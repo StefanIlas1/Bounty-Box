@@ -51,12 +51,15 @@ export function createApi(store: Store, token: string) {
         const data = await body(req);
         const brief = parseBrief(data.brief);
         if (!['live','fixture'].includes(data.mode as string)) throw new HttpError(400, 'Choose live or fixture mode explicitly');
+        const key = req.headers['idempotency-key'];
+        if (key !== undefined && (typeof key !== 'string' || !/^[\x21-\x7e]{1,128}$/.test(key))) throw new HttpError(400, 'Invalid Idempotency-Key');
+        // A replay does not create provider work and must survive readiness changes.
+        const existing = store.existingRequest(brief, data.mode as 'live' | 'fixture', key);
+        if (existing) return send(202, existing);
         if (data.mode === 'live') {
           try { await livePreflight(brief, store); }
           catch { throw new HttpError(503, 'Live preflight failed: check provider credentials, generator, pricing, demo limits and sandbox reconciliation'); }
         }
-        const key = req.headers['idempotency-key'];
-        if (key !== undefined && (typeof key !== 'string' || !/^[\x21-\x7e]{1,128}$/.test(key))) throw new HttpError(400, 'Invalid Idempotency-Key');
         return send(202, store.create(brief, data.mode as 'live' | 'fixture', key));
       }
       const artifact = /^\/api\/runs\/([a-f0-9-]{36})\/artifacts(?:\/([1-9][0-9]*))?$/.exec(path);

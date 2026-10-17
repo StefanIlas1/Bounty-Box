@@ -59,16 +59,19 @@ export class Store {
     if (!row) throw new HttpError(404, 'Artifact not found');
     return { digest: row.digest as string, app: readArtifact(this.artifactRoot, row.digest as string) };
   }
+  existingRequest(brief: Brief, mode: RunSnapshot['mode'], key?: string): RunSnapshot | undefined {
+    if (!key) return;
+    const old = this.db.prepare('SELECT hash,run_id FROM requests WHERE key=?').get(key);
+    if (!old) return;
+    const hash = createHash('sha256').update(JSON.stringify({ brief, mode })).digest('hex');
+    if (old.hash !== hash) throw new HttpError(409, 'Idempotency key used for a different request');
+    return this.get(old.run_id as string);
+  }
   create(brief: Brief, mode: RunSnapshot['mode'], key?: string) {
     return this.tx(() => {
       const hash = createHash('sha256').update(JSON.stringify({ brief, mode })).digest('hex');
-      if (key) {
-        const old = this.db.prepare('SELECT hash,run_id FROM requests WHERE key=?').get(key);
-        if (old) {
-          if (old.hash !== hash) throw new HttpError(409, 'Idempotency key used for a different request');
-          return this.get(old.run_id as string);
-        }
-      }
+      const existing = this.existingRequest(brief, mode, key);
+      if (existing) return existing;
       const count = this.db.prepare("SELECT count(*) AS n FROM jobs WHERE state IN ('queued','running')").get()!;
       if (Number(count.n) >= 5) throw new HttpError(429, 'Queue full; at most five unfinished runs');
       const now = new Date().toISOString();

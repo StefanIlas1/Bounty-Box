@@ -58,6 +58,15 @@ test('HTTP auth, input bounds, live preflight, idempotency, queue limit and canc
   try {
     assert.equal((await fetch(url + '/api/health')).status, 401);
     assert.equal((await post('/api/runs', { brief, mode: 'live' })).status, 503);
+    const existingLive = store.create(brief, 'live', 'live-retry');
+    store.recordSandbox(existingLive.id, { name: 'active-test-sandbox', phase: 'created', sandboxId: 'sb-test' });
+    const replay = await post('/api/runs', { brief, mode: 'live' }, 'live-retry');
+    assert.equal(replay.status, 202);
+    assert.equal(((await replay.json()) as { id: string }).id, existingLive.id);
+    assert.equal((await post('/api/runs', { brief: { ...brief, description: 'Different request' }, mode: 'live' }, 'live-retry')).status, 409);
+    assert.equal((await post('/api/runs', { brief, mode: 'live' }, 'new-live')).status, 503);
+    store.cancel(existingLive.id);
+    store.recordSandbox(existingLive.id, { name: 'active-test-sandbox', phase: 'destroyed' });
     assert.equal((await post('/api/runs', { brief: { ...brief, load: { ...brief.load, concurrency: 51 } }, mode: 'fixture' })).status, 400);
     const r = await post('/api/runs', { brief, mode: 'fixture' }, 'same');
     assert.equal(r.status, 202);
