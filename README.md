@@ -22,6 +22,4 @@ See [design.md](design.md) for the full pitch, scope and risks.
 
 ## How to run
 
-_Coming soon — setup instructions will be added as the build lands._
-
-Never commit `.env` files or API keys.
+Setup instructions are added here as the build lands.

@@ -55,3 +55,11 @@ Bounty-Box brokers deals with vendors.
 - **Live spending:** use test mode, or the cheapest free tiers, so the demo doesn't spend real money.
 - **Unreliable swap:** make the swap deterministic by setting a load target that the first stack is known to miss.
 - **"Isn't it Lovable?":** open the video with the budget and the swap, not the code generation.
+
+## Likely judge pushback (kept out of the README)
+
+- **"Isn't this just Lovable or v0?"** No: those generate code and stop. Bounty-Box picks, load-tests, budgets and buys the infrastructure. Lead the demo with the budget and the swap.
+- **"Isn't partner placement just paid ads?"** The trust rule: partners only win if they pass the same tests and beat the best market price, and they are always labeled.
+- **"Is the swap staged?"** The load target is set so the first stack misses it, which makes the swap reliable on camera. Be upfront that the target is chosen, the test itself is real.
+- **"Is the negotiation agent real?"** Not today: it is a drafted email and a badge. Present it as roadmap.
+- **"Did it spend real money?"** Test mode or free tiers only.
