@@ -7,8 +7,6 @@ import { useMotionValueEvent, useScroll } from 'motion/react'
 import {
   CartesianGrid,
   ComposedChart,
-  Line,
-  ReferenceArea,
   ReferenceDot,
   ReferenceLine,
   Scatter,
@@ -71,49 +69,23 @@ type PlotPoint = {
   verdict: string
 }
 
-// Per-point label placement keeps labels off the dashed budget/target lines.
-const LABEL_PLACEMENT: Record<string, { dx: number; dy: number; anchor: 'start' | 'middle' | 'end' }> = {
-  'Attempt 1': { dx: 12, dy: -8, anchor: 'start' },
-  'Attempt 2': { dx: 0, dy: 22, anchor: 'middle' },
-  'Attempt 3': { dx: -12, dy: -8, anchor: 'end' },
-  Chosen: { dx: -12, dy: 20, anchor: 'end' },
-}
-
 function PointMark(props: ScatterShapeProps) {
   const { cx, cy, payload } = props as unknown as { cx?: number; cy?: number; payload: PlotPoint }
   if (cx == null || cy == null) return null
-  const color = payload.status === 'chosen' ? 'var(--color-gold)' : payload.status === 'fail' ? 'var(--color-bad)' : 'var(--color-muted)'
-  const lp = LABEL_PLACEMENT[payload.label] ?? { dx: 10, dy: -8, anchor: 'start' as const }
-  return (
-    <g className="bb-pop">
-      {payload.status === 'fail' ? (
-        <g stroke={color} strokeWidth={2.2} strokeLinecap="round">
-          <line x1={cx - 5} x2={cx + 5} y1={cy - 5} y2={cy + 5} />
-          <line x1={cx - 5} x2={cx + 5} y1={cy + 5} y2={cy - 5} />
-        </g>
-      ) : payload.status === 'chosen' ? (
-        <>
-          <circle cx={cx} cy={cy} r={11} fill="none" stroke={color} opacity={0.45} className="bb-ring" />
-          <circle cx={cx} cy={cy} r={6} fill={color} />
-        </>
-      ) : (
-        <circle cx={cx} cy={cy} r={5.5} fill="none" stroke={color} strokeWidth={2} />
-      )}
-      <text x={cx + lp.dx} y={cy + lp.dy} fontSize={12} fontWeight={600} fill="var(--color-ink)" textAnchor={lp.anchor}>
-        {payload.label}
-      </text>
-    </g>
-  )
+  if (payload.status === 'chosen') {
+    return (
+      <g>
+        <circle cx={cx} cy={cy} r={5} fill="var(--color-gold)" />
+        <text x={cx - 10} y={cy + 18} fontSize={11} fontWeight={600} fill="var(--color-gold)" textAnchor="end">Chosen</text>
+      </g>
+    )
+  }
+  return <circle cx={cx} cy={cy} r={4} fill="var(--color-surface)" stroke="var(--color-muted)" strokeWidth={1.5} />
 }
 
 function ProbeMark({ cx, cy }: DotProps) {
   if (cx == null || cy == null) return <g />
-  return (
-    <g>
-      <circle cx={cx} cy={cy} r={14} fill="var(--color-blue)" opacity={0.15} />
-      <circle cx={cx} cy={cy} r={4.5} fill="var(--color-blue-soft)" />
-    </g>
-  )
+  return <circle cx={cx} cy={cy} r={3.5} fill="var(--color-blue-soft)" />
 }
 
 function Chart({ p }: { p: number }) {
@@ -151,7 +123,7 @@ function Chart({ p }: { p: number }) {
         title="Cost versus p95 latency for each attempt"
         desc="Scatter of monthly cost against p95 latency for four attempts. The chosen stack lands under both the budget and the latency target."
       >
-        <CartesianGrid horizontal vertical={false} stroke="var(--color-line)" strokeOpacity={0.55} />
+        <CartesianGrid horizontal vertical={false} stroke="var(--color-line)" strokeOpacity={0.35} />
         <XAxis
           type="number"
           dataKey="x"
@@ -160,7 +132,7 @@ function Chart({ p }: { p: number }) {
           tickFormatter={formatCost}
           tick={{ fill: 'var(--color-muted)', fontSize: 11 }}
           tickLine={false}
-          axisLine={{ stroke: 'var(--color-line)', strokeWidth: 1.5 }}
+          axisLine={false}
           label={{ value: 'monthly cost', position: 'insideBottom', offset: -4, fill: 'var(--color-muted)', fontSize: 11 }}
         />
         <YAxis
@@ -173,40 +145,25 @@ function Chart({ p }: { p: number }) {
           tick={{ fill: 'var(--color-muted)', fontSize: 11 }}
           tickLine={false}
           width={46}
-          axisLine={{ stroke: 'var(--color-line)', strokeWidth: 1.5 }}
+          axisLine={false}
           label={{ value: 'p95 latency', angle: -90, position: 'insideLeft', offset: 12, fill: 'var(--color-muted)', fontSize: 11 }}
         />
 
-        {/* the passing region: under budget and under target */}
-        <ReferenceArea x1={0} x2={BUDGET} y1={0} y2={TARGET} fill="var(--color-gold)" fillOpacity={0.06} stroke="none" />
         <ReferenceLine
           x={BUDGET}
           stroke="var(--color-gold)"
-          strokeDasharray="5 5"
-          strokeWidth={1.5}
+          strokeOpacity={0.5}
+          strokeWidth={1}
           label={{ value: '$30 budget', position: 'insideTopRight', fill: 'var(--color-gold)', fontSize: 11 }}
         />
         <ReferenceLine
           y={TARGET}
           stroke="var(--color-blue)"
-          strokeDasharray="5 5"
-          strokeWidth={1.5}
+          strokeOpacity={0.5}
+          strokeWidth={1}
           label={{ value: '200 ms target', position: 'insideTopRight', fill: 'var(--color-blue-soft)', fontSize: 11 }}
         />
 
-        <Line
-          data={finished}
-          dataKey="y"
-          type="linear"
-          stroke="var(--color-muted)"
-          strokeOpacity={0.45}
-          strokeWidth={2}
-          strokeDasharray="2 6"
-          strokeLinecap="round"
-          dot={false}
-          isAnimationActive={false}
-          legendType="none"
-        />
         <Scatter data={finished} dataKey="y" shape={PointMark} isAnimationActive={false} legendType="none" />
         {probe && <ReferenceDot x={probe.x} y={probe.y} shape={ProbeMark} ifOverflow="visible" />}
 
