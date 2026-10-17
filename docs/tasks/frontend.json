@@ -1,0 +1,12 @@
+{
+  "id": "frontend",
+  "title": "DEFERRED: frontend is out of current scope",
+  "paths": [
+    "src/app/page.tsx",
+    "src/app/layout.tsx",
+    "src/app/globals.css",
+    "src/components/",
+    "docs/handoffs/agent-2.md"
+  ],
+  "instructions": "Cancelled by user direction: no frontend agent needed. Preserve existing edits; do not claim or implement this task. Agent 2 now owns the orchestration task."
+}

@@ -1,0 +1,10 @@
+{
+  "id": "benchmark",
+  "title": "Independent benchmark harness and orchestration integration",
+  "paths": [
+    "src/lib/benchmark/",
+    "src/lib/orchestrator/",
+    "docs/handoffs/agent-2.md"
+  ],
+  "instructions": "Agent 2: claim benchmark. Preserve existing orchestration. Implement trusted HTTP benchmark at src/lib/benchmark/index.ts, export benchmark({baseUrl,token,brief,signal}) returning TestResult. Token sent as Bearer auth, never logged. Validate /health then measure POST /signups with unique synthetic emails, bounded concurrency/duration from Brief, individual timeout and cancellation. Report actual elapsed time, p95, errors, requests and throughput; no generated metrics accepted. Support injectable fetch for smoke checks; do not install dependencies or perform live provider calls. Agent 1 owns persistence/API/contracts. Hardware modules now exist: read agent-3 handoff, send proposed target-aware orchestration changes without changing shared contracts. Send exact harness signature promptly. Run one narrow smoke and handoff."
+}

@@ -1,0 +1,9 @@
+{
+  "id": "architecture-reference",
+  "title": "REFERENCE: Backend architecture and Miro board",
+  "paths": [
+    "docs/backend-system-design.md",
+    "docs/diagrams/"
+  ],
+  "instructions": "Shared architecture reference for every current and future agent: https://miro.com/app/board/uXjVEYwmnCA=/ \u2014 Bounty-Box \u2014 Backend Architecture & Execution Design. Canonical local text: docs/backend-system-design.md, section 10 lists selected decisions. Four Mermaid-backed diagrams: components, lifecycle, shipping sequence and data model. This is target architecture; implementation remains in progress. Do not change other agents ownership based on this reference. Miro access inherits workspace permissions; use local text if unavailable."
+}

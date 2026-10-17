@@ -1,0 +1,20 @@
+{
+  "id": "core",
+  "title": "Foundation, API, generation, and integration",
+  "paths": [
+    "package.json",
+    "package-lock.json",
+    "tsconfig.json",
+    "next-env.d.ts",
+    "next.config.ts",
+    "postcss.config.mjs",
+    ".env.example",
+    "src/lib/contracts.ts",
+    "src/app/api/",
+    "src/lib/server/",
+    "src/lib/generation/",
+    "scripts/",
+    "docs/coordination.md"
+  ],
+  "instructions": "Agent 1 is the lead and owns the bulk of the build. Build the Next.js App Router/TypeScript/Tailwind foundation, shared contracts, durable local run state, generation, and start/status/approve/cancel API. Agent 2 owns the orchestration loop in src/lib/orchestrator/; integrate it without competing edits. Integrate other agents' work. Keep real provider execution behind explicit setup; label fixtures. Enforce proposal-specific approval before provisioning, cancellation, duplicate request protection, a small attempt cap, one sandbox at a time, and truthful measured evidence. Only the coordinator installs dependencies and runs live provider operations. Purchases require explicit concrete approval. No commits or branch changes unless requested. Verify a narrow smoke flow and report blockers. Use the coordination service for messages and task handoffs."
+}
