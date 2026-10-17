@@ -77,3 +77,12 @@
 @keyframes bb-ring { 0%,100% { transform: scale(1); opacity: .45 } 50% { transform: scale(1.35); opacity: .15 } }
 .bb-ring { animation: bb-ring 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
 @media (prefers-reduced-motion: reduce) { .bb-pop, .bb-ring { animation: none } }
+
+/* Catalog strip: slow seamless scroll of glowing gold app widgets. */
+@keyframes bb-marquee { from { transform: translateX(0) } to { transform: translateX(calc(-50% - 0.5rem)) } }
+.bb-marquee { animation: bb-marquee 40s linear infinite; }
+.bb-marquee:hover { animation-play-state: paused; }
+.bb-marquee-mask { mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent); }
+.bb-widget { box-shadow: 0 0 24px -6px rgb(233 185 73 / 0.45), inset 0 1px 0 rgb(246 249 252 / 0.06); }
+.bb-widget svg { filter: drop-shadow(0 0 6px rgb(233 185 73 / 0.7)); }
+@media (prefers-reduced-motion: reduce) { .bb-marquee { animation: none; flex-wrap: wrap; justify-content: center; width: auto } }

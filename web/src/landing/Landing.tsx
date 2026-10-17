@@ -24,6 +24,7 @@ import {
 } from 'lucide-react'
 import { Logo } from '../shared/Logo'
 import { ModeToggle } from '../shared/ModeToggle'
+import { siNeon, siSupabase, siUpstash, siResend, siVercel, siRailway, siAuth0, siRender, siStripe, siCloudflare, siPosthog, siRedis } from 'simple-icons'
 import { ProviderGrid, type GridMode } from './ProviderGrid'
 import { IterationStory } from './IterationStory'
 import { FigChart } from './FigChart'
@@ -62,7 +63,12 @@ const BOTTOM_TILES = [
   { icon: Clock, name: 'Cron', detail: 'Cron · via Railway' },
 ]
 
-const CATALOG_PROVIDERS = ['Neon', 'Supabase', 'Upstash', 'Resend', 'Vercel', 'Railway', 'Auth0', 'Render']
+const CATALOG_PROVIDERS = [
+  { name: 'Neon', path: siNeon.path }, { name: 'Supabase', path: siSupabase.path }, { name: 'Upstash', path: siUpstash.path },
+  { name: 'Resend', path: siResend.path }, { name: 'Vercel', path: siVercel.path }, { name: 'Railway', path: siRailway.path },
+  { name: 'Auth0', path: siAuth0.path }, { name: 'Render', path: siRender.path }, { name: 'Stripe', path: siStripe.path },
+  { name: 'Cloudflare', path: siCloudflare.path }, { name: 'PostHog', path: siPosthog.path }, { name: 'Redis', path: siRedis.path },
+]
 
 type IterationCard = {
   n: string
@@ -215,10 +221,10 @@ function Hero() {
         <h1 className="mt-4 font-display text-[clamp(2.25rem,5.2vw,3.75rem)] font-extrabold leading-[1.05] tracking-tight text-ink">
           Building big <span className="text-gold whitespace-nowrap">under budget.</span>
         </h1>
-        <p className="mx-auto mt-5 max-w-xl text-base text-muted sm:text-lg">
+        <p className="mx-auto mt-5 flex min-h-[7.5rem] max-w-xl items-start justify-center text-base text-muted sm:min-h-[7rem] sm:text-lg">
           {mode === 'software'
             ? 'Describe the app you want and a monthly budget. Bounty-Box picks the stack, load-tests it inside a CreateOS sandbox, fixes and swaps out whatever fails, then buys it through Stripe Projects and hands you a live URL.'
-            : 'Need a device too? Bounty-Box adds a hardware bill of materials: boards, chips and parts priced against your budget, with firmware written and tested next to your app.'}
+            : 'Need a device too? Bounty-Box adds a hardware bill of materials: boards, chips and parts priced against your budget, firmware written and tested next to your app, and the parts bought only after you approve the whole build.'}
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Button asChild className={CTA_GOLD}>
@@ -238,16 +244,21 @@ function Hero() {
 }
 
 function CatalogRow() {
+  // Two copies side by side so the strip loops seamlessly.
+  const loop = [...CATALOG_PROVIDERS, ...CATALOG_PROVIDERS]
   return (
     <section className="border-y border-line bg-surface/40">
-      <div className="mx-auto max-w-6xl px-6 py-10 text-center">
-        <p className="mb-5 text-xs font-medium uppercase tracking-[0.12em] text-muted">Buys from the Stripe Projects catalog</p>
-        <div className="flex flex-wrap justify-center gap-x-10 gap-y-3">
-          {CATALOG_PROVIDERS.map((p) => (
-            <span key={p} className="text-sm font-medium text-muted">
-              {p}
-            </span>
-          ))}
+      <div className="py-10 text-center">
+        <p className="mb-6 text-xs font-medium uppercase tracking-[0.12em] text-muted">Buys from the Stripe Projects catalog</p>
+        <div className="bb-marquee-mask overflow-hidden">
+          <ul className="bb-marquee flex w-max gap-4" aria-label="Providers in the Stripe Projects catalog">
+            {loop.map((p, i) => (
+              <li key={`${p.name}-${i}`} aria-hidden={i >= CATALOG_PROVIDERS.length} className="bb-widget flex h-20 w-20 shrink-0 flex-col items-center justify-center gap-1.5 rounded-xl border border-gold/25 bg-surface">
+                <svg viewBox="0 0 24 24" className="h-7 w-7 text-gold" fill="currentColor" aria-hidden="true"><path d={p.path} /></svg>
+                <span className="text-[10px] font-medium text-ink/80">{p.name}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

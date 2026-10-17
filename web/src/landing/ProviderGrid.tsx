@@ -71,7 +71,7 @@ const ZONE_LABELS: Record<GridMode, Record<Zone, string>> = {
     db: 'Boards & microcontrollers',
     cloud: 'Compute & chips',
     auth: 'Parts suppliers',
-    data: 'Design & fabrication',
+    data: '',
   },
 }
 
