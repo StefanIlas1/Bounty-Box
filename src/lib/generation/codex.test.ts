@@ -19,7 +19,10 @@ const manifest = { files: [
 test('Codex transport isolates secrets, validates output, handles failure/deadline and cleans temporary files', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'bounty-codex-test-'));
   const executable = join(dir, 'fake-codex.cjs');
-  const before = new Set((await readdir(tmpdir())).filter(p => p.startsWith('bounty-codex-generation-')));
+  // Each test process owns its temp root; concurrent checkouts may generate too.
+  const tempVariables = ['TMPDIR', 'TEMP', 'TMP'] as const;
+  const previousTemp = Object.fromEntries(tempVariables.map(name => [name, process.env[name]]));
+  for (const name of tempVariables) process.env[name] = dir;
   const env = { HOME: process.env.HOME, PATH: process.env.PATH, NEON_DATABASE_URL: 'secret-db', OPENAI_API_KEY: 'secret-api', CREATEOS_PROJECT_API_KEY: 'secret-provider' };
   try {
     await writeFile(executable, `#!/usr/bin/env node
@@ -39,7 +42,13 @@ fs.writeFileSync(args[args.indexOf('--output-last-message')+1], ${JSON.stringify
     await assert.rejects(generator.generate({ brief, stack }), e => e instanceof Error && e.message.includes('exit 12') && !e.message.includes('secret-db'));
     await writeFile(executable, '#!/usr/bin/env node\nsetInterval(()=>{},1000);', { mode: 0o700 });
     await assert.rejects(createCodexGenerator({ executable, env, timeoutMs: 80 }).generate({ brief, stack }), /deadline/);
-    const after = (await readdir(tmpdir())).filter(p => p.startsWith('bounty-codex-generation-') && !before.has(p));
+    const after = (await readdir(dir)).filter(p => p.startsWith('bounty-codex-generation-'));
     assert.deepEqual(after, []);
-  } finally { await rm(dir, { recursive: true, force: true }); }
+  } finally {
+    for (const name of tempVariables) {
+      if (previousTemp[name] === undefined) delete process.env[name];
+      else process.env[name] = previousTemp[name];
+    }
+    await rm(dir, { recursive: true, force: true });
+  }
 });
