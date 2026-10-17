@@ -1,0 +1,5 @@
+.env
+.env.*
+.projects/vault/
+.projects/cache/
+node_modules/
