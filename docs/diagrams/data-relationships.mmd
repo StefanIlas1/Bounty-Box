@@ -1,0 +1,10 @@
+erDiagram
+    RUN ||--o{ RUN_EVENT : records
+    RUN ||--o{ JOB : queues
+    RUN ||--o{ ATTEMPT : measures
+    ARTIFACT ||--o{ ATTEMPT : executes
+    ATTEMPT ||--o{ PROPOSAL : qualifies
+    ARTIFACT ||--o{ PROPOSAL : binds
+    PROPOSAL ||--o| APPROVAL : authorizes
+    APPROVAL ||--o{ SHIPPING_OPERATION : permits
+    SHIPPING_OPERATION ||--o{ PROVIDER_RECEIPT : records

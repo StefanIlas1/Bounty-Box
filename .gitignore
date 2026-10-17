@@ -3,3 +3,9 @@
 .projects/vault/
 .projects/cache/
 node_modules/
+.coordination/
+.next/
+.bounty-box/
+__pycache__/
+*.tsbuildinfo
+!.env.example

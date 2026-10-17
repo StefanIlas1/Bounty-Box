@@ -1,0 +1,19 @@
+sequenceDiagram
+    participant U as Operator
+    participant A as API
+    participant D as SQLite and artifacts
+    participant W as Shipping worker
+    participant S as Stripe Projects
+    participant C as CreateOS deployment
+    U->>A: Approve current proposal ID
+    A->>D: Transaction: validate digest, expiry, price; reserve unique job
+    A-->>U: Accepted snapshot
+    W->>D: Claim job and persist provisioning intent
+    W->>S: Provision selected services
+    S-->>W: Resource IDs and receipts
+    W->>D: Persist receipts
+    W->>C: Configure runtime; upload approved artifact
+    C-->>W: Deployment ID and URL
+    W->>C: Check digest, health and signup persistence
+    W->>D: Persist deployed URL and evidence
+    Note over W,D: Unknown outcome stops automatic retry and requires reconciliation

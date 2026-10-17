@@ -1,0 +1,11 @@
+stateDiagram-v2
+    [*] --> queued
+    queued --> planning
+    planning --> generating
+    generating --> testing
+    testing --> repairing: Failed criteria and attempts remain
+    repairing --> generating: Revised code or different stack
+    testing --> awaiting_approval: Qualified proposal persisted
+    awaiting_approval --> provisioning: Matching proposal approved
+    provisioning --> deployed: Deployment health check passes
+    deployed --> [*]

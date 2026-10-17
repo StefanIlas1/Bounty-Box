@@ -15,6 +15,8 @@ Built at **Build Agents That Run Code: CreateOS × Stripe Projects** (Oct 17, 20
 
 See [design.md](design.md) for the full pitch, scope and risks.
 
+Backend architecture: [system design and decisions](docs/backend-system-design.md) · [Miro architecture board](https://miro.com/app/board/uXjVEYwmnCA=/).
+
 ## Tech
 
 - **Stripe Projects**: provisions and buys the chosen services (`stripe projects add`).

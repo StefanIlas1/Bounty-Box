@@ -1,0 +1,22 @@
+flowchart LR
+    Client[CLI or HTTP client] --> API[Run and approval API]
+    API --> Store[(Run state and event log)]
+    API --> Queue[Serialized job queue]
+    Queue --> Worker[Run worker]
+    Worker --> Loop[Bounded orchestrator]
+    Loop --> Catalog[Catalog and cost estimator]
+    Loop --> Generator[Code generator]
+    Generator --> Model[Model provider]
+    Generator --> Artifacts[(Versioned source artifacts)]
+    Loop --> Runner[CreateOS adapter]
+    Runner --> Sandbox[Isolated application and diagnostic load script]
+    Sandbox --> Trial[Approved trial services]
+    Worker --> Harness[Independent benchmark harness]
+    Harness --> Sandbox
+    Loop --> Store
+    API --> Gate[Proposal-specific approval gate]
+    Gate --> Shipping[Provision and deployment worker]
+    Shipping --> Stripe[Stripe Projects]
+    Shipping --> Host[Selected deployment provider]
+    Shipping --> Verify[Deployed application health check]
+    Verify --> Store
