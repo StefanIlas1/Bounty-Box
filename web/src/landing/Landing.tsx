@@ -125,12 +125,12 @@ function NavBar() {
   const [open, setOpen] = useState(false)
   return (
     <header className="sticky top-0 z-50 h-16 border-b border-line bg-bg/90 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <Link to="/" className="shrink-0" aria-label="Bounty-Box home">
+      <div className="flex h-16 w-full items-center justify-between px-6 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:px-12 2xl:px-16">
+        <Link to="/" className="shrink-0 justify-self-start" aria-label="Bounty-Box home">
           <Logo size={20} />
         </Link>
 
-        <nav className="hidden items-center gap-7 lg:flex">
+        <nav className="hidden items-center gap-10 lg:flex">
           {NAV_LINKS.map((l) => (
             <a key={l.href} href={l.href} className="text-sm text-muted transition-colors hover:text-ink">
               {l.label}
@@ -147,7 +147,7 @@ function NavBar() {
           </a>
         </nav>
 
-        <div className="hidden items-center gap-3 lg:flex">
+        <div className="hidden items-center gap-3 justify-self-end lg:flex">
           <Button asChild variant="outline" className={cn(CTA_OUTLINE, 'py-2')}>
             <Link to="/demo">Try the demo</Link>
           </Button>

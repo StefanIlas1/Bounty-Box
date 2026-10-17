@@ -71,7 +71,7 @@ export default function Saas() {
   return (
     <div className="min-h-svh bg-bg text-ink">
       <header className="sticky top-0 z-50 h-16 border-b border-line bg-bg/90 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+        <div className="flex h-16 w-full items-center justify-between px-6 lg:px-12 2xl:px-16">
           <Link to="/" aria-label="Bounty-Box home"><Logo size={20} /></Link>
           <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink"><ArrowLeft className="h-4 w-4" /> Back to site</Link>
         </div>
