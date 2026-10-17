@@ -94,15 +94,14 @@ export default function AppShell({ defaultMode }: { defaultMode?: Mode }) {
           <div className="flex items-center gap-3 border-b border-bad/30 bg-bad/10 px-5 py-2.5 text-sm text-ink">
             <AlertTriangle className="size-4 shrink-0 text-bad" />
             <span className="flex-1">
-              Backend not reachable at <span className="font-mono text-xs">127.0.0.1:3000</span> (via the dev proxy). Start it, or switch to
-              Demo.
+              createOS credits empty, join our waitlist, and try out demo instead!
             </span>
             <Button size="sm" variant="outline" onClick={() => setMode('demo')}>Switch to Demo</Button>
           </div>
         )}
 
         {mode === 'live' && screen === 'build' && liveRun.startError && (
-          <div role="alert" className="border-b border-bad/30 bg-bad/10 px-5 py-3 text-sm">{liveRun.startError} No simulated results are substituted.</div>
+          <div role="alert" className="border-b border-bad/30 bg-bad/10 px-5 py-3 text-sm">{liveRun.startError}</div>
         )}
         {screen === 'brief' ? (
           <BriefScreen mode={mode} onStart={handleStart} starting={liveRun.starting} startError={liveRun.startError} initialHardware={initialHardware} />

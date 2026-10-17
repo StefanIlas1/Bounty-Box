@@ -73,7 +73,7 @@ export function useLiveRun({ dispatch, setPhase, resetState, initialRunId }: Use
       applySnapshot(snap)
       if (SETTLED.has(snap.status)) stopPolling()
     } catch (error) {
-      if (epoch === epochRef.current) setStartError(`Cannot refresh live run: ${error instanceof Error ? error.message : 'connection failed'}. Retrying; results remain unchanged.`)
+      if (epoch === epochRef.current) setStartError('createOS credits empty, join our waitlist, and try out demo instead!')
     }
   }, [applySnapshot, stopPolling])
 
@@ -101,7 +101,7 @@ export function useLiveRun({ dispatch, setPhase, resetState, initialRunId }: Use
     void getRun(initialRunId).then(snap => {
       if (epoch === epochRef.current) watch(snap)
     }).catch(error => {
-      if (epoch === epochRef.current) setStartError(`Cannot open saved run: ${error instanceof Error ? error.message : 'connection failed'}`)
+      if (epoch === epochRef.current) setStartError('createOS credits empty, join our waitlist, and try out demo instead!')
     })
     return () => { epochRef.current += 1; stopPolling() }
   }, [initialRunId, watch, stopPolling])
@@ -120,7 +120,7 @@ export function useLiveRun({ dispatch, setPhase, resetState, initialRunId }: Use
       }, payload.useFixtures ? 'fixture' : 'live')
       if (epoch === epochRef.current) watch(snap)
     } catch (error) {
-      if (epoch === epochRef.current) setStartError(error instanceof Error ? error.message : 'Live run could not start.')
+      if (epoch === epochRef.current) setStartError('createOS credits empty, join our waitlist, and try out demo instead!')
     } finally {
       if (epoch === epochRef.current) setStarting(false)
     }

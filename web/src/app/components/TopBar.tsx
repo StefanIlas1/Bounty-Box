@@ -47,7 +47,7 @@ export function TopBar({ mode, onModeChange, reachable, fixtureRun, simulated, o
                 Backend: 127.0.0.1:3000 via proxy
               </Badge>
             </TooltipTrigger>
-            <TooltipContent>{reachable === null ? 'checking…' : reachable ? 'reachable' : 'unreachable'}</TooltipContent>
+            <TooltipContent>{reachable === null ? 'checking…' : reachable ? 'reachable' : 'createOS credits empty, join our waitlist, and try out demo instead!'}</TooltipContent>
           </Tooltip>
         )}
         <Button size="sm" variant="outline" onClick={onNewRun} className="gap-1.5">
