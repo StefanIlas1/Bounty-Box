@@ -50,7 +50,11 @@ export function BriefScreen({
   const [hardwareOn, setHardwareOn] = useState(!!initialHardware)
   const [deviceNeeds, setDeviceNeeds] = useState(initialHardware ? 'A door sensor that posts signups from a kiosk' : '')
 
-  const canStart = prompt.trim().length > 0 && budget > 0 && users > 0
+  const [hardwareName, setHardwareName] = useState('STM32 NUCLEO-F446RE')
+  const [hardwarePrice, setHardwarePrice] = useState(28.19)
+  const [hardwareQty, setHardwareQty] = useState(1)
+
+  const canStart = prompt.trim().length > 0 && budget > 0 && users > 0 && (!hardwareOn || (hardwareName.trim().length > 0 && Number.isFinite(hardwarePrice) && hardwarePrice >= 0 && Number.isInteger(hardwareQty) && hardwareQty > 0 && hardwareQty <= 1000))
 
   const start = () =>
     onStart({
@@ -64,6 +68,7 @@ export function BriefScreen({
       useFixtures,
       hardwareOn,
       deviceNeeds,
+      hardwareItem: { name: hardwareName.trim(), unitPriceUsd: hardwarePrice, qty: hardwareQty, supplier: 'Demo catalog' },
     })
 
   return (
@@ -126,7 +131,11 @@ export function BriefScreen({
             <ToggleGroupItem value="software">Software</ToggleGroupItem>
             <ToggleGroupItem value="hardware">Software + hardware</ToggleGroupItem>
           </ToggleGroup>
-          {hardwareOn && mode === 'demo' && <div className="rounded border border-gold/30 bg-gold/5 p-3 text-sm"><p className="font-medium">Hardware demo: connected signup kiosk</p><div className="mt-2 grid grid-cols-2 gap-3"><div><p className="text-xs text-muted">Monthly services</p><p className="text-lg font-semibold">$27.40 / month</p></div><div><p className="text-xs text-muted">One-time hardware</p><p className="text-lg font-semibold">$30.90</p></div></div><p className="mt-2 text-xs text-muted">Example USD prices for one device. Includes board selection, firmware, a simulated compile and a parts list. First month: $58.30; then $27.40/month. Shipping and tax excluded.</p></div>}
+          {hardwareOn && mode === 'demo' && <div className="grid grid-cols-2 gap-3">
+            <div className="col-span-2"><Label htmlFor="hardware-item">Hardware item</Label><Input id="hardware-item" value={hardwareName} onChange={e => setHardwareName(e.target.value)} /></div>
+            <div><Label htmlFor="hardware-price">Unit price (USD, one-time)</Label><Input id="hardware-price" type="number" min={0} step={0.01} value={hardwarePrice} onChange={e => setHardwarePrice(Number(e.target.value))} /></div>
+            <div><Label htmlFor="hardware-qty">Quantity</Label><Input id="hardware-qty" type="number" min={1} max={1000} step={1} value={hardwareQty} onChange={e => setHardwareQty(Number(e.target.value))} /></div>
+          </div>}
           {hardwareOn && (
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="device-needs">Device needs</Label>

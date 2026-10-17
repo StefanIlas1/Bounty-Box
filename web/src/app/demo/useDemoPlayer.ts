@@ -1,11 +1,12 @@
 import { useCallback, useRef, useState } from 'react'
-import type { RunEvent } from '../../shared/types'
+import type { RunEvent, BomItem } from '../../shared/types'
 import { buildPreApprovalEvents, demoEventsPostApproval } from './script'
 
 export type DemoStage = 'idle' | 'playing' | 'paused' | 'awaiting_approval' | 'finished'
 export type DemoSpeed = 1 | 2 | 4
 
 export interface DemoStartOptions {
+  hardwareItem?: BomItem
   hardwareOn?: boolean
   deviceNeeds?: string
 }
@@ -74,7 +75,7 @@ export function useDemoPlayer({ dispatch, resetState }: UseDemoPlayerOpts) {
     clearTimer()
     pausedRef.current = false
     pendingRemainingRef.current = null
-    queueRef.current = buildPreApprovalEvents(!!options?.hardwareOn, options?.deviceNeeds)
+    queueRef.current = buildPreApprovalEvents(!!options?.hardwareOn, options?.deviceNeeds, options?.hardwareItem)
     indexRef.current = 0
     lastAtRef.current = 0
     setStage('playing')
@@ -128,7 +129,7 @@ export function useDemoPlayer({ dispatch, resetState }: UseDemoPlayerOpts) {
     clearTimer()
     pausedRef.current = false
     pendingRemainingRef.current = null
-    queueRef.current = buildPreApprovalEvents(!!lastOptionsRef.current.hardwareOn, lastOptionsRef.current.deviceNeeds)
+    queueRef.current = buildPreApprovalEvents(!!lastOptionsRef.current.hardwareOn, lastOptionsRef.current.deviceNeeds, lastOptionsRef.current.hardwareItem)
     indexRef.current = 0
     lastAtRef.current = 0
     setStage('playing')

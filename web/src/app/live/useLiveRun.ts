@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { RunEvent } from '../../shared/types'
+import type { RunEvent, BomItem } from '../../shared/types'
 import type { RunSnapshot } from '../../shared/backend'
 import type { Phase } from '../state/reducer'
 import { approveRun, cancelRun, createRun, getRun, probeBackendReachable } from './client'
@@ -14,6 +14,7 @@ export interface StartPayload {
   maxP95Ms: number
   maxErrorRate: number
   useFixtures: boolean
+  hardwareItem?: BomItem
   hardwareOn?: boolean
   deviceNeeds?: string
 }

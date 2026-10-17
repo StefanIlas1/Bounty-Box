@@ -58,7 +58,7 @@ export default function AppShell({ defaultMode }: { defaultMode?: Mode }) {
 
   const handleStart = (payload: StartPayload) => {
     setScreen('build')
-    if (mode === 'demo') demoPlayer.start({ hardwareOn: payload.hardwareOn, deviceNeeds: payload.deviceNeeds })
+    if (mode === 'demo') demoPlayer.start({ hardwareOn: payload.hardwareOn, deviceNeeds: payload.deviceNeeds, hardwareItem: payload.hardwareItem })
     else liveRun.begin(payload)
   }
 

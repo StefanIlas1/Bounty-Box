@@ -213,77 +213,16 @@ function at(ms: number): number {
   return ms
 }
 
-const FIRMWARE_MAIN_CPP = `#include <WiFi.h>
-#include <HTTPClient.h>
-
-const char* WIFI_SSID = "kiosk-net";
-const char* WIFI_PASS = "***";
-const char* SIGNUP_URL = "https://waitlist-7f3a.sb.createos.sh/signups";
-const int SENSOR_PIN = 4;   // door / reed sensor
-
-void setup() {
-  pinMode(SENSOR_PIN, INPUT_PULLUP);
-  WiFi.begin(WIFI_SSID, WIFI_PASS);
-  while (WiFi.status() != WL_CONNECTED) delay(250);
-}
-
-void loop() {
-  if (digitalRead(SENSOR_PIN) == LOW) {
-    HTTPClient http;
-    http.begin(SIGNUP_URL);
-    http.addHeader("Content-Type", "application/json");
-    http.POST("{\\"email\\":\\"kiosk+" + String(millis()) + "@example.com\\"}");
-    http.end();
-    delay(3000); // debounce
-  }
-  delay(100);
-}
-`
-
-function hardwareSegment(startAt: number, deviceNeeds: string): RunEvent[] {
-  const bomItems: BomItem[] = [
-    { name: 'ESP32-S3-DevKitC-1', qty: 1, unitPriceUsd: 13.5, supplier: 'DigiKey' },
-    { name: 'Magnetic door sensor (reed switch)', qty: 1, unitPriceUsd: 4.95, supplier: 'Adafruit' },
-    { name: 'Project enclosure, small', qty: 1, unitPriceUsd: 6.5, supplier: 'SparkFun' },
-    { name: 'USB-C cable, 1m', qty: 1, unitPriceUsd: 5.95, supplier: 'Adafruit' },
+function hardwareSegment(startAt: number, deviceNeeds: string, item: BomItem): RunEvent[] {
+  const oneTimeCostUsd = Math.round(item.qty * item.unitPriceUsd * 100) / 100
+  return [
+    { type: 'agent_message', text: `Reviewing hardware for ${deviceNeeds}. Adding ${item.qty} × ${item.name} from the demo catalog.`, at: startAt + 700 },
+    { type: 'decision', requirement: 'hardware', chosen: item.name, alternatives: [], evidence: `Configured demo item: ${item.qty} × $${item.unitPriceUsd.toFixed(2)} = $${oneTimeCostUsd.toFixed(2)} one-time.`, at: startAt + 2300 },
+    { type: 'file_written', stackId: 'C', path: 'hardware/bill-of-materials.json', content: JSON.stringify({ items: [item], oneTimeCostUsd }, null, 2), at: startAt + 3700 },
+    { type: 'command', stackId: 'C', cmd: 'demo validate-hardware-plan', output: `Demo hardware plan validated: ${item.qty} × ${item.name}. No physical device or firmware was tested.`, exitCode: 0, at: startAt + 5500 },
+    { type: 'agent_message', text: `Added ${item.name}: $${oneTimeCostUsd.toFixed(2)} one-time. Monthly services stay $27.40/month. First month total: $${(27.4 + oneTimeCostUsd).toFixed(2)} (example USD prices, excluding shipping and tax).`, at: startAt + 7000 },
+    { type: 'bom_proposed', items: [item], oneTimeCostUsd, at: startAt + 7300 },
   ]
-  const oneTimeCostUsd = bomItems.reduce((sum, i) => sum + i.qty * i.unitPriceUsd, 0)
-  let t = startAt
-  const step = (ms: number) => {
-    t += ms
-    return t
-  }
-  const events: RunEvent[] = [
-    { type: 'agent_message', text: `The brief also needs hardware: ${deviceNeeds}. Comparing boards on price and power...`, at: step(700) },
-    {
-      type: 'decision',
-      requirement: 'device',
-      chosen: 'ESP32-S3 dev board',
-      alternatives: [
-        { name: 'Raspberry Pi Zero 2 W', why: 'More compute than this needs; about $15 pricier and draws roughly 5x the idle power for a single sensor POST.' },
-        { name: 'Arduino Nano ESP32', why: 'Workable, but thinner community firmware support for this sensor and a higher unit price than the DevKit.' },
-      ],
-      evidence: 'price and power comparison',
-      at: step(1600),
-    },
-    { type: 'agent_message', text: 'Writing firmware/main.cpp to post signups from the sensor to the app...', at: step(1400) },
-    { type: 'file_written', stackId: 'C', path: 'firmware/main.cpp', content: FIRMWARE_MAIN_CPP, at: step(1800) },
-    {
-      type: 'command',
-      stackId: 'C',
-      cmd: 'pio run -e esp32s3',
-      output: 'Compiling .pio/build/esp32s3/firmware.elf\nRAM:   [=         ]   9.8% (used 32104 bytes)\nFlash: [==        ]  18.2% (used 612480 bytes)\n======= [SUCCESS] Took 6.42 seconds =======',
-      exitCode: 0,
-      at: step(3000),
-    },
-    {
-      type: 'agent_message',
-      text: `Firmware compiles clean. Bill of materials comes to $${oneTimeCostUsd.toFixed(2)} one-time (example prices), added to the cart.`,
-      at: step(1800),
-    },
-    { type: 'bom_proposed', items: bomItems, oneTimeCostUsd, at: step(300) },
-  ]
-  return events
 }
 
 const PRE_APPROVAL_CORE: RunEvent[] = [
@@ -376,11 +315,11 @@ const CORE_END_AT = 49400
 /** Builds the full pre-approval timeline, optionally splicing in a ~10-15s hardware
  * segment (device decision, firmware, compile check, bill of materials) right after
  * the software decisions and before the sandbox pauses for approval. */
-export function buildPreApprovalEvents(hardwareOn: boolean, deviceNeeds?: string): RunEvent[] {
+export function buildPreApprovalEvents(hardwareOn: boolean, deviceNeeds?: string, hardwareItem: BomItem = { name: 'STM32 NUCLEO-F446RE', qty: 1, unitPriceUsd: 28.19, supplier: 'Demo catalog' }): RunEvent[] {
   const events = [...PRE_APPROVAL_CORE]
   let tailStart = CORE_END_AT
   if (hardwareOn) {
-    const hw = hardwareSegment(tailStart, deviceNeeds?.trim() || 'a device that posts signups from a kiosk')
+    const hw = hardwareSegment(tailStart, deviceNeeds?.trim() || 'a device that posts signups from a kiosk', hardwareItem)
     events.push(...hw)
     tailStart = hw[hw.length - 1].at
   }
