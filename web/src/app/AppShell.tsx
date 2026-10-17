@@ -21,9 +21,9 @@ function appReducer(state: RunState, action: Action): RunState {
   return runReducer(state, action)
 }
 
-export default function AppShell() {
+export default function AppShell({ defaultMode }: { defaultMode?: Mode }) {
   const [searchParams, setSearchParams] = useSearchParams()
-  const [mode, setModeState] = useState<Mode>(() => resolveInitialMode(window.location.search))
+  const [mode, setModeState] = useState<Mode>(() => searchParams.has('mode') ? resolveInitialMode(window.location.search) : defaultMode ?? resolveInitialMode(window.location.search))
   const [initialHardware] = useState<boolean>(() => resolveInitialHardware(window.location.search))
   const [initialRunId] = useState(() => searchParams.get('run'))
   const [screen, setScreen] = useState<'brief' | 'build'>(initialRunId ? 'build' : 'brief')
