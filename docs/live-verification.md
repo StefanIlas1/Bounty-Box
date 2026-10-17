@@ -26,3 +26,23 @@ credits and remains subject to provider quotas. Shipping is still disabled.
 Repeat with `npm run demo:live` after following [backend setup](backend-development.md).
 Each repeat uses model allowance and sandbox quota. Do not rerun just to refresh an
 expired proposal unless another trial is intended.
+
+## Browser demonstration and repair
+
+A second real run, `4074090e-f546-4faf-bdad-125d735db587`, was submitted through
+Live mode on 2026-10-17 at 22:56 UTC. Revision 1 failed with two timeouts in
+35 requests. The agent generated revision 2, which passed: **29 requests,
+383.83 ms p95, zero errors**, over 5.343 seconds at concurrency 2. Both
+sandboxes were destroyed. This demonstrates the automatic repair workflow;
+it does not establish that the code change caused the latency improvement.
+
+The saved result can be reopened locally at
+`http://127.0.0.1:5173/app?mode=live&run=4074090e-f546-4faf-bdad-125d735db587`.
+It is historical evidence, not a new trial or a permanent deployed app.
+
+The frontend previously substituted simulated results after rejected requests
+or 45 seconds without new events, including while waiting for approval. That
+fallback has been removed from Live mode. Live errors remain visible and saved
+runs can be reopened from their URL. Default live settings now match the bounded
+trial. A rejected 1,000-target-user request was checked in the browser: it shows
+the backend error with no simulated results and no new sandbox allocation.

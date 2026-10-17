@@ -25,7 +25,8 @@ export default function AppShell() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [mode, setModeState] = useState<Mode>(() => resolveInitialMode(window.location.search))
   const [initialHardware] = useState<boolean>(() => resolveInitialHardware(window.location.search))
-  const [screen, setScreen] = useState<'brief' | 'build'>('brief')
+  const [initialRunId] = useState(() => searchParams.get('run'))
+  const [screen, setScreen] = useState<'brief' | 'build'>(initialRunId ? 'build' : 'brief')
   const [state, dispatchRaw] = useReducer(appReducer, initialRunState)
 
   const dispatch = useCallback((e: RunEvent) => dispatchRaw(e), [])
@@ -48,7 +49,12 @@ export default function AppShell() {
   }
 
   const demoPlayer = useDemoPlayer({ dispatch, resetState })
-  const liveRun = useLiveRun({ dispatch, setPhase, resetState })
+  const liveRun = useLiveRun({ dispatch, setPhase, resetState, initialRunId })
+
+  useEffect(() => {
+    if (!liveRun.runId || mode !== 'live') return
+    setSearchParams(params => { const next = new URLSearchParams(params); next.set('run', liveRun.runId!); return next }, { replace: true })
+  }, [liveRun.runId, mode, setSearchParams])
 
   const handleStart = (payload: StartPayload) => {
     setScreen('build')
@@ -65,6 +71,7 @@ export default function AppShell() {
     demoPlayer.stop()
     liveRun.stop()
     resetState()
+    setSearchParams({ mode }, { replace: true })
     setScreen('brief')
   }
 
@@ -94,6 +101,9 @@ export default function AppShell() {
           </div>
         )}
 
+        {mode === 'live' && screen === 'build' && liveRun.startError && (
+          <div role="alert" className="border-b border-bad/30 bg-bad/10 px-5 py-3 text-sm">{liveRun.startError} No simulated results are substituted.</div>
+        )}
         {screen === 'brief' ? (
           <BriefScreen mode={mode} onStart={handleStart} starting={liveRun.starting} startError={liveRun.startError} initialHardware={initialHardware} />
         ) : (

@@ -38,12 +38,12 @@ export function BriefScreen({
   startError?: string | null
   initialHardware?: boolean
 }) {
-  const [prompt, setPrompt] = useState(EXAMPLES[0])
+  const [prompt, setPrompt] = useState(mode === 'live' ? 'A small email waitlist with normalized unique emails persisted in Neon Postgres.' : EXAMPLES[0])
   const [budget, setBudget] = useState(30)
-  const [users, setUsers] = useState(1000)
-  const [concurrency, setConcurrency] = useState(DEFAULT_CONCURRENCY)
-  const [durationSeconds, setDurationSeconds] = useState(DEFAULT_DURATION_S)
-  const [maxP95Ms, setMaxP95Ms] = useState(DEFAULT_MAX_P95)
+  const [users, setUsers] = useState(mode === 'live' ? 100 : 1000)
+  const [concurrency, setConcurrency] = useState(mode === 'live' ? 2 : DEFAULT_CONCURRENCY)
+  const [durationSeconds, setDurationSeconds] = useState(mode === 'live' ? 5 : DEFAULT_DURATION_S)
+  const [maxP95Ms, setMaxP95Ms] = useState(mode === 'live' ? 2000 : DEFAULT_MAX_P95)
   const [maxErrorRate, setMaxErrorRate] = useState(DEFAULT_MAX_ERROR_RATE)
   const [useFixtures, setUseFixtures] = useState(false)
   const [advancedOpen, setAdvancedOpen] = useState(false)
@@ -110,7 +110,7 @@ export function BriefScreen({
             <Input id="budget" type="number" min={1} value={budget} onChange={(e) => setBudget(Number(e.target.value))} />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="users">Target concurrent users</Label>
+            <Label htmlFor="users">Target users</Label>
             <Input id="users" type="number" min={1} value={users} onChange={(e) => setUsers(Number(e.target.value))} />
           </div>
         </div>
@@ -168,6 +168,7 @@ export function BriefScreen({
           </div>
         )}
 
+        {mode === 'live' && <p className="text-xs text-muted">Live trial: up to 100 target users, 5 concurrent test requests and 30 seconds. Target users are a planning input, not measured capacity. Default test: 2 concurrent requests for 5 seconds.</p>}
         {startError && <p className="text-sm text-bad">{startError}</p>}
 
         <div className="flex items-center gap-2">
