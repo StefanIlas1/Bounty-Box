@@ -5,8 +5,8 @@ and [backend-system-design.md](backend-system-design.md) §5. This file only des
 
 - **Demo mode** (`/app?mode=demo`): a scripted run in the browser. No backend.
 - **Live mode** (`/app?mode=live`): calls `/api/*` on the Vite dev server, which proxies to the
-  backend at `http://127.0.0.1:3000` and adds `Authorization: Bearer $BOUNTY_BOX_API_TOKEN`
-  (export it in the shell that runs `npm run dev`; never commit it).
+  backend at `http://127.0.0.1:3000` and adds `Authorization: Bearer $BOUNTYBOX_API_TOKEN`, read from the shell or the backend's
+  ignored `.env.backend.local` (the same token the backend uses; never committed).
   - `POST /api/runs { brief, mode: 'live' | 'fixture' }`, then poll `GET /api/runs/:id` every 2 s.
   - `POST /api/runs/:id/approve { proposalId }`, `POST /api/runs/:id/cancel`.
   - `web/src/app/live/snapshotAdapter.ts` turns successive `RunSnapshot`s into the UI's event stream
