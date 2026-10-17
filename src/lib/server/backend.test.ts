@@ -73,3 +73,19 @@ test('HTTP auth, input bounds, live preflight, idempotency, queue limit and canc
     store.close(); rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test('sandbox creation intent survives restart until cleanup is confirmed', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'bounty-resources-test-'));
+  let store = new Store(join(dir, 'runs.sqlite3'));
+  try {
+    const run = store.create(brief, 'live');
+    store.recordSandbox(run.id, { name: 'bounty-trial', phase: 'creating' });
+    store.close(); store = new Store(join(dir, 'runs.sqlite3'));
+    assert.equal(store.unsettledSandboxes().length, 1);
+    store.recordSandbox(run.id, { name: 'bounty-trial', phase: 'created', sandboxId: 'sb-test' });
+    store.recordSandbox(run.id, { name: 'bounty-trial', phase: 'reconcile' });
+    assert.equal(store.unsettledSandboxes()[0].sandbox_id, 'sb-test');
+    store.recordSandbox(run.id, { name: 'bounty-trial', phase: 'destroyed' });
+    assert.equal(store.unsettledSandboxes().length, 0);
+  } finally { store.close(); rmSync(dir, { recursive: true, force: true }); }
+});

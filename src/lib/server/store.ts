@@ -20,9 +20,17 @@ export class Store {
       CREATE TABLE IF NOT EXISTS jobs(run_id TEXT PRIMARY KEY, state TEXT NOT NULL, created INTEGER NOT NULL);
       CREATE TABLE IF NOT EXISTS requests(key TEXT PRIMARY KEY, hash TEXT NOT NULL, run_id TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS artifacts(run_id TEXT NOT NULL, attempt INTEGER NOT NULL, digest TEXT NOT NULL, PRIMARY KEY(run_id,attempt));
+      CREATE TABLE IF NOT EXISTS sandbox_resources(name TEXT PRIMARY KEY, run_id TEXT NOT NULL, phase TEXT NOT NULL, sandbox_id TEXT, updated_at TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS lease(id INTEGER PRIMARY KEY CHECK(id=1), owner TEXT NOT NULL, expires INTEGER NOT NULL);`);
   }
   close() { this.db.close(); }
+  recordSandbox(runId: string, event: { name: string; phase: string; sandboxId?: string }) {
+    this.db.prepare(`INSERT INTO sandbox_resources VALUES(?,?,?,?,?) ON CONFLICT(name) DO UPDATE SET phase=excluded.phase,sandbox_id=COALESCE(excluded.sandbox_id,sandbox_resources.sandbox_id),updated_at=excluded.updated_at`)
+      .run(event.name, runId, event.phase, event.sandboxId ?? null, new Date().toISOString());
+  }
+  unsettledSandboxes() {
+    return this.db.prepare("SELECT name,run_id,phase,sandbox_id FROM sandbox_resources WHERE phase != 'destroyed'").all();
+  }
   tx<T>(fn: () => T): T {
     this.db.exec('BEGIN IMMEDIATE');
     try { const result = fn(); this.db.exec('COMMIT'); return result; }

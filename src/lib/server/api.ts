@@ -4,6 +4,7 @@ import { pathToFileURL } from 'node:url';
 import { Store, HttpError } from './store';
 import { config } from './config';
 import type { Brief } from '../contracts';
+import { livePreflight } from './live';
 
 export function parseBrief(value: unknown): Brief {
   const b = value as Brief;
@@ -39,15 +40,24 @@ export function createApi(store: Store, token: string) {
       const supplied = Buffer.from(req.headers.authorization ?? '');
       if (supplied.length !== expected.length || !timingSafeEqual(supplied, expected)) throw new HttpError(401, 'Unauthorized');
       const path = new URL(req.url ?? '/', 'http://localhost').pathname;
-      if (req.method === 'GET' && path === '/api/health') return send(200, { ok: true, liveReady: false, shippingReady: false });
+      if (req.method === 'GET' && path === '/api/health') {
+        let liveReady = false;
+        try { await livePreflight({ description: 'Readiness', monthlyBudgetUsd: 0, targetUsers: 1,
+          load: { concurrency: 1, durationSeconds: 1, maxP95Ms: 2000, maxErrorRate: 0.01 } }, store); liveReady = true; }
+        catch { /* Configuration failure is reported without credential details. */ }
+        return send(200, { ok: true, liveEnabled: process.env.BOUNTYBOX_LIVE_ENABLED === 'true', liveReady, shippingReady: false });
+      }
       if (req.method === 'POST' && path === '/api/runs') {
         const data = await body(req);
         const brief = parseBrief(data.brief);
         if (!['live','fixture'].includes(data.mode as string)) throw new HttpError(400, 'Choose live or fixture mode explicitly');
-        if (data.mode === 'live') throw new HttpError(503, 'Live generation and benchmark adapters are not integrated yet');
+        if (data.mode === 'live') {
+          try { await livePreflight(brief, store); }
+          catch { throw new HttpError(503, 'Live preflight failed: check provider credentials, generator, pricing, demo limits and sandbox reconciliation'); }
+        }
         const key = req.headers['idempotency-key'];
         if (key !== undefined && (typeof key !== 'string' || !/^[\x21-\x7e]{1,128}$/.test(key))) throw new HttpError(400, 'Invalid Idempotency-Key');
-        return send(202, store.create(brief, 'fixture', key));
+        return send(202, store.create(brief, data.mode as 'live' | 'fixture', key));
       }
       const artifact = /^\/api\/runs\/([a-f0-9-]{36})\/artifacts(?:\/([1-9][0-9]*))?$/.exec(path);
       if (req.method === 'GET' && artifact) return send(200, artifact[2] ? store.artifact(artifact[1], Number(artifact[2])) : store.artifacts(artifact[1]));

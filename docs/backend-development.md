@@ -14,7 +14,8 @@ npm run worker
 
 API listens on 127.0.0.1:3000. Worker processes jobs sequentially. Data is persisted
 under ignored `.bounty-box/runs.sqlite3`. All API endpoints require bearer auth.
-Use POST /api/runs with an explicit fixture mode for now; live mode returns 503.
+Use POST /api/runs with explicit `fixture` or `live` mode. Live mode requires the
+configuration below; missing configuration returns 503 before queueing.
 POST accepts an optional Idempotency-Key (1–128 visible ASCII characters).
 
 ```json
@@ -38,22 +39,70 @@ in SQLite. Authenticated GET /api/runs/:id/artifacts lists these receipts;
 GET /api/runs/:id/artifacts/:attempt retrieves an integrity-checked source bundle.
 Earlier running API/worker processes must be restarted to load code changes.
 
-## Generation integration status
+## Live software demo
+
+The local workaround uses a signed-in Codex CLI for generation and repair, and
+CreateOS credits for sandbox execution. `codex login status` must report a ChatGPT
+login. No separate model API key is required. Codex usage counts against the signed-in
+account's allowance; this does not turn CreateOS credits into model API credits.
+
+Provision the free CreateOS project and dedicated free Neon database through Stripe
+Projects, then run `stripe projects env --pull --no-interactive`. The backend maps
+`NEON_POSTGRES_CONNECTION_STRING` to `NEON_DATABASE_URL` at runtime without rewriting
+Stripe's environment file. Use only an isolated trial database for generated code.
+
+Add these nonsecret settings to ignored `.env.backend.local` and restart both processes:
+
+```dotenv
+BOUNTYBOX_LIVE_ENABLED=true
+BOUNTYBOX_GENERATOR=codex
+BOUNTYBOX_NEON_TRIAL_READY=true
+BOUNTYBOX_PRICING_FILE=config/demo-pricing.json
+```
+
+`config/demo-pricing.json` records the verified account's free base fees and expires
+after 24 hours. Credits, free-tier quotas and production capacity are explicit
+limitations; update from provider evidence before using another account or date.
+The live demo caps load at five concurrent requests for 30 seconds and 100 target
+users. Those are scope limits, not production capacity guarantees.
+
+```sh
+npm run check:neon
+npm run demo:live
+```
+
+The demo script submits a real run to the API and prints its events and measurements.
+Generated code remains untrusted: Codex returns a validated manifest, then execution
+happens inside CreateOS. The CLI child gets no provider/database credentials, has
+tools disabled and a read-only temporary workspace, and is cancelled after four
+minutes. App credentials enter only the sandbox runtime, with database-only egress
+for the zero-dependency Neon app. An independent worker-side harness verifies
+artifact identity, normalized duplicate handling, database counts and load results.
+
+Sandbox creation intent and cleanup receipts are durable in SQLite. An unresolved
+sandbox blocks another live run until reconciled. Trial database tables remain for
+inspection after each sandbox is destroyed. A benchmark proves persistence through
+separate database requests; a restart/redeployment durability check is not yet included.
+
+Shipping remains disabled. A passing live run produces an artifact-bound proposal,
+not a permanent deployment URL. Sandbox previews expire when cleanup destroys them.
+
+## Optional direct API generation
 
 The OpenAI Responses adapter (`src/lib/generation/index.ts`) implements strict JSON
 output, a 180-second deadline, one model call per attempt, a 12,000-output-token cap,
 bounded source/response sizes, safe relative paths, pinned dependency metadata,
 scoped environment names, refusal/incomplete handling and sanitized errors.
-Transport tests use synthetic responses; no live model call has been made.
-OPENAI_API_KEY and OPENAI_MODEL are not configured. User requested demo use of
-CreateOS hackathon credits, so do not select or charge an OpenAI model implicitly.
+Transport tests for this adapter use synthetic responses. Select it explicitly with
+`BOUNTYBOX_GENERATOR=openai`, `OPENAI_API_KEY` and `OPENAI_MODEL`. The local demo uses
+the verified Codex CLI adapter instead.
 
 CreateOS documentation confirms credit-funded generation in its Create UI:
 https://createos.sh/docs/Build-Deploy/Create/
 The public API/MCP references inspected list platform management operations;
 a backend-callable generation endpoint funded by these credits has not yet been
 verified. `createos ask` launches OpenCode; it is not a documented generation API.
-Therefore do not describe the fixture's scripted repair as live AI generation.
+Fixture scripted repairs are still labelled as simulated and never qualify as live evidence.
 
 OpenAI adapter reference:
 https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=responses

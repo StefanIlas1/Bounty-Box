@@ -5,6 +5,7 @@ import { Store } from './store';
 import { config } from './config';
 import { fixtureAdapters } from './fixtures';
 import { orchestrateRun } from '../orchestrator';
+import { liveAdapters, livePreflight } from './live';
 
 export async function processNext(store: Store, owner: string, shutdown?: AbortSignal) {
   const run = store.next(owner);
@@ -19,8 +20,8 @@ export async function processNext(store: Store, owner: string, shutdown?: AbortS
     catch { abort(); }
   }, 200);
   try {
-    if (run.mode !== 'fixture') throw new Error('Live adapters not ready');
-    const adapters = fixtureAdapters();
+    if (run.mode === 'live') await livePreflight(run.brief, store);
+    const adapters = run.mode === 'fixture' ? fixtureAdapters() : liveAdapters(store, run.id);
     let attempt = 0;
     const generator = { generate: async (...args: Parameters<typeof adapters.generator.generate>) => {
       const app = await adapters.generator.generate(...args);
@@ -49,7 +50,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   for (const signal of ['SIGINT','SIGTERM'] as const) process.once(signal, () => stop.abort());
   let leaseFailure = false;
   const heartbeat = setInterval(() => { try { store.heartbeat(owner); } catch { leaseFailure = true; stop.abort(); } }, 10_000);
-  console.log('Bounty-Box worker running (fixture integration enabled)');
+  console.log('Bounty-Box worker running (live adapters require explicit configuration)');
   try {
     while (!stop.signal.aborted) {
       if (!await processNext(store, owner, stop.signal)) await delay(250);

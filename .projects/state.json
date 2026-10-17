@@ -3,6 +3,9 @@
   "providers": {
     "createos": {
       "name": "createos"
+    },
+    "neon": {
+      "name": "Neon"
     }
   },
   "resources": {
@@ -17,6 +20,18 @@
       "name": "createos-project",
       "providerName": "createos",
       "serviceId": "project"
+    },
+    "neon-plan": {
+      "livemode": true,
+      "name": "neon-plan",
+      "providerName": "Neon",
+      "serviceId": "free"
+    },
+    "neon-postgres": {
+      "livemode": true,
+      "name": "neon-postgres",
+      "providerName": "Neon",
+      "serviceId": "postgres"
     }
   }
 }

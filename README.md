@@ -153,15 +153,18 @@ in [`web/`](web/README.md) and has separate dependencies and demo/live modes.
 
 ### Implementation status
 
-The backend fixture flow is implemented: durable queue, bounded repair, measured-result
-interfaces, artifact-bound proposals, cancellation and authenticated source retrieval.
-Fixture evidence is labelled and cannot authorize provisioning. Independent benchmark,
-CreateOS runner, quote-gated software catalog and hardware planning/validation adapters
-are implemented with local/mock checks. A real EU sandbox upload/execute/cleanup smoke
-passed during provider setup.
+The live software flow is verified: authenticated API → durable queue → locally
+signed-in Codex generation → CreateOS EU sandbox → Neon persistence → independent
+benchmark → artifact-bound proposal. The latest run passed 33 requests at 549 ms p95
+with zero errors, then destroyed its sandbox. See [live verification](docs/live-verification.md).
 
-Live generation, trial-database configuration and deployment integration are still
-pending; live API submissions currently return an explicit setup error. Hardware
+Run `npm run demo:live` after following the live settings in
+[backend development](docs/backend-development.md). Generation uses the signed-in
+Codex allowance; sandbox execution uses CreateOS credits. Stripe Projects provisions
+the free CreateOS and Neon resources. Fixture mode remains explicitly simulated.
+
+Permanent deployment and shipping remain unfinished. A live repair still needs a
+demonstration; the verified generated revision passed on its first attempt. Hardware
 modules cover reference firmware/HDL packages and pre-arrival checks, not automated
 physical purchases or verified device operation.
 

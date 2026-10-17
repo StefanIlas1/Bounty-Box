@@ -83,5 +83,6 @@ Use the CLI for request schemas. There is no remote command execution endpoint.
 See `docs/implementation-phases.md` for the five phases and software-first priority.
 Phase 1 foundation is implemented and verified; API runs at 127.0.0.1:3000 with
 a separate serialized worker. See `docs/backend-development.md`. Both integration
-tests and a separate-process fixture run passed. Live generation/benchmark/shipping
-are not wired yet. SDK and TypeScript dependencies are installed; use Node 22.
+tests and a separate-process fixture run passed. Live Codex generation, Neon trial
+database access and CreateOS benchmarking are integrated. Shipping remains disabled.
+Use Node 22 and follow the explicit live settings in backend-development.md.

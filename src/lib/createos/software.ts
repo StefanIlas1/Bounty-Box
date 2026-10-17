@@ -25,7 +25,7 @@ export interface SoftwareBenchmarkInput {
   artifactDigest: string;
 }
 export type SoftwareBenchmark = (input: SoftwareBenchmarkInput) => Promise<TestResult>;
-export type SoftwareSandbox = Pick<Sandbox, 'id' | 'files' | 'streamCommand' | 'setEgress' | 'waitForPortReady' | 'previewUrl' | 'destroy'>;
+export type SoftwareSandbox = Pick<Sandbox, 'id' | 'files' | 'processes' | 'streamCommand' | 'setEgress' | 'waitForPortReady' | 'previewUrl' | 'destroy'>;
 export interface SoftwareRunnerOptions {
   /** Defaults to agent-2's trusted worker-side benchmark. */
   benchmark?: SoftwareBenchmark;
@@ -60,11 +60,13 @@ function validateApp(app: GeneratedApp, allowedEnv: readonly string[]): boolean 
   if (bytes > 1024 * 1024 || !paths.has('server.mjs') || !paths.has('diagnostic.mjs')) throw new SoftwareRunnerError('Artifact must include server.mjs and diagnostic.mjs within the 1 MiB limit.');
   if (paths.has('package.json') !== paths.has('package-lock.json')) throw new SoftwareRunnerError('Dependencies require both package.json and package-lock.json.');
   if (!paths.has('package.json')) return false;
+  let dependencyCount = 0;
   try {
     const manifest = JSON.parse(app.files.find(f => f.path === 'package.json')!.content);
     const lock = JSON.parse(app.files.find(f => f.path === 'package-lock.json')!.content);
     if (lock.lockfileVersion !== 3 || !lock.packages?.[''] || manifest.workspaces || manifest.devDependencies && Object.keys(manifest.devDependencies).length) throw new Error();
     for (const [name, version] of Object.entries(manifest.dependencies ?? {})) {
+      dependencyCount++;
       if (!['@neondatabase/serverless', '@libsql/client'].includes(name) || typeof version !== 'string' || !/^\d+\.\d+\.\d+(?:-[\w.-]+)?$/.test(version) || lock.packages[''].dependencies?.[name] !== version) throw new Error();
     }
     for (const [path, value] of Object.entries(lock.packages) as Array<[string, { resolved?: string; integrity?: string; link?: boolean }]>) {
@@ -74,7 +76,7 @@ function validateApp(app: GeneratedApp, allowedEnv: readonly string[]): boolean 
       if (url.protocol !== 'https:' || url.hostname !== 'registry.npmjs.org' || url.username || url.password || url.port || url.search || url.hash) throw new Error();
     }
   } catch { throw new SoftwareRunnerError('Invalid locked dependencies: use lockfile v3, pinned Neon/libSQL dependencies, and integrity-checked npm registry packages.'); }
-  return true;
+  return dependencyCount > 0;
 }
 function validateBrief(brief: Brief) {
   const l = brief.load;
@@ -135,14 +137,15 @@ export function createSandboxRunner(options: SoftwareRunnerOptions = {}): Sandbo
     // Reject embedded known credentials before uploading source or returning app-derived metadata.
     const privateValues = [apiKey, ...Object.values(trial.secrets), ...Object.entries(env).filter(([name]) => /KEY|TOKEN|SECRET|PASSWORD|DATABASE_URL|CREDENTIAL/.test(name)).map(([, value]) => value)].filter((v): v is string => !!v && v.length >= 8);
     if (app.files.some(f => privateValues.some(secret => f.content.includes(secret)))) throw new SoftwareRunnerError('Artifact contains credentials; use runtime environment injection.');
-    const client = options.clientFactory ? options.clientFactory({ apiKey, baseUrl: CREATEOS_EU_ENDPOINT, retry: false }) : new CreateosSandboxClient({ apiKey, baseUrl: CREATEOS_EU_ENDPOINT, retry: false });
+    const client = options.clientFactory ? options.clientFactory({ apiKey, baseUrl: CREATEOS_EU_ENDPOINT, retry: false }) : new CreateosSandboxClient({ apiKey, baseUrl: CREATEOS_EU_ENDPOINT, retry: false, fetch: globalThis.fetch.bind(globalThis) });
     const controller = new AbortController();
     const abort = () => controller.abort();
     signal?.addEventListener('abort', abort, { once: true });
     if (signal?.aborted) controller.abort();
     const timer = setTimeout(abort, 15 * 60 * 1000);
     const token = randomBytes(32).toString('hex');
-    const name = `bounty-${randomBytes(12).toString('hex')}`;
+    // CreateOS names are limited to 22 characters.
+    const name = `bounty-${randomBytes(7).toString('hex')}`;
     const digest = softwareArtifactDigest(app);
     const runtime = { ...trial.secrets, PORT: '3000', BOUNTYBOX_INGRESS_TOKEN: token, BOUNTYBOX_ARTIFACT_DIGEST: digest, BOUNTYBOX_TRIAL_NAMESPACE: name.replaceAll('-', '_') };
     const logs: string[] = [];
@@ -185,8 +188,18 @@ export function createSandboxRunner(options: SoftwareRunnerOptions = {}): Sandbo
       }
       if (install && await execute('dependency install', 'sh', ['-c', 'cd /tmp/bounty-app && exec npm ci --ignore-scripts --omit=dev --no-audit --no-fund'], 120_000)) return failed('Locked dependency installation failed; no benchmark ran.');
       stage = 'restrict runtime network';
-      await sandbox.setEgress(trial.egress, { signal: controller.signal, timeoutMs: 15_000, retry: false });
-      if (await execute('start', 'sh', ['-c', 'cd /tmp/bounty-app && nohup setsid node server.mjs </dev/null >/dev/null 2>&1 &'], 15_000, true)) return failed('Application launch failed; no benchmark ran.');
+      if (install) await sandbox.setEgress(trial.egress, { signal: controller.signal, timeoutMs: 15_000, retry: false });
+      if (stack.id === 'createos-neon') {
+        // Wait for the egress update and database to become usable before model code starts.
+        const check = `const connection=process.env.NEON_DATABASE_URL;const host=new URL(connection).hostname.replace(/^[^.]+\\./,'api.');let ok=false;for(let i=0;i<5;i++){try{const r=await fetch('https://'+host+'/sql',{method:'POST',signal:AbortSignal.timeout(5000),headers:{'Content-Type':'application/json','Neon-Connection-String':connection,'Neon-Array-Mode':'true','Neon-Raw-Text-Output':'true'},body:JSON.stringify({query:'SELECT 1',params:[]})});const v=await r.json();if(r.ok&&String(v.rows?.[0]?.[0])==='1'){ok=true;break;}}catch{}await new Promise(r=>setTimeout(r,500));}process.exitCode=ok?0:1;`;
+        if (await execute('database connectivity', 'node', ['--input-type=module', '-e', check], 30000, true)) throw new SoftwareRunnerError('Scoped Neon connectivity failed inside sandbox; no generated app or benchmark ran.');
+      }
+      stage = 'start';
+      // Managed processes outlive the exec request; background exec children may be reaped.
+      const process = await sandbox.processes.create({ cmd: 'node', args: ['server.mjs'], cwd: '/tmp/bounty-app', env: runtime },
+        { signal: controller.signal, timeoutMs: 15000, retry: false });
+      logs.push('Application started as a managed process. Process output withheld.');
+      if (process.leader_exited) return failed('Application exited during startup; no benchmark ran.');
       stage = 'readiness';
       try { await sandbox.waitForPortReady(3000, { signal: controller.signal, timeoutMs: 90_000 }); }
       catch { controller.signal.throwIfAborted(); return failed('Application did not become ready within 90 seconds; no benchmark ran.'); }

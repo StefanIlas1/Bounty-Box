@@ -32,7 +32,8 @@ Artifacts are persisted as canonical content-addressed JSON files, with run/atte
 receipts in SQLite and final tested source bound transactionally to each proposal.
 Shipping receipts remain phase 4 work.
 
-Live submissions currently fail explicitly with 503. Fixture runs never provision.
+Live submissions are enabled only after explicit provider/generator/quote preflight.
+Codex CLI provides local generation with the signed-in ChatGPT account. Fixture runs never provision.
 The API publishes awaiting_approval only after the tested artifact, SHA-256 digest
 and 15-minute expiry have been saved in one transaction. Shipping remains disabled.
 
@@ -43,4 +44,11 @@ persistence, idempotency conflicts, worker lease exclusion/expired-lease refusal
 fixture repair and artifact binding, HTTP authentication/input limits/queue bounds,
 cancellation and fixture shipping rejection. A separate running API and worker also
 completed a two-attempt fixture run to awaiting_approval and rejected shipping.
-No live model generation, vendor benchmark or deployed app is claimed.
+Live Codex generation and Neon SQL access have now been verified. The backend wires
+those adapters to CreateOS and the independent benchmark. See provider-setup.md and
+backend-development.md for current limitations. Shipping and permanent deployment
+remain phase 4 work.
+
+The complete live API/worker flow reached `awaiting_approval` with measured evidence;
+see [live verification](live-verification.md). A real repair remains to be demonstrated
+because the fresh generated revision passed on its first attempt.

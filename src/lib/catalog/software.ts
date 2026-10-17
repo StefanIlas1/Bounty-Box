@@ -44,8 +44,12 @@ export function resolveSoftwareTrial(id: SoftwareStackId, env: ProviderEnvironme
   if (!url.hostname.endsWith(domain) || !/^[a-z0-9.-]+$/.test(url.hostname) || (neon ? !['postgres:', 'postgresql:'].includes(url.protocol) : !['libsql:', 'https:'].includes(url.protocol))) throw new SoftwareSetupError('Trial URL must identify the selected hosted database provider.');
   if (neon && (!url.username || !url.password || url.pathname.length < 2)) throw new SoftwareSetupError('Neon trial requires a scoped database connection URL.');
   if (!neon && (url.username || url.password || url.port || url.search || url.hash)) throw new SoftwareSetupError('Turso trial URL must use the hosted HTTPS endpoint without embedded credentials.');
-  // Neon serverless HTTP driver and @libsql/client/http use HTTPS, not raw PG TCP.
-  return { secrets, egress: [`${url.hostname}:443`] };
+  // Neon HTTP queries use the regional API host, replacing the endpoint's first
+  // DNS label (the official serverless driver's fetchEndpoint derivation).
+  // Keep the endpoint host for compatible direct HTTPS transports as well.
+  const egress = [`${url.hostname}:443`];
+  if (neon) egress.push(`${url.hostname.replace(/^[^.]+\./, 'api.')}:443`);
+  return { secrets, egress: [...new Set(egress)] };
 }
 
 export interface SoftwareCatalogOptions {

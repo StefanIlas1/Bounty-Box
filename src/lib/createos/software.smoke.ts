@@ -26,13 +26,23 @@ const events: string[] = [];
 const clientFactory = (config: { apiKey: string; baseUrl: string }) => {
   assert.equal(config.baseUrl, CREATEOS_EU_ENDPOINT);
   assert.equal(config.apiKey, env.CREATEOS_PROJECT_API_KEY);
-  return { async createSandbox(request: { envs?: Record<string, string>; egress?: string[] }) {
+  return { async createSandbox(request: { name?: string; envs?: Record<string, string>; egress?: string[] }) {
+    assert.ok(request.name && request.name.length <= 22, 'CreateOS sandbox name limit');
     creates++;
-    assert.deepEqual(request.egress, ['registry.npmjs.org:443']);
+    assert.deepEqual(request.egress, ['fixture.neon.tech:443', 'api.neon.tech:443']);
+    events.push('restricted');
     assert.ok(Object.values(request.envs!).every(value => value === ''));
     assert.equal('CREATEOS_PROJECT_API_KEY' in request.envs!, false);
     return {
       id: 'fixture-sandbox', files: { async upload(path: string) { assert.ok(path.startsWith('/tmp/bounty-app/')); } },
+      processes: { async create(request: { cmd: string; args: string[]; cwd: string; env: Record<string, string> }) {
+        assert.equal(request.cmd, 'node'); assert.deepEqual(request.args, ['server.mjs']);
+        assert.equal(request.cwd, '/tmp/bounty-app'); assert.ok(events.includes('restricted'));
+        assert.equal(request.env.NEON_DATABASE_URL, env.NEON_DATABASE_URL);
+        assert.equal(request.env.OPENAI_API_KEY, undefined);
+        assert.equal(request.env.BOUNTYBOX_ARTIFACT_DIGEST, artifactDigest(app));
+        return { process_id: 'test-process', leader_exited: false };
+      } },
       async *streamCommand(command: string, args: string[], options: { env?: Record<string, string> }) {
         if (args.join(' ').includes('npm ci')) assert.equal(options.env, undefined);
         if (args.join(' ').includes('node server.mjs')) {
@@ -44,7 +54,7 @@ const clientFactory = (config: { apiKey: string; baseUrl: string }) => {
         yield { type: 'stdout', data: env.NEON_DATABASE_URL + env.CREATEOS_PROJECT_API_KEY };
         yield { type: 'exit', exitCode: 0 };
       },
-      async setEgress(rules: string[]) { assert.deepEqual(rules, ['fixture.neon.tech:443']); events.push('restricted'); },
+      async setEgress(rules: string[]) { assert.deepEqual(rules, ['fixture.neon.tech:443', 'api.neon.tech:443']); events.push('restricted'); },
       async waitForPortReady() { events.push('ready'); }, previewUrl() { return 'https://fixture.example.invalid'; },
       async destroy() { destroys++; events.push('destroyed'); },
     } as unknown as SoftwareSandbox;

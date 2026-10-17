@@ -1,0 +1,29 @@
+[
+  {
+    "serviceId": "createos/project",
+    "monthlyCostUsd": 0,
+    "sourceUrl": "https://projects.dev/llms.txt",
+    "verifiedAt": "2026-10-17T22:30:00.000Z",
+    "expiresAt": "2026-10-18T22:30:00.000Z",
+    "accountEligible": true,
+    "maxTargetUsers": 100,
+    "assumptions": [
+      "Stripe Projects reports this account's CreateOS free plan and project complete; base subscription price is zero.",
+      "Hackathon trial only: existing credits fund sandbox runtime. This is not an unlimited hosting or production capacity quote.",
+      "Live demo is capped at 5 concurrent requests for 30 seconds; production deployment and overages require a separate estimate."
+    ]
+  },
+  {
+    "serviceId": "neon/postgres",
+    "monthlyCostUsd": 0,
+    "sourceUrl": "https://neon.com/pricing",
+    "verifiedAt": "2026-10-17T22:30:00.000Z",
+    "expiresAt": "2026-10-18T22:30:00.000Z",
+    "accountEligible": true,
+    "maxTargetUsers": 100,
+    "assumptions": [
+      "Stripe Projects provisioned a dedicated Neon free plan and Postgres database for this trial; no paid upgrade enabled.",
+      "Synthetic demo records only, within free-plan usage limits. Target users are a demo scope cap, not a throughput guarantee."
+    ]
+  }
+]
