@@ -240,7 +240,7 @@ function Hero() {
             </Link>
           </Button>
           <Button asChild variant="outline" className={CTA_OUTLINE}>
-            <Link to={mode === 'hardware' ? '/demo' : '/demo'}>
+            <Link to={mode === 'hardware' ? '/demo?hardware=1' : '/demo'}>
               Watch the demo <Play className="h-4 w-4" />
             </Link>
           </Button>

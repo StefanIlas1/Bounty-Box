@@ -48,7 +48,7 @@ export function BriefScreen({
   const [useFixtures, setUseFixtures] = useState(false)
   const [advancedOpen, setAdvancedOpen] = useState(false)
   const [hardwareOn, setHardwareOn] = useState(!!initialHardware)
-  const [deviceNeeds, setDeviceNeeds] = useState('')
+  const [deviceNeeds, setDeviceNeeds] = useState(initialHardware ? 'A door sensor that posts signups from a kiosk' : '')
 
   const canStart = prompt.trim().length > 0 && budget > 0 && users > 0
 
@@ -124,8 +124,9 @@ export function BriefScreen({
             className="self-start"
           >
             <ToggleGroupItem value="software">Software</ToggleGroupItem>
-            <ToggleGroupItem value="hardware">+ Hardware</ToggleGroupItem>
+            <ToggleGroupItem value="hardware">Software + hardware</ToggleGroupItem>
           </ToggleGroup>
+          {hardwareOn && mode === 'demo' && <div className="rounded border border-gold/30 bg-gold/5 p-3 text-sm"><p className="font-medium">Hardware demo: connected signup kiosk</p><div className="mt-2 grid grid-cols-2 gap-3"><div><p className="text-xs text-muted">Monthly services</p><p className="text-lg font-semibold">$27.40 / month</p></div><div><p className="text-xs text-muted">One-time hardware</p><p className="text-lg font-semibold">$30.90</p></div></div><p className="mt-2 text-xs text-muted">Example USD prices for one device. Includes board selection, firmware, a simulated compile and a parts list. First month: $58.30; then $27.40/month. Shipping and tax excluded.</p></div>}
           {hardwareOn && (
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="device-needs">Device needs</Label>

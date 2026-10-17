@@ -38,7 +38,7 @@ export function CartCard({ state, onApprove, approving, recorded }: { state: Run
             </div>
             <div className="flex flex-col gap-1.5">
               <div className="flex items-baseline justify-between">
-                <span className="text-lg font-semibold text-ink">${cost.toFixed(2)}<span className="text-xs text-muted">/mo</span></span>
+                <span className="text-lg font-semibold text-ink"><span className="block text-xs font-normal text-muted">Monthly services</span>${cost.toFixed(2)}<span className="text-xs text-muted">/mo</span></span>
                 <span className="text-xs text-muted">budget ${budget}/mo</span>
               </div>
               <Progress value={pct} className={cn(overBudget ? '[&>[data-slot=progress-indicator]]:bg-bad' : '[&>[data-slot=progress-indicator]]:bg-blue')} />
@@ -46,10 +46,11 @@ export function CartCard({ state, onApprove, approving, recorded }: { state: Run
             </div>
             {state.bomOneTimeCostUsd > 0 && (
               <div className="flex items-center justify-between rounded bg-surface-2 px-2.5 py-1.5 text-xs">
-                <span className="text-muted">Hardware (one-time)</span>
+                <span className="text-muted">One-time hardware</span>
                 <span className="font-mono text-ink">${state.bomOneTimeCostUsd.toFixed(2)}</span>
               </div>
             )}
+            {state.bomOneTimeCostUsd > 0 && <div className="rounded border border-line p-2.5 text-xs"><div className="flex justify-between"><span>First month total</span><strong>${(cost + state.bomOneTimeCostUsd).toFixed(2)}</strong></div><p className="mt-1 text-muted">Then ${cost.toFixed(2)}/month. Example USD prices; shipping and tax excluded. Hardware is not purchased in this demo.</p></div>}
           </>
         )}
       </CardContent>

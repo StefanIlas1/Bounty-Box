@@ -35,6 +35,7 @@ export function TopBar({ mode, onModeChange, reachable, fixtureRun, simulated, o
       </div>
 
       <div className="flex items-center gap-2">
+        <Button asChild size="sm" variant="outline"><Link to="/">Back to site</Link></Button>
         {mode === 'live' && (
           <Tooltip>
             <TooltipTrigger asChild>
