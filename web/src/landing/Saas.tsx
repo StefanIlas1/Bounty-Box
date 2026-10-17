@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Check, Copy, ShieldCheck, Scale, Tag } from 'lucide-react'
-import { Logo } from '../shared/Logo'
+import { Check, Copy, ShieldCheck, Scale, Tag } from 'lucide-react'
+import { NavBar } from './Landing'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -70,12 +70,7 @@ export default function Saas() {
 
   return (
     <div className="min-h-svh bg-bg text-ink">
-      <header className="sticky top-0 z-50 h-16 border-b border-line bg-bg/90 backdrop-blur">
-        <div className="flex h-16 w-full items-center justify-between px-6 lg:px-12 2xl:px-16">
-          <Link to="/" aria-label="Bounty-Box home"><Logo size={20} /></Link>
-          <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink"><ArrowLeft className="h-4 w-4" /> Back to site</Link>
-        </div>
-      </header>
+      <NavBar />
 
       <section className="relative isolate overflow-hidden border-b border-line">
         <DotPattern aria-hidden="true" width={22} height={22} cr={1} className="pointer-events-none absolute inset-0 -z-10 fill-brown-soft/30 [mask-image:radial-gradient(600px_circle_at_30%_30%,white,transparent)]" />

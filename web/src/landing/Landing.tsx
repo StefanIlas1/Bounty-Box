@@ -42,9 +42,9 @@ import { cn } from '@/lib/utils'
 import './landing.css'
 
 const NAV_LINKS = [
-  { href: '#how-it-works', label: 'How it works' },
-  { href: '#fig-01', label: 'Proof' },
-  { href: '#trust', label: 'Trust' },
+  { href: '/#how-it-works', label: 'How it works' },
+  { href: '/#fig-01', label: 'Proof' },
+  { href: '/#trust', label: 'Trust' },
 ]
 
 const TOP_TILES = [
@@ -100,18 +100,27 @@ const STEPS = [
     icon: FlaskConical,
     title: 'Test in a CreateOS sandbox',
     detail: 'Runs behind an egress allowlist; a self-fix loop patches what fails.',
+    shot: '/shots/terminal.png',
+    shotAlt: 'Terminal tab showing a failed test, a self-fix, then a passing load test inside the CreateOS sandbox',
+    shotRatio: 900 / 416,
   },
   {
     n: '03',
     icon: CheckCircle2,
     title: 'Approve',
     detail: 'The sandbox pauses — nothing runs or costs money while you review the stack.',
+    shot: '/shots/comparisons.png',
+    shotAlt: 'Comparisons table scoring three stacks on latency, error rate and monthly cost',
+    shotRatio: 900 / 306,
   },
   {
     n: '04',
     icon: Rocket,
     title: 'Buy and ship with Stripe Projects',
     detail: 'Each service is bought with stripe projects add, then you get a live ingress URL.',
+    shot: '/shots/sandbox-cart.png',
+    shotAlt: 'Sandbox and cart panel with an egress allowlist, a paused sandbox, and a Stripe Projects approve button',
+    shotRatio: 620 / 1049,
   },
 ]
 
@@ -127,7 +136,7 @@ const CTA_GOLD =
 const CTA_OUTLINE =
   'h-auto rounded-lg border-blue/50 px-5 py-3 text-sm font-semibold text-ink transition-all duration-300 ease-[cubic-bezier(.34,1.56,.64,1)] hover:-translate-y-0.5 hover:border-blue hover:bg-blue/10'
 
-function NavBar() {
+export function NavBar() {
   const [open, setOpen] = useState(false)
   return (
     <header className="sticky top-0 z-50 h-16 border-b border-line bg-bg/90 backdrop-blur">
@@ -371,6 +380,11 @@ function HowItWorks() {
               </div>
               <h3 className="text-base font-semibold text-ink">{s.title}</h3>
               <p className="text-sm leading-relaxed text-muted">{s.detail}</p>
+              {s.shot && (
+                <div className="bb-shot-frame mt-1" style={{ aspectRatio: s.shotRatio }}>
+                  <img src={s.shot} alt={s.shotAlt} width={900} height={Math.round(900 / s.shotRatio!)} loading="lazy" decoding="async" />
+                </div>
+              )}
             </div>
           ))}
         </div>
