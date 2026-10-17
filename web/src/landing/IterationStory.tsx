@@ -4,8 +4,22 @@
 // the run to the next attempt. At the end everything stays in its final state.
 import { useEffect, useRef, useState } from 'react'
 import { useMotionValueEvent, useScroll } from 'motion/react'
+import {
+  CartesianGrid,
+  ComposedChart,
+  Line,
+  ReferenceArea,
+  ReferenceDot,
+  ReferenceLine,
+  Scatter,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
+import type { DotProps, ScatterShapeProps } from 'recharts'
 import { cn } from '@/lib/utils'
 import { BorderBeam } from '@/components/ui/border-beam'
+import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart'
 
 type Status = 'fail' | 'over' | 'chosen'
 type Attempt = { label: string; title: string; cost: number; ms: number; users: number; status: Status; verdict: string }
@@ -17,12 +31,16 @@ const ATTEMPTS: Attempt[] = [
   { label: 'Chosen', title: 'Postgres + edge + Redis', cost: 27.4, ms: 140, users: 1000, status: 'chosen', verdict: '$2.60 under budget' },
 ]
 
-// Chart geometry (sqrt y scale keeps 90 ms and 2 s both readable).
-const W = 560, H = 380, PL = 56, PR = 20, PT = 24, PB = 44
-const PW = W - PL - PR, PH = H - PT - PB
+// Chart domain (sqrt y scale keeps 90 ms and 2 s both readable).
 const MAX_COST = 60, MAX_MS = 2400, BUDGET = 30, TARGET = 200
-const xFor = (c: number) => PL + (c / MAX_COST) * PW
-const yFor = (ms: number) => PT + PH - Math.sqrt(Math.min(ms, MAX_MS) / MAX_MS) * PH
+const X_TICKS = [0, 15, 30, 45, 60]
+const Y_TICKS = [0, 100, 200, 500, 1000, 2000]
+const formatCost = (v: number) => `$${v}`
+const formatMs = (v: number) => (v >= 1000 ? `${v / 1000}s` : `${v}`)
+// sqrt-scale fraction <-> ms, used to ease the probe along the same curve the
+// y-axis itself draws (see Chart() below).
+const toFraction = (ms: number) => Math.sqrt(Math.min(ms, MAX_MS) / MAX_MS)
+const fromFraction = (u: number) => u * u * MAX_MS
 
 const clamp = (n: number) => Math.max(0, Math.min(1, n))
 const START = 0.06, SEG = 0.215 // four segments, ending at ~0.92 so the final state holds
@@ -42,85 +60,175 @@ function useProgress(ref: React.RefObject<HTMLElement | null>) {
   return static_ ? 1 : p
 }
 
+type PlotPoint = {
+  x: number
+  y: number
+  label: string
+  title: string
+  cost: number
+  ms: number
+  status: Status
+  verdict: string
+}
+
+// Per-point label placement keeps labels off the dashed budget/target lines.
+const LABEL_PLACEMENT: Record<string, { dx: number; dy: number; anchor: 'start' | 'middle' | 'end' }> = {
+  'Attempt 1': { dx: 12, dy: -8, anchor: 'start' },
+  'Attempt 2': { dx: 0, dy: 22, anchor: 'middle' },
+  'Attempt 3': { dx: -12, dy: -8, anchor: 'end' },
+  Chosen: { dx: -12, dy: 20, anchor: 'end' },
+}
+
+function PointMark(props: ScatterShapeProps) {
+  const { cx, cy, payload } = props as unknown as { cx?: number; cy?: number; payload: PlotPoint }
+  if (cx == null || cy == null) return null
+  const color = payload.status === 'chosen' ? 'var(--color-gold)' : payload.status === 'fail' ? 'var(--color-bad)' : 'var(--color-muted)'
+  const lp = LABEL_PLACEMENT[payload.label] ?? { dx: 10, dy: -8, anchor: 'start' as const }
+  return (
+    <g className="bb-pop">
+      {payload.status === 'fail' ? (
+        <g stroke={color} strokeWidth={2.2} strokeLinecap="round">
+          <line x1={cx - 5} x2={cx + 5} y1={cy - 5} y2={cy + 5} />
+          <line x1={cx - 5} x2={cx + 5} y1={cy + 5} y2={cy - 5} />
+        </g>
+      ) : payload.status === 'chosen' ? (
+        <>
+          <circle cx={cx} cy={cy} r={11} fill="none" stroke={color} opacity={0.45} className="bb-ring" />
+          <circle cx={cx} cy={cy} r={6} fill={color} />
+        </>
+      ) : (
+        <circle cx={cx} cy={cy} r={5.5} fill="none" stroke={color} strokeWidth={2} />
+      )}
+      <text x={cx + lp.dx} y={cy + lp.dy} fontSize={12} fontWeight={600} fill="var(--color-ink)" textAnchor={lp.anchor}>
+        {payload.label}
+      </text>
+    </g>
+  )
+}
+
+function ProbeMark({ cx, cy }: DotProps) {
+  if (cx == null || cy == null) return <g />
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={14} fill="var(--color-blue)" opacity={0.15} />
+      <circle cx={cx} cy={cy} r={4.5} fill="var(--color-blue-soft)" />
+    </g>
+  )
+}
+
 function Chart({ p }: { p: number }) {
   const done = ATTEMPTS.map((_, i) => local(p, i) >= 1)
   const activeIdx = ATTEMPTS.findIndex((_, i) => local(p, i) > 0 && local(p, i) < 1)
-  const pts = ATTEMPTS.map((a) => ({ x: xFor(a.cost), y: yFor(a.ms) }))
-  const trail = pts.filter((_, i) => done[i])
+  const points: PlotPoint[] = ATTEMPTS.map((a) => ({
+    x: a.cost,
+    y: a.ms,
+    label: a.label,
+    title: a.title,
+    cost: a.cost,
+    ms: a.ms,
+    status: a.status,
+    verdict: a.verdict,
+  }))
+  const finished = points.filter((_, i) => done[i])
+
+  // Probe eases between attempts in the same sqrt-fraction space the y-axis
+  // scales by, so its path on screen is a straight line regardless of how
+  // curved the ms domain looks once the sqrt scale maps it to pixels.
   let probe: { x: number; y: number } | null = null
   if (activeIdx >= 0) {
     const t = local(p, activeIdx)
-    const from = activeIdx === 0 ? { x: xFor(0), y: yFor(0) } : pts[activeIdx - 1]
-    const to = pts[activeIdx]
     const e = 1 - Math.pow(1 - t, 3)
-    probe = { x: from.x + (to.x - from.x) * e, y: from.y + (to.y - from.y) * e }
+    const from = activeIdx === 0 ? { cost: 0, u: 0 } : { cost: points[activeIdx - 1].cost, u: toFraction(points[activeIdx - 1].ms) }
+    const to = { cost: points[activeIdx].cost, u: toFraction(points[activeIdx].ms) }
+    probe = { x: from.cost + (to.cost - from.cost) * e, y: fromFraction(from.u + (to.u - from.u) * e) }
   }
+
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img" aria-label="Cost versus p95 latency for each attempt">
-      {[0, 100, 200, 500, 1000, 2000].map((ms) => (
-        <g key={ms}>
-          <line x1={PL} x2={W - PR} y1={yFor(ms)} y2={yFor(ms)} stroke="var(--color-line)" opacity={0.55} />
-          <text x={PL - 10} y={yFor(ms) + 4} fontSize={11} fill="var(--color-muted)" textAnchor="end" className="tabular-nums">{ms >= 1000 ? `${ms / 1000}s` : `${ms}`}</text>
-        </g>
-      ))}
-      {[0, 15, 30, 45, 60].map((c) => (
-        <text key={c} x={xFor(c)} y={PT + PH + 20} fontSize={11} fill="var(--color-muted)" textAnchor="middle" className="tabular-nums">${c}</text>
-      ))}
-      <text x={PL + PW / 2} y={H - 6} fontSize={11} fill="var(--color-muted)" textAnchor="middle">monthly cost</text>
-      <text x={14} y={PT + PH / 2} fontSize={11} fill="var(--color-muted)" textAnchor="middle" transform={`rotate(-90 14 ${PT + PH / 2})`}>p95 latency (ms)</text>
-      <line x1={PL} x2={W - PR} y1={PT + PH} y2={PT + PH} stroke="var(--color-line)" strokeWidth={1.5} />
-      <line x1={PL} x2={PL} y1={PT} y2={PT + PH} stroke="var(--color-line)" strokeWidth={1.5} />
+    <ChartContainer aspect={560 / 380}>
+      <ComposedChart
+        margin={{ top: 22, right: 16, bottom: 26, left: 14 }}
+        role="img"
+        title="Cost versus p95 latency for each attempt"
+        desc="Scatter of monthly cost against p95 latency for four attempts. The chosen stack lands under both the budget and the latency target."
+      >
+        <CartesianGrid horizontal vertical={false} stroke="var(--color-line)" strokeOpacity={0.55} />
+        <XAxis
+          type="number"
+          dataKey="x"
+          domain={[0, MAX_COST]}
+          ticks={X_TICKS}
+          tickFormatter={formatCost}
+          tick={{ fill: 'var(--color-muted)', fontSize: 11 }}
+          tickLine={false}
+          axisLine={{ stroke: 'var(--color-line)', strokeWidth: 1.5 }}
+          label={{ value: 'monthly cost', position: 'insideBottom', offset: -4, fill: 'var(--color-muted)', fontSize: 11 }}
+        />
+        <YAxis
+          type="number"
+          dataKey="y"
+          scale="sqrt"
+          domain={[0, MAX_MS]}
+          ticks={Y_TICKS}
+          tickFormatter={formatMs}
+          tick={{ fill: 'var(--color-muted)', fontSize: 11 }}
+          tickLine={false}
+          width={46}
+          axisLine={{ stroke: 'var(--color-line)', strokeWidth: 1.5 }}
+          label={{ value: 'p95 latency', angle: -90, position: 'insideLeft', offset: 12, fill: 'var(--color-muted)', fontSize: 11 }}
+        />
 
-      {/* the passing region: under budget and under target */}
-      <rect x={PL} y={yFor(TARGET)} width={xFor(BUDGET) - PL} height={PT + PH - yFor(TARGET)} fill="var(--color-gold)" opacity={0.06} />
-      <line x1={xFor(BUDGET)} x2={xFor(BUDGET)} y1={PT} y2={PT + PH} stroke="var(--color-gold)" strokeDasharray="5 5" strokeWidth={1.5} />
-      <text x={xFor(BUDGET) + 6} y={PT + 12} fontSize={11} fill="var(--color-gold)">$30 budget</text>
-      <line x1={PL} x2={W - PR} y1={yFor(TARGET)} y2={yFor(TARGET)} stroke="var(--color-blue)" strokeDasharray="5 5" strokeWidth={1.5} />
-      <text x={W - PR - 4} y={yFor(TARGET) - 7} fontSize={11} fill="var(--color-blue-soft)" textAnchor="end">200 ms target</text>
+        {/* the passing region: under budget and under target */}
+        <ReferenceArea x1={0} x2={BUDGET} y1={0} y2={TARGET} fill="var(--color-gold)" fillOpacity={0.06} stroke="none" />
+        <ReferenceLine
+          x={BUDGET}
+          stroke="var(--color-gold)"
+          strokeDasharray="5 5"
+          strokeWidth={1.5}
+          label={{ value: '$30 budget', position: 'insideTopRight', fill: 'var(--color-gold)', fontSize: 11 }}
+        />
+        <ReferenceLine
+          y={TARGET}
+          stroke="var(--color-blue)"
+          strokeDasharray="5 5"
+          strokeWidth={1.5}
+          label={{ value: '200 ms target', position: 'insideTopRight', fill: 'var(--color-blue-soft)', fontSize: 11 }}
+        />
 
-      {trail.length > 1 && (
-        <polyline points={trail.map((t) => `${t.x},${t.y}`).join(' ')} fill="none" stroke="var(--color-muted)" strokeOpacity={0.45} strokeDasharray="2 6" strokeLinecap="round" strokeWidth={2} />
-      )}
+        <Line
+          data={finished}
+          dataKey="y"
+          type="linear"
+          stroke="var(--color-muted)"
+          strokeOpacity={0.45}
+          strokeWidth={2}
+          strokeDasharray="2 6"
+          strokeLinecap="round"
+          dot={false}
+          isAnimationActive={false}
+          legendType="none"
+        />
+        <Scatter data={finished} dataKey="y" shape={PointMark} isAnimationActive={false} legendType="none" />
+        {probe && <ReferenceDot x={probe.x} y={probe.y} shape={ProbeMark} ifOverflow="visible" />}
 
-      {ATTEMPTS.map((a, i) => {
-        if (!done[i]) return null
-        const { x, y } = pts[i]
-        const color = a.status === 'chosen' ? 'var(--color-gold)' : a.status === 'fail' ? 'var(--color-bad)' : 'var(--color-muted)'
-        // per-point label placement keeps labels off the dashed budget/target lines
-        const place: Record<string, { dx: number; dy: number; end: boolean }> = {
-          'Attempt 1': { dx: 12, dy: -8, end: false },
-          'Attempt 2': { dx: 0, dy: 22, end: false },
-          'Attempt 3': { dx: -12, dy: -8, end: true },
-          Chosen: { dx: -12, dy: 20, end: true },
-        }
-        const lp = place[a.label]
-        return (
-          <g key={a.label} className="bb-pop">
-            {a.status === 'fail' ? (
-              <g stroke={color} strokeWidth={2.2} strokeLinecap="round">
-                <line x1={x - 5} x2={x + 5} y1={y - 5} y2={y + 5} />
-                <line x1={x - 5} x2={x + 5} y1={y + 5} y2={y - 5} />
-              </g>
-            ) : a.status === 'chosen' ? (
-              <>
-                <circle cx={x} cy={y} r={11} fill="none" stroke={color} opacity={0.45} className="bb-ring" />
-                <circle cx={x} cy={y} r={6} fill={color} />
-              </>
-            ) : (
-              <circle cx={x} cy={y} r={5.5} fill="none" stroke={color} strokeWidth={2} />
-            )}
-            <text x={x + lp.dx} y={y + lp.dy} fontSize={12} fontWeight={600} fill="var(--color-ink)" textAnchor={lp.dx === 0 ? 'middle' : lp.end ? 'end' : 'start'}>{a.label}</text>
-          </g>
-        )
-      })}
-
-      {probe && (
-        <g>
-          <circle cx={probe.x} cy={probe.y} r={14} fill="var(--color-blue)" opacity={0.15} />
-          <circle cx={probe.x} cy={probe.y} r={4.5} fill="var(--color-blue-soft)" />
-        </g>
-      )}
-    </svg>
+        <Tooltip
+          cursor={{ stroke: 'var(--color-line)', strokeDasharray: '3 3' }}
+          content={({ active, payload }) => (
+            <ChartTooltipContent<PlotPoint>
+              active={active}
+              payload={payload as unknown as ReadonlyArray<{ payload: PlotPoint }> | undefined}
+              render={(pt) => ({
+                title: `${pt.label} — ${pt.title}`,
+                rows: [
+                  { label: '$/mo', value: `$${pt.cost.toFixed(pt.cost % 1 ? 2 : 0)}` },
+                  { label: 'p95', value: pt.ms >= 1000 ? `${(pt.ms / 1000).toFixed(1)}s` : `${pt.ms} ms` },
+                  { label: 'verdict', value: pt.verdict, accent: pt.status === 'chosen' },
+                ],
+              })}
+            />
+          )}
+        />
+      </ComposedChart>
+    </ChartContainer>
   )
 }
 
