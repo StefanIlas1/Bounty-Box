@@ -92,7 +92,7 @@ export function FigChart() {
           role="img"
           aria-labelledby="fig01-title fig01-desc"
         >
-          <title id="fig01-title">Fig. 01 — Stacks tried for a 1,000-user waitlist app</title>
+          <title id="fig01-title">Proof — Stacks tried for a 1,000-user waitlist app</title>
           <desc id="fig01-desc">
             Scatter chart plotting monthly cost against p95 latency for four attempted stacks. The
             chosen stack, Postgres plus edge plus Redis, lands under the $30 budget line and under
@@ -225,7 +225,7 @@ export function FigChart() {
         </svg>
       </div>
       <figcaption className="mt-3 text-sm text-muted">
-        Fig. 01 — Stacks tried for a 1,000-user waitlist app (example run).
+        Proof — Stacks tried for a 1,000-user waitlist app (example run).
       </figcaption>
     </figure>
   )

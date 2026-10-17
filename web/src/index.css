@@ -7,24 +7,24 @@
 
 /* Brand tokens: mirror of design/tokens.css (source of truth). */
 @theme {
-  /* Oxblood/brown/gold base with Stripe accents (blurple, navy, #f6f9fc paper). No green, no red. */
-  --color-bg: #1e1013;        /* oxblood night: page background */
-  --color-surface: #2a171b;   /* cards */
-  --color-surface-2: #351e23; /* raised / hover */
-  --color-line: #44292d;      /* borders */
-  --color-ink: #f3e7e2;       /* ivory: text */
-  --color-muted: #a68f8c;     /* secondary text */
+  /* Blue-black base with gold + Stripe accents (blurple, navy, #f6f9fc paper). No red, no purple. */
+  --color-bg: #060b16;        /* near-black, blue hue: page background */
+  --color-surface: #0b1322;   /* cards */
+  --color-surface-2: #111c30; /* raised / hover */
+  --color-line: #1c2a42;      /* borders */
+  --color-ink: #f6f9fc;       /* Stripe off-white: text */
+  --color-muted: #8b98ad;     /* secondary text */
   --color-paper: #f6f9fc;     /* light sections */
   --color-paper-ink: #0a2540; /* text on light sections */
   --color-gold: #e9b949;      /* gold: primary action */
   --color-on-gold: #1a1200;
   --color-navy: #0a2540;      /* Stripe navy: code panels, deep accents */
   --color-navy-2: #10304f;
-  --color-orange: #e8833a;    /* warm accent */
+  --color-orange: #e8833a;    /* warm accent, used sparingly */
   --color-blue: #635bff;      /* Stripe blurple: data, links, focus, pass */
   --color-blue-soft: #8f89ff;
-  --color-brown: #7a4a2a;     /* chest wood: logo outline, warm surfaces */
-  --color-brown-soft: #a0693f;
+  --color-brown: #273449;     /* neutral blue-grey (was oxblood brown) */
+  --color-brown-soft: #5b6b85; /* neutral blue-grey, lighter */
   --color-ok: #8f89ff;        /* pass = blurple (never green) */
   --color-bad: #f2994a;       /* fail = amber (never red) */
 
@@ -45,19 +45,19 @@
 :root {
   color-scheme: dark;
   /* shadcn/ui variables mapped to the Bounty-Box brand (single dark theme). */
-  --background: #1e1013; --foreground: #f3e7e2;
-  --card: #2a171b; --card-foreground: #f3e7e2;
-  --popover: #2a171b; --popover-foreground: #f3e7e2;
+  --background: #060b16; --foreground: #f6f9fc;
+  --card: #0b1322; --card-foreground: #f6f9fc;
+  --popover: #0b1322; --popover-foreground: #f6f9fc;
   --primary: #e9b949; --primary-foreground: #1a1200;
-  --secondary: #351e23; --secondary-foreground: #f3e7e2;
-  --muted: #351e23; --muted-foreground: #a68f8c;
-  --accent: #351e23; --accent-foreground: #f3e7e2;
+  --secondary: #111c30; --secondary-foreground: #f6f9fc;
+  --muted: #111c30; --muted-foreground: #8b98ad;
+  --accent: #111c30; --accent-foreground: #f6f9fc;
   --destructive: #f2994a;
-  --border: #44292d; --input: #44292d; --ring: #635bff;
-  --chart-1: #635bff; --chart-2: #e9b949; --chart-3: #7a4a2a; --chart-4: #8f89ff; --chart-5: #a68f8c;
+  --border: #1c2a42; --input: #1c2a42; --ring: #635bff;
+  --chart-1: #635bff; --chart-2: #e9b949; --chart-3: #8f89ff; --chart-4: #00d4ff; --chart-5: #8b98ad;
   --radius: 6px;
-  --sidebar: #2a171b; --sidebar-foreground: #f3e7e2; --sidebar-primary: #e9b949; --sidebar-primary-foreground: #1a1200;
-  --sidebar-accent: #351e23; --sidebar-accent-foreground: #f3e7e2; --sidebar-border: #44292d; --sidebar-ring: #635bff;
+  --sidebar: #0b1322; --sidebar-foreground: #f6f9fc; --sidebar-primary: #e9b949; --sidebar-primary-foreground: #1a1200;
+  --sidebar-accent: #111c30; --sidebar-accent-foreground: #f6f9fc; --sidebar-border: #1c2a42; --sidebar-ring: #635bff;
 }
 html, body { background: var(--color-bg); color: var(--color-ink); font-family: var(--font-sans); }
 body { margin: 0; -webkit-font-smoothing: antialiased; }

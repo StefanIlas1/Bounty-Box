@@ -19,12 +19,12 @@ export const PHASE_LABEL: Record<Phase, string> = {
 // Hex values mirror the brand tokens in src/index.css (gold/blue/blue-soft/muted/bad).
 // Kept as literal hex because the shader prop takes a color, not a Tailwind class.
 const MAP: Record<Phase, { state: AgentState; color: `#${string}` }> = {
-  idle: { state: 'idle', color: '#a68f8c' },
+  idle: { state: 'idle', color: '#8b98ad' },
   planning: { state: 'thinking', color: '#635bff' },
   writing: { state: 'speaking', color: '#8f89ff' },
   testing: { state: 'listening', color: '#635bff' },
   fixing: { state: 'thinking', color: '#e9b949' },
-  awaiting_approval: { state: 'idle', color: '#a68f8c' },
+  awaiting_approval: { state: 'idle', color: '#8b98ad' },
   buying: { state: 'connecting', color: '#e9b949' },
   live: { state: 'listening', color: '#635bff' },
   finished: { state: 'listening', color: '#635bff' },

@@ -2,19 +2,22 @@
 @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap");
 
 :root {
-  /* Palette (v2, 17 Oct): Stripe navy base, blurple data, off-white text; brown + orange-gold accents. No green, no red. */
-  --bb-bg: #0a2540;        /* Stripe navy */
-  --bb-surface: #0f2e4f;
-  --bb-surface-2: #163a60;
-  --bb-line: #24496f;
+  /* Palette (v3, 17 Oct): near-black blue-hue base, blurple data, off-white text; gold accent. No red, no purple. */
+  --bb-bg: #060b16;        /* near-black, blue hue */
+  --bb-surface: #0b1322;
+  --bb-surface-2: #111c30;
+  --bb-line: #1c2a42;
   --bb-ink: #f6f9fc;       /* Stripe off-white */
-  --bb-muted: #9fb3c8;
+  --bb-muted: #8b98ad;
   --bb-paper: #f6f9fc;     /* light sections */
-  --bb-gold: #f0a93b;      /* orange-gold primary action */
-  --bb-on-gold: #1f1300;
+  --bb-gold: #e9b949;      /* gold primary action */
+  --bb-on-gold: #1a1200;
   --bb-orange: #e8833a;
   --bb-blue: #635bff;      /* Stripe blurple */
-  --bb-brown: #7a4a2a;     /* logo outline, warm surfaces */
+  --bb-blue-soft: #8f89ff;
+  --bb-cyan: #00d4ff;      /* Stripe cyan, sparingly */
+  --bb-navy: #0a2540;      /* Stripe navy */
+  --bb-brown: #273449;     /* neutral blue-grey (was oxblood brown) */
   --bb-ok: #8f89ff;        /* pass = blurple */
   --bb-bad: #f2994a;       /* fail = amber */
 

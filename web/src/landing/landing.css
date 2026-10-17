@@ -30,8 +30,8 @@
 .bb-tile:focus-within .bb-tile-inner {
   transform: translateY(-6px);
   box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.35),
-    0 0 24px rgba(99, 91, 255, 0.35);
+    0 10px 30px rgba(0, 0, 0, 0.45),
+    0 0 18px rgba(99, 91, 255, 0.22);
   border-color: var(--color-blue-soft);
   animation-play-state: paused;
 }
