@@ -192,6 +192,19 @@ export function BriefScreen({
           )}
         </div>
         {mode === 'demo' && <p className="text-center text-[11px] text-muted">Demo mode plays a fixed scripted example regardless of what you type above.</p>}
+        <ol aria-label="What you will see after you start" className="grid grid-cols-2 gap-2 border-t border-line pt-4 text-xs text-muted sm:grid-cols-4">
+          {[
+            ['Agent', 'left panel: its reasoning, live'],
+            ['Code', 'files it writes and fixes'],
+            ['Terminal + Sandbox', 'real runs in CreateOS'],
+            ['Cart', 'buy the winner via Stripe'],
+          ].map(([t, d], i) => (
+            <li key={t} className="rounded border border-line/70 px-2.5 py-2">
+              <span className="font-medium text-ink"><span className="mr-1 tabular-nums text-gold">{i + 1}</span>{t}</span>
+              <span className="mt-0.5 block">{d}</span>
+            </li>
+          ))}
+        </ol>
         </div>
       </div>
     </div>
