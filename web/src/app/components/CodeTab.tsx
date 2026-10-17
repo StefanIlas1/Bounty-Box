@@ -61,7 +61,7 @@ export function CodeTab({ state, mode }: { state: RunState; mode: Mode }) {
             </pre>
           </ScrollArea>
         ) : (
-          <div className="flex h-full items-center justify-center text-sm text-muted">Select a file.</div>
+          <div className="flex h-full items-center justify-center text-sm text-muted">{files.length ? "Select a file." : "The agent is about to write its first file. It will appear here."}</div>
         )}
       </div>
     </div>
