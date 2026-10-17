@@ -1,0 +1,27 @@
+{
+  "name": "bounty-box-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13 <23"
+  },
+  "scripts": {
+    "dev": "tsx src/lib/server/api.ts",
+    "worker": "tsx src/lib/server/worker.ts",
+    "check": "tsc --noEmit",
+    "test:backend": "tsx --test src/lib/server/*.test.ts",
+    "test:orchestrator": "node --import tsx src/lib/orchestrator/smoke.cjs",
+    "test:benchmark": "tsx src/lib/benchmark/smoke.ts",
+    "test:providers": "tsx src/lib/createos/software.smoke.ts",
+    "test": "npm run test:backend && npm run test:orchestrator && npm run test:benchmark && npm run test:providers"
+  },
+  "dependencies": {
+    "@nodeops-createos/sandbox": "^0.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}

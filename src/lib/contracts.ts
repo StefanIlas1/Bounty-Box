@@ -61,6 +61,8 @@ export interface Attempt {
 
 export interface Proposal {
   id: string;
+  artifactDigest?: string;
+  approvalExpiresAt?: string;
   stack: CandidateStack;
   result: TestResult;
   estimatedMonthlyCostUsd: number;
