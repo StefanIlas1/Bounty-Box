@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Code2, Terminal as TerminalIcon, Columns3, ListChecks, ArrowRight, Eye } from 'lucide-react'
+import { Code2, Terminal as TerminalIcon, Columns3, ListChecks, ArrowRight, ArrowDown, Eye } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { AgentPanel } from '../components/AgentPanel'
 import { CodeTab } from '../components/CodeTab'
@@ -28,6 +28,7 @@ function suggestTab(state: RunState): TabKey | null {
     case 'command':
     case 'load_test':
       return 'terminal'
+    case 'bom_proposed':
     case 'stack_result':
     case 'awaiting_approval':
     case 'provisioning':
@@ -114,6 +115,7 @@ export function BuildScreen({ mode, state, onApprove, approving, demoControls, l
     const el = document.getElementById(PANEL_ID[key])
     if (!el) return
     el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    if (key === 'live') el.focus({ preventScroll: true })
     el.classList.remove('bb-flash')
     void el.offsetWidth
     el.classList.add('bb-flash')
@@ -155,16 +157,19 @@ export function BuildScreen({ mode, state, onApprove, approving, demoControls, l
         </Tabs>
       </div>
 
-      <div className="flex min-h-0 min-w-0 flex-col gap-3 overflow-y-auto pr-0.5 [&>*]:shrink-0">
+      <div className="flex min-h-0 min-w-0 flex-col gap-3 overflow-y-auto pb-16 pr-0.5 [&>*]:shrink-0">
         <div id="panel-sandbox" className="rounded">{recorded ? <div className="rounded bg-surface p-4 text-sm"><h2 className="font-semibold">Verified sandbox run</h2><p className="mt-2 text-muted">Executed in CreateOS with Neon Postgres. Both trial sandboxes were destroyed after testing.</p><p className="mt-2">29 requests · 384 ms p95 · 0 errors</p><p className="mt-2 text-muted">2 concurrent requests for 5.34 seconds. Target users in the table are a planning input, not verified capacity.</p><p className="mt-2 text-muted">Recorded October 17, 2026. Approval and permanent deployment are not available in this replay.</p></div> : <SandboxCard state={state} />}</div>
         <div id="panel-cart" className="flex flex-col gap-3 rounded">
           <CartCard state={state} onApprove={onApprove} approving={approving} recorded={recorded} />
           <BomCard state={state} />
           <ProvisioningCard state={state} />
         </div>
-        <div id="panel-live" className="rounded"><LiveUrlCard state={state} /></div>
+        <div id="panel-live" tabIndex={-1} className="rounded focus-visible:outline-2 focus-visible:outline-gold"><LiveUrlCard state={state} /></div>
       </div>
     </div>
+    {state.liveUrl && <button type="button" onClick={() => flashPanel('live')} aria-label="Link — show live URL at bottom" title="Show the link at the bottom of the side panel" className="fixed bottom-4 right-5 z-50 flex items-center gap-2 rounded-full border border-gold/60 bg-gold px-4 py-2 text-sm font-semibold text-on-gold shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold">
+      Link <ArrowDown className="size-4" aria-hidden="true" />
+    </button>}
     </div>
   )
 }

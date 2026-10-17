@@ -48,6 +48,20 @@ export function ComparisonsTab({ state }: { state: RunState }) {
           })}
         </TableBody>
       </Table>
+      {!!state.bom?.length && <section className="border-t border-line p-4" aria-label="Hardware comparison">
+        <h3 className="mb-2 text-sm font-semibold">Hardware · one-time costs</h3>
+        <Table>
+          <TableHeader><TableRow><TableHead>Item</TableHead><TableHead>Quantity</TableHead><TableHead>Unit price</TableHead><TableHead>One-time total</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+          <TableBody>{state.bom.map((item, index) => <TableRow key={`${item.name}-${index}`}>
+            <TableCell className="whitespace-normal font-medium">{item.name}</TableCell>
+            <TableCell>{item.qty}</TableCell><TableCell>${item.unitPriceUsd.toFixed(2)}</TableCell>
+            <TableCell>${(item.qty * item.unitPriceUsd).toFixed(2)}</TableCell><TableCell>Selected · demo</TableCell>
+          </TableRow>)}</TableBody>
+        </Table>
+        <p className="mt-3 text-sm">Hardware subtotal: <strong>${state.bomOneTimeCostUsd.toFixed(2)} one-time</strong></p>
+        <p className="mt-1 text-xs text-muted">Added to the monthly software services above. Example USD prices; shipping and tax excluded. No physical hardware benchmark is claimed.</p>
+      </section>}
+
     </div>
   )
 }
