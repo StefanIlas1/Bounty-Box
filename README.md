@@ -131,4 +131,39 @@ erDiagram
 
 ## How to run
 
-Setup instructions are added here as the build lands.
+Use Node 22 and install the backend dependencies:
+
+```sh
+nvm use
+npm ci
+```
+
+Set a random `BOUNTYBOX_API_TOKEN` of at least 32 characters in an ignored
+`.env.backend.local` file. Run the API and worker in separate terminals:
+
+```sh
+npm run dev
+npm run worker
+```
+
+The API listens on `127.0.0.1:3000`. All endpoints require bearer authentication.
+See [backend development](docs/backend-development.md) for request examples,
+credential setup, artifact retrieval and worker recovery limits. The frontend lives
+in [`web/`](web/README.md) and has separate dependencies and demo/live modes.
+
+### Implementation status
+
+The backend fixture flow is implemented: durable queue, bounded repair, measured-result
+interfaces, artifact-bound proposals, cancellation and authenticated source retrieval.
+Fixture evidence is labelled and cannot authorize provisioning. Independent benchmark,
+CreateOS runner, quote-gated software catalog and hardware planning/validation adapters
+are implemented with local/mock checks. A real EU sandbox upload/execute/cleanup smoke
+passed during provider setup.
+
+Live generation, trial-database configuration and deployment integration are still
+pending; live API submissions currently return an explicit setup error. Hardware
+modules cover reference firmware/HDL packages and pre-arrival checks, not automated
+physical purchases or verified device operation.
+
+See [implementation phases](docs/implementation-phases.md) and
+[provider setup](docs/provider-setup.md) for the current handoff.
