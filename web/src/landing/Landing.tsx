@@ -23,9 +23,9 @@ import {
   Menu,
 } from 'lucide-react'
 import { Logo } from '../shared/Logo'
+import { ModeToggle } from '../shared/ModeToggle'
 import { ProviderGrid, type GridMode } from './ProviderGrid'
 import { IterationStory } from './IterationStory'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { FigChart } from './FigChart'
 import { GithubMark } from './GithubMark'
 import { Button } from '@/components/ui/button'
@@ -42,7 +42,7 @@ import './landing.css'
 
 const NAV_LINKS = [
   { href: '#how-it-works', label: 'How it works' },
-  { href: '#fig-01', label: 'Fig. 01' },
+  { href: '#fig-01', label: 'Proof' },
   { href: '#trust', label: 'Trust' },
 ]
 
@@ -210,20 +210,7 @@ function Hero() {
       <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[520px] w-[820px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue/[0.07] blur-[120px]" />
 
       <div className="bb-fade-up mx-auto max-w-2xl text-center">
-        <ToggleGroup
-          type="single"
-          value={mode}
-          onValueChange={(v) => v && setMode(v as GridMode)}
-          className="mx-auto mb-7 inline-flex rounded-md border border-line bg-surface/70 p-1 backdrop-blur"
-          aria-label="What are you building?"
-        >
-          <ToggleGroupItem value="software" className="h-7 rounded-sm px-3 text-xs font-medium data-[state=on]:bg-surface-2 data-[state=on]:text-ink text-muted">
-            Software
-          </ToggleGroupItem>
-          <ToggleGroupItem value="hardware" className="h-7 rounded-sm px-3 text-xs font-medium data-[state=on]:bg-surface-2 data-[state=on]:text-ink text-muted">
-            + Hardware
-          </ToggleGroupItem>
-        </ToggleGroup>
+        <ModeToggle hardware={mode === 'hardware'} onChange={(hw) => setMode(hw ? 'hardware' : 'software')} className="mx-auto mb-7" />
         <p className="text-xs font-medium uppercase tracking-[0.14em] text-gold">Stripe Projects × CreateOS Sandbox</p>
         <h1 className="mt-4 font-display text-[clamp(2.25rem,5.2vw,3.75rem)] font-extrabold leading-[1.05] tracking-tight text-ink">
           Building big <span className="text-gold whitespace-nowrap">under budget.</span>
@@ -354,7 +341,7 @@ function FigureSection() {
 
 function HowItWorks() {
   return (
-    <section id="how-it-works" className="relative isolate overflow-hidden border-b border-line bg-surface/30">
+    <section id="how-it-works" className="relative isolate scroll-mt-16 overflow-hidden border-b border-line bg-surface/30">
       <DotPattern aria-hidden="true" width={22} height={22} cr={1} className="pointer-events-none absolute inset-0 -z-10 fill-brown-soft/30 [mask-image:linear-gradient(to_bottom,white,transparent_85%)]" />
       <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
         <SectionHead
@@ -383,7 +370,7 @@ function HowItWorks() {
 
 function Trust() {
   return (
-    <section id="trust" className="relative isolate overflow-hidden border-b border-line">
+    <section id="trust" className="relative isolate scroll-mt-16 overflow-hidden border-b border-line">
       <GridPattern aria-hidden="true" width={56} height={56} className="pointer-events-none absolute inset-0 -z-10 stroke-line/50 [mask-image:radial-gradient(500px_circle_at_80%_20%,white,transparent)]" />
       <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
         <SectionHead

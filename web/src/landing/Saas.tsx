@@ -70,7 +70,7 @@ export default function Saas() {
 
   return (
     <div className="min-h-svh bg-bg text-ink">
-      <header className="border-b border-line">
+      <header className="sticky top-0 z-50 h-16 border-b border-line bg-bg/90 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <Link to="/" aria-label="Bounty-Box home"><Logo size={20} /></Link>
           <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink"><ArrowLeft className="h-4 w-4" /> Back to site</Link>
@@ -81,7 +81,7 @@ export default function Saas() {
         <DotPattern aria-hidden="true" width={22} height={22} cr={1} className="pointer-events-none absolute inset-0 -z-10 fill-brown-soft/30 [mask-image:radial-gradient(600px_circle_at_30%_30%,white,transparent)]" />
         <div className="mx-auto grid max-w-6xl gap-12 px-6 py-16 lg:grid-cols-[1fr_1.15fr] lg:py-20">
           <div className="flex flex-col gap-6">
-            <p className="font-mono text-xs uppercase tracking-[0.16em] text-gold">For SaaS companies</p>
+            <p className="text-xs font-medium uppercase tracking-[0.12em] text-gold">For SaaS companies</p>
             <h1 className="font-display text-[clamp(2rem,4.4vw,3.25rem)] font-extrabold leading-[1.05] tracking-tight">
               Get picked by the agent that <span className="text-gold">buys infrastructure.</span>
             </h1>

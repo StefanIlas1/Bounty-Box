@@ -7,9 +7,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Logo } from '../../shared/Logo'
+import { ModeToggle } from '../../shared/ModeToggle'
 import type { Mode } from '../../shared/types'
 import type { StartPayload } from '../live/useLiveRun'
 
@@ -121,16 +121,7 @@ export function BriefScreen({
         </div>
 
         <div className="flex flex-col gap-2">
-          <ToggleGroup
-            type="single"
-            value={hardwareOn ? 'hardware' : 'software'}
-            onValueChange={(v) => v && setHardwareOn(v === 'hardware')}
-            size="sm"
-            className="self-start"
-          >
-            <ToggleGroupItem value="software">Software</ToggleGroupItem>
-            <ToggleGroupItem value="hardware">Software + hardware</ToggleGroupItem>
-          </ToggleGroup>
+          <ModeToggle hardware={hardwareOn} onChange={setHardwareOn} className="self-start" />
           {hardwareOn && mode === 'demo' && <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2"><Label htmlFor="hardware-item">Hardware item</Label><Input id="hardware-item" value={hardwareName} onChange={e => setHardwareName(e.target.value)} /></div>
             <div><Label htmlFor="hardware-price">Unit price (USD, one-time)</Label><Input id="hardware-price" type="number" min={0} step={0.01} value={hardwarePrice} onChange={e => setHardwarePrice(Number(e.target.value))} /></div>

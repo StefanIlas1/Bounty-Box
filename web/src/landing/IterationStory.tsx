@@ -259,7 +259,7 @@ export function IterationStory() {
   const p = useProgress(ref)
   const step = Math.min(4, ATTEMPTS.filter((_, i) => local(p, i) >= 1).length)
   return (
-    <section ref={ref} id="fig-01" className="relative border-b border-line lg:h-[300vh]">
+    <section ref={ref} id="fig-01" className="relative scroll-mt-16 border-b border-line lg:h-[300vh]">
       <div className="lg:sticky lg:top-16 lg:flex lg:h-[calc(100svh-4rem)] lg:items-center">
         <div className="mx-auto w-full max-w-6xl px-6 py-16 lg:py-0">
           <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
@@ -274,7 +274,7 @@ export function IterationStory() {
           <div className="grid items-center gap-8 lg:grid-cols-[1.25fr_1fr]">
             <figure className="m-0 rounded-lg border border-line bg-surface/70 p-4 sm:p-5">
               <Chart p={p} />
-              <figcaption className="mt-2 text-xs text-muted">Fig. 01 · Stacks tried for a 1,000-user waitlist app. Example run; in the product every number comes from a sandbox run you can open.</figcaption>
+              <figcaption className="mt-2 text-xs text-muted">Proof · Stacks tried for a 1,000-user waitlist app. Example run; in the product every number comes from a sandbox run you can open.</figcaption>
             </figure>
             <div>
               {ATTEMPTS.map((a, i) => (
