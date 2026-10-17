@@ -13,6 +13,10 @@ Built at **Build Agents That Run Code: CreateOS × Stripe Projects** (Oct 17, 20
 5. **Approve:** you review the final stack, monthly cost and test results.
 6. **Buy and ship:** it runs `stripe projects add …` for each service, deploys, and returns a live URL.
 
+### Hardware mode: for physical builders
+
+Building something physical? Describe the product, quantity, budget and deadline. Bounty-Box writes a parametric CAD model and a bill of materials, sources each part from eBay and Chinese manufacturers, and calculates the landed cost: shipping, import duty, tariffs and delivery date. Parts that don't fit, miss the deadline or break the budget get swapped automatically. You review the 3D model, blueprints and per-part costs, then buy everything in one checkout.
+
 See [design.md](design.md) for the full pitch, scope and risks.
 
 Backend architecture: [system design and decisions](docs/backend-system-design.md) · [Miro architecture board](https://miro.com/app/board/uXjVEYwmnCA=/).
@@ -123,6 +127,7 @@ erDiagram
 
 - **Stripe Projects**: provisions and buys the chosen services (`stripe projects add`).
 - **CreateOS Sandbox**: runs the generated app and load tests, with egress allowlisting, a live ingress URL, and pause/resume while waiting for approval.
+- **Hardware mode**: CadQuery / OpenSCAD for parametric CAD, three.js (react-three-fiber) and Online3DViewer for the 3D view, SVG drawings and KiCad for blueprints, eBay Browse API for sourcing.
 
 ## How to run
 

@@ -23,6 +23,27 @@ Bounty-Box brokers deals with vendors.
 - **Revenue for us:** vendors pay placement or referral fees. This makes Bounty-Box a distribution channel for new dev-tool companies, which solves the cold-start problem that kills two-sided marketplaces.
 - **Trust rule:** a partner product is only recommended if it passes the same tests and costs less than the best market alternative, and partner picks are always labeled. This answers the obvious judge question: "Isn't this just paid placement?"
 
+## Hardware mode: for physical builders
+
+The same loop, for physical products. Instead of buying a software stack, Bounty-Box buys parts.
+
+1. **Brief:** "A desk air-quality monitor, 50 units, under $40 per unit landed, delivered to Toronto by Nov 15."
+2. **Design:** the agent writes a parametric CAD model (CadQuery or OpenSCAD) and a bill of materials (BOM) with the specs each part must meet: sensor accuracy, board size, voltage, enclosure dimensions.
+3. **Source:** it searches eBay (Browse API) and Chinese suppliers (AliExpress, Alibaba, LCSC, JLCPCB) for parts that meet each spec.
+4. **Landed cost:** for each candidate it adds unit price, shipping, import duty and tariffs (by HS code), customs brokerage and currency conversion, and checks minimum order quantity and the delivery date against the deadline.
+5. **Self-fix:** the CAD script runs in a CreateOS sandbox and checks that the chosen parts physically fit the enclosure. If a part doesn't fit, misses the deadline or breaks the budget, the agent swaps it, regenerates the model and checks again. On screen: "Supplier A's sensor arrives Nov 22, after your deadline. Switching to a US eBay seller, +$3 per unit."
+6. **Approval:** you see the 3D model, the blueprint, and the BOM with landed cost and arrival dates per part.
+7. **Buy:** checkout runs through Stripe, which places the orders in one approved purchase.
+
+### Demo UI
+
+This part is built light on the backend, but the UI has to be clean and clear on camera. Open-source tools only:
+
+- **3D view:** three.js via react-three-fiber (or Online3DViewer for STEP files), with orbit, exploded view, and parts highlighted when you hover their BOM row.
+- **Blueprints:** 2D drawings with dimensions exported from CadQuery as SVG; KiCad (`kicad-cli`) for schematics and PCB drawings if the product has a board.
+- **Layout:** BOM and supplier cards on the left, the 3D/Blueprint viewer in the centre (tabs), landed cost and a delivery timeline against the deadline on the right. The swap animates: the old part fades out of the model and the new one drops in.
+- **Style:** follows the brand palette; tinted dark themes only, never gold on pure black.
+
 ## Fit with the judging criteria
 
 | Criterion | What we show |
@@ -31,7 +52,7 @@ Bounty-Box brokers deals with vendors.
 | Writes, runs and fixes its own code | The stack swap after a failed load test is the self-fix moment, and it happens on camera. |
 | Real-world use | Every developer has burned days choosing a stack or been surprised by a bill. |
 | Execution | One narrow app type, 2–3 candidate stacks, one swap that happens reliably. |
-| Creativity | An agent that shops for infrastructure, plus the partner-deal business model. |
+| Creativity | An agent that shops for infrastructure, plus the partner-deal business model. Hardware mode extends the same loop to physical parts, with a live 3D model of what you're buying. |
 
 ## Scope for today (lock at 5:30 PM PT)
 
@@ -42,11 +63,15 @@ Bounty-Box brokers deals with vendors.
 - The sandbox write → load test → swap loop.
 - The approval screen.
 - `stripe projects add` and the live URL.
+- Hardware mode UI: 3D viewer, blueprint tab, BOM with landed cost, delivery timeline and one animated part swap, for a single demo product.
+- Hardware mode logic, kept light: the CAD script and fit check running in the sandbox, plus the landed-cost and deadline calculation.
 
 **Fake or put on a slide:**
 
 - The negotiation agent: show a drafted partner email and a "partner rate" badge in the price comparison. Don't email real vendors today.
 - Shared hosting across users and big-company partnership pitches: roadmap slide.
+- Hardware sourcing data: use a fixed set of supplier listings (clearly labelled as sample data) and a small duty-rate table. A live eBay Browse API call is a bonus if time allows.
+- Hardware purchases: Stripe test mode only. No real orders.
 - Its own email inbox for verification codes: skip it. Going through Stripe Projects avoids most vendor logins anyway, which is worth saying in the video.
 
 ## Risks
@@ -54,6 +79,7 @@ Bounty-Box brokers deals with vendors.
 - **Sandbox limits:** the free plan allows 1 concurrent sandbox and 10 per day. Test stacks one after another and budget about 6 sandbox runs for development plus 2 for the demo.
 - **Live spending:** use test mode, or the cheapest free tiers, so the demo doesn't spend real money.
 - **Unreliable swap:** make the swap deterministic by setting a load target that the first stack is known to miss.
+- **Hardware scope creep:** hardware mode is secondary. Get the software loop working first, then spend what's left on the hardware UI.
 - **"Isn't it Lovable?":** open the video with the budget and the swap, not the code generation.
 
 ## Likely judge pushback (kept out of the README)
@@ -63,3 +89,6 @@ Bounty-Box brokers deals with vendors.
 - **"Is the swap staged?"** The load target is set so the first stack misses it, which makes the swap reliable on camera. Be upfront that the target is chosen, the test itself is real.
 - **"Is the negotiation agent real?"** Not today: it is a drafted email and a badge. Present it as roadmap.
 - **"Did it spend real money?"** Test mode or free tiers only.
+- **"Is the hardware sourcing live?"** For the demo, supplier listings are a labelled sample set. The CAD generation, fit check and landed-cost maths are real.
+- **"Are the import fees accurate?"** They are estimates from HS-code duty rates; a customs broker confirms them before a real order.
+- **"Scraping marketplaces breaks their terms."** We use official APIs (eBay Browse, supplier APIs), not scraping.
