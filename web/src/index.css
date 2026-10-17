@@ -35,6 +35,11 @@
   --radius-DEFAULT: 6px;
   --radius-sm: 4px;
   --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  /* Durations mirror src/lib/motion-tokens.ts. */
+  --dur-press: 120ms;
+  --dur-overlay: 170ms;
+  --dur-panel: 220ms;
 }
 
 :root {
@@ -110,5 +115,15 @@ body { margin: 0; -webkit-font-smoothing: antialiased; }
   }
   html {
     @apply font-sans;
+  }
+}
+
+/* Reduced motion: drop nonessential movement app-wide; state changes still apply instantly. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
