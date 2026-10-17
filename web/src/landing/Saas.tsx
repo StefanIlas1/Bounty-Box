@@ -94,7 +94,7 @@ export default function Saas() {
                 <div key={r.title} className="flex gap-3">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-line bg-surface text-blue-soft"><r.icon className="h-4 w-4" /></div>
                   <div>
-                    <p className="font-display font-semibold">{r.title}</p>
+                    <p className="font-semibold">{r.title}</p>
                     <p className="text-sm text-muted">{r.body}</p>
                   </div>
                 </div>

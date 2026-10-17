@@ -70,3 +70,10 @@
 @keyframes bb-logo-in { 0% { opacity: 0; transform: scale(.92) } 12% { opacity: 1; transform: scale(1) } 82% { opacity: 1 } 100% { opacity: 0 } }
 .bb-logo-cell { animation: bb-logo-in 14.4s cubic-bezier(.34,1.56,.64,1) forwards; }
 @media (prefers-reduced-motion: reduce) { .bb-cell-flicker, .bb-logo-cell { animation: none; opacity: 1 } }
+
+/* Iteration story */
+@keyframes bb-pop { 0% { transform: scale(.4); opacity: 0 } 100% { transform: scale(1); opacity: 1 } }
+.bb-pop { animation: bb-pop .5s cubic-bezier(.34,1.56,.64,1) both; transform-box: fill-box; transform-origin: center; }
+@keyframes bb-ring { 0%,100% { transform: scale(1); opacity: .45 } 50% { transform: scale(1.35); opacity: .15 } }
+.bb-ring { animation: bb-ring 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@media (prefers-reduced-motion: reduce) { .bb-pop, .bb-ring { animation: none } }

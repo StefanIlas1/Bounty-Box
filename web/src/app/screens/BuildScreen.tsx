@@ -81,7 +81,7 @@ export function BuildScreen({ mode, state, onApprove, approving, demoControls, l
   }
 
   return (
-    <div className="grid min-h-0 flex-1 grid-cols-[320px_minmax(0,1fr)_300px] gap-4 p-4">
+    <div className="grid min-h-0 flex-1 grid-cols-[300px_minmax(0,1fr)_340px] gap-4 p-4">
       <div className="min-h-0 min-w-0">
         <AgentPanel mode={mode} state={state} demo={demoControls} live={liveControls} />
       </div>
@@ -101,7 +101,7 @@ export function BuildScreen({ mode, state, onApprove, approving, demoControls, l
         </Tabs>
       </div>
 
-      <div className="flex min-h-0 min-w-0 flex-col gap-3 overflow-y-auto pr-0.5">
+      <div className="flex min-h-0 min-w-0 flex-col gap-3 overflow-y-auto pr-0.5 [&>*]:shrink-0">
         <SandboxCard state={state} />
         <CartCard state={state} onApprove={onApprove} approving={approving} />
         <BomCard state={state} />

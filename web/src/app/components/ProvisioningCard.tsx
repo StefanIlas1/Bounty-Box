@@ -9,7 +9,7 @@ export function ProvisioningCard({ state }: { state: RunState }) {
   return (
     <Card className="border-line bg-surface">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 font-display text-base">
+        <CardTitle className="flex items-center gap-2 text-base">
           <ListChecks className="size-4 text-blue" /> Provisioning
         </CardTitle>
       </CardHeader>

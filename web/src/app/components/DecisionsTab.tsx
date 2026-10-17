@@ -14,7 +14,7 @@ export function DecisionsTab({ state }: { state: RunState }) {
         {state.decisions.map((d) => (
           <Card key={d.requirement} className="border-line bg-surface-2">
             <CardHeader>
-              <CardTitle className="flex items-center justify-between font-display text-base capitalize">
+              <CardTitle className="flex items-center justify-between text-base capitalize">
                 {d.requirement}
                 <Badge variant="outline" className="border-blue/30 text-blue">
                   {d.chosen}

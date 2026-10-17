@@ -68,13 +68,20 @@ export default function AppShell() {
     setScreen('brief')
   }
 
-  const unreachableBanner = mode === 'live' && liveRun.reachable === false
+  const unreachableBanner = mode === 'live' && liveRun.reachable === false && !liveRun.simulated
   const fixtureRun = mode === 'live' && liveRun.snapshotMode === 'fixture'
 
   return (
     <TooltipProvider>
       <div className="flex h-screen min-h-0 flex-col bg-bg">
-        <TopBar mode={mode} onModeChange={setMode} reachable={liveRun.reachable} fixtureRun={fixtureRun} onNewRun={handleNewRun} />
+        <TopBar
+          mode={mode}
+          onModeChange={setMode}
+          reachable={liveRun.reachable}
+          fixtureRun={fixtureRun}
+          simulated={mode === 'live' && liveRun.simulated}
+          onNewRun={handleNewRun}
+        />
 
         {unreachableBanner && (
           <div className="flex items-center gap-3 border-b border-bad/30 bg-bad/10 px-5 py-2.5 text-sm text-ink">

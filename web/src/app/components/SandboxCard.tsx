@@ -17,7 +17,7 @@ export function SandboxCard({ state }: { state: RunState }) {
   return (
     <Card className="border-line bg-surface">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 font-display text-base">
+        <CardTitle className="flex items-center gap-2 text-base">
           <Server className="size-4 text-blue" /> Sandbox
         </CardTitle>
       </CardHeader>
@@ -48,8 +48,8 @@ export function SandboxCard({ state }: { state: RunState }) {
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {sandbox.egress.length === 0 && <span className="text-xs text-muted">open (no allowlist set)</span>}
-                {sandbox.egress.map((e) => (
-                  <Badge key={e} variant="outline" className="border-line font-mono text-[11px] text-ink">
+                {sandbox.egress.flatMap((e) => e.split(',').map((x) => x.trim()).filter(Boolean)).map((e) => (
+                  <Badge key={e} variant="outline" className="h-auto max-w-full whitespace-normal break-all border-line font-mono text-[11px] text-ink">
                     {e}
                   </Badge>
                 ))}

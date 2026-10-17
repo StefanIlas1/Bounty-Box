@@ -13,10 +13,11 @@ interface TopBarProps {
   onModeChange: (m: Mode) => void
   reachable: boolean | null
   fixtureRun: boolean
+  simulated: boolean
   onNewRun: () => void
 }
 
-export function TopBar({ mode, onModeChange, reachable, fixtureRun, onNewRun }: TopBarProps) {
+export function TopBar({ mode, onModeChange, reachable, fixtureRun, simulated, onNewRun }: TopBarProps) {
   return (
     <div className="flex items-center justify-between gap-4 border-b border-line bg-surface px-5 py-3">
       <Link to="/" className="shrink-0">
@@ -30,6 +31,7 @@ export function TopBar({ mode, onModeChange, reachable, fixtureRun, onNewRun }: 
         </ToggleGroup>
         {mode === 'demo' && <Badge variant="outline" className="border-gold/40 text-gold">Demo · scripted example run</Badge>}
         {fixtureRun && <Badge variant="outline" className="border-gold/40 text-gold">Fixture run (backend test data)</Badge>}
+        {simulated && <Badge variant="outline" className="border-bad/40 text-bad">Simulated · catalog prices</Badge>}
       </div>
 
       <div className="flex items-center gap-2">

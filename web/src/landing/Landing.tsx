@@ -24,6 +24,7 @@ import {
 } from 'lucide-react'
 import { Logo } from '../shared/Logo'
 import { ProviderGrid, type GridMode } from './ProviderGrid'
+import { IterationStory } from './IterationStory'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { FigChart } from './FigChart'
 import { GithubMark } from './GithubMark'
@@ -104,7 +105,7 @@ const STEPS = [
     n: '04',
     icon: Rocket,
     title: 'Buy and ship with Stripe Projects',
-    detail: '`stripe projects add neon/free` runs for real, then you get a live ingress URL.',
+    detail: 'Each service is bought with stripe projects add, then you get a live ingress URL.',
   },
 ]
 
@@ -216,14 +217,14 @@ function Hero() {
           className="mx-auto mb-7 inline-flex rounded-md border border-line bg-surface/70 p-1 backdrop-blur"
           aria-label="What are you building?"
         >
-          <ToggleGroupItem value="software" className="h-7 rounded-sm px-3 font-mono text-xs data-[state=on]:bg-surface-2 data-[state=on]:text-ink text-muted">
+          <ToggleGroupItem value="software" className="h-7 rounded-sm px-3 text-xs font-medium data-[state=on]:bg-surface-2 data-[state=on]:text-ink text-muted">
             Software
           </ToggleGroupItem>
-          <ToggleGroupItem value="hardware" className="h-7 rounded-sm px-3 font-mono text-xs data-[state=on]:bg-surface-2 data-[state=on]:text-ink text-muted">
+          <ToggleGroupItem value="hardware" className="h-7 rounded-sm px-3 text-xs font-medium data-[state=on]:bg-surface-2 data-[state=on]:text-ink text-muted">
             + Hardware
           </ToggleGroupItem>
         </ToggleGroup>
-        <p className="font-mono text-xs uppercase tracking-[0.16em] text-gold">Stripe Projects × CreateOS Sandbox</p>
+        <p className="text-xs font-medium uppercase tracking-[0.14em] text-gold">Stripe Projects × CreateOS Sandbox</p>
         <h1 className="mt-4 font-display text-[clamp(2.25rem,5.2vw,3.75rem)] font-extrabold leading-[1.05] tracking-tight text-ink">
           Building big <span className="text-gold whitespace-nowrap">under budget.</span>
         </h1>
@@ -253,10 +254,10 @@ function CatalogRow() {
   return (
     <section className="border-y border-line bg-surface/40">
       <div className="mx-auto max-w-6xl px-6 py-10 text-center">
-        <p className="mb-5 font-mono text-xs uppercase tracking-[0.14em] text-muted">Buys from the Stripe Projects catalog</p>
+        <p className="mb-5 text-xs font-medium uppercase tracking-[0.12em] text-muted">Buys from the Stripe Projects catalog</p>
         <div className="flex flex-wrap justify-center gap-x-10 gap-y-3">
           {CATALOG_PROVIDERS.map((p) => (
-            <span key={p} className="font-mono text-sm text-muted">
+            <span key={p} className="text-sm font-medium text-muted">
               {p}
             </span>
           ))}
@@ -280,7 +281,7 @@ function SectionHead({
   const light = tone === 'light'
   return (
     <div className="mb-10 grid gap-3 sm:grid-cols-[200px_1fr] sm:gap-6">
-      <span className={cn('font-mono text-xs uppercase tracking-[0.14em] sm:pt-1', light ? 'text-blue' : 'text-gold')}>
+      <span className={cn('text-xs font-medium uppercase tracking-[0.12em] sm:pt-1', light ? 'text-blue' : 'text-gold')}>
         {eyebrow}
       </span>
       <div>
@@ -368,10 +369,10 @@ function HowItWorks() {
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-line bg-surface text-blue-soft">
                   <s.icon className="h-5 w-5" strokeWidth={1.75} />
                 </div>
-                <span className="font-mono text-xs text-muted/70">{s.n}</span>
+                <span className="text-xs tabular-nums text-muted/70">{s.n}</span>
               </div>
-              <h3 className="font-display text-lg font-semibold text-ink">{s.title}</h3>
-              <p className="font-mono text-[13px] leading-relaxed text-muted">{s.detail}</p>
+              <h3 className="text-base font-semibold text-ink">{s.title}</h3>
+              <p className="text-sm leading-relaxed text-muted">{s.detail}</p>
             </div>
           ))}
         </div>
@@ -398,7 +399,7 @@ function Trust() {
                   <t.icon className="h-4.5 w-4.5" strokeWidth={1.75} />
                 </div>
                 <div>
-                  <h3 className="font-display text-base font-semibold text-ink">{t.title}</h3>
+                  <h3 className="text-base font-semibold text-ink">{t.title}</h3>
                   <p className="mt-1 text-sm text-muted">{t.body}</p>
                 </div>
               </CardContent>
@@ -465,8 +466,7 @@ export default function Landing() {
         <NavBar />
         <Hero />
         <CatalogRow />
-        <IterationStrip />
-        <FigureSection />
+        <IterationStory />
         <HowItWorks />
         <Trust />
         <FinalCta />

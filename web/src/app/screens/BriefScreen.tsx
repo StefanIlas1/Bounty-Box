@@ -38,7 +38,7 @@ export function BriefScreen({
   startError?: string | null
   initialHardware?: boolean
 }) {
-  const [prompt, setPrompt] = useState('')
+  const [prompt, setPrompt] = useState(EXAMPLES[0])
   const [budget, setBudget] = useState(30)
   const [users, setUsers] = useState(1000)
   const [concurrency, setConcurrency] = useState(DEFAULT_CONCURRENCY)

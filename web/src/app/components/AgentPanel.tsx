@@ -45,7 +45,7 @@ export function AgentPanel({ mode, state, demo, live }: { mode: Mode; state: Run
         </div>
         <div className="flex items-center gap-2">
           {active && <AgentChatIndicator size="sm" style={{ backgroundColor: color }} />}
-          <span className="font-display text-sm font-semibold text-ink">{PHASE_LABEL[state.phase]}</span>
+          <span className="text-sm font-semibold text-ink">{PHASE_LABEL[state.phase]}</span>
         </div>
         {state.currentStackId && (
           <span className="font-mono text-xs text-muted">stack {state.currentStackId}</span>
@@ -72,7 +72,7 @@ export function AgentPanel({ mode, state, demo, live }: { mode: Mode; state: Run
                 <Message key={entry.id} align="start">
                   <MessageContent>
                     <MessageHeader>Agent</MessageHeader>
-                    <Bubble variant="tinted">
+                    <Bubble variant="secondary" className="max-w-[92%]">
                       <BubbleContent>{entry.text}</BubbleContent>
                     </Bubble>
                   </MessageContent>
@@ -90,7 +90,7 @@ export function AgentPanel({ mode, state, demo, live }: { mode: Mode; state: Run
                 )}
               >
                 <div className="mb-1 flex items-center justify-between">
-                  <span className={cn('font-display text-[13px] font-semibold', fix.resolved ? 'text-blue' : 'text-bad')}>
+                  <span className={cn('text-[13px] font-semibold', fix.resolved ? 'text-blue' : 'text-bad')}>
                     Self-fix · attempt {fix.attempt} {fix.resolved ? '· resolved' : ''}
                   </span>
                   <span className="font-mono text-[10px] text-muted">stack {fix.stackId}</span>

@@ -23,7 +23,7 @@ export function LiveUrlCard({ state }: { state: RunState }) {
     <Card className="relative border-blue/30 bg-surface">
       <BorderBeam size={60} duration={5} colorFrom="#635bff" colorTo="#e9b949" />
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 font-display text-base">
+        <CardTitle className="flex items-center gap-2 text-base">
           <Rocket className="size-4 text-blue" /> Live URL
         </CardTitle>
       </CardHeader>

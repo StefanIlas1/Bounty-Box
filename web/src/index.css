@@ -59,7 +59,7 @@ body { margin: 0; -webkit-font-smoothing: antialiased; }
 ::selection { background: var(--color-blue); color: white; }
 
 @theme inline {
-  --font-heading: "Fraunces", Georgia, serif;
+  --font-heading: "Geist Variable", "Geist", system-ui, sans-serif;
   --font-sans: 'Geist Variable', sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);

@@ -29,7 +29,7 @@ export function ComparisonsTab({ state }: { state: RunState }) {
             const bestUsers = s.loadResults.reduce((max, r) => (r.passed && r.users > max ? r.users : max), 0)
             return (
               <TableRow key={s.stack.id}>
-                <TableCell className="truncate font-display font-semibold">
+                <TableCell className="truncate font-semibold">
                   {s.stack.id} <span className="font-sans text-xs text-muted">{s.stack.label}</span>
                 </TableCell>
                 <TableCell

@@ -8,7 +8,7 @@ export function BomCard({ state }: { state: RunState }) {
   return (
     <Card className="border-line bg-surface">
       <CardHeader>
-        <CardTitle className="flex items-center justify-between font-display text-base">
+        <CardTitle className="flex items-center justify-between text-base">
           <span className="flex items-center gap-2">
             <Cpu className="size-4 text-gold" /> Bill of materials
           </span>
@@ -28,7 +28,7 @@ export function BomCard({ state }: { state: RunState }) {
         ))}
         <div className="mt-1 flex items-center justify-between border-t border-line pt-2">
           <span className="text-xs text-muted">Subtotal (one-time)</span>
-          <span className="font-display text-base font-semibold text-ink">${state.bomOneTimeCostUsd.toFixed(2)}</span>
+          <span className="text-base font-semibold text-ink">${state.bomOneTimeCostUsd.toFixed(2)}</span>
         </div>
       </CardContent>
     </Card>

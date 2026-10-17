@@ -19,7 +19,7 @@ export function CartCard({ state, onApprove, approving }: { state: RunState; onA
     <Card className="relative border-line bg-surface">
       {canApprove && <BorderBeam size={60} duration={5} colorFrom="#e9b949" colorTo="#635bff" />}
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 font-display text-base">
+        <CardTitle className="flex items-center gap-2 text-base">
           <ShoppingCart className="size-4 text-gold" /> Cart
         </CardTitle>
       </CardHeader>
@@ -38,7 +38,7 @@ export function CartCard({ state, onApprove, approving }: { state: RunState; onA
             </div>
             <div className="flex flex-col gap-1.5">
               <div className="flex items-baseline justify-between">
-                <span className="font-display text-lg font-semibold text-ink">${cost.toFixed(2)}<span className="text-xs text-muted">/mo</span></span>
+                <span className="text-lg font-semibold text-ink">${cost.toFixed(2)}<span className="text-xs text-muted">/mo</span></span>
                 <span className="text-xs text-muted">budget ${budget}/mo</span>
               </div>
               <Progress value={pct} className={cn(overBudget ? '[&>[data-slot=progress-indicator]]:bg-bad' : '[&>[data-slot=progress-indicator]]:bg-blue')} />
