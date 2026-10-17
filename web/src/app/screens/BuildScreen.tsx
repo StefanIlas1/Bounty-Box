@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Code2, Terminal as TerminalIcon, Columns3, ListChecks } from 'lucide-react'
+import { Code2, Terminal as TerminalIcon, Columns3, ListChecks, ArrowRight, Eye } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { AgentPanel } from '../components/AgentPanel'
 import { CodeTab } from '../components/CodeTab'
@@ -39,6 +39,34 @@ function suggestTab(state: RunState): TabKey | null {
       return null
   }
 }
+
+const TAB_LABEL: Record<TabKey, string> = { code: 'Code', terminal: 'Terminal', comparisons: 'Comparisons', decisions: 'Decisions' }
+
+// Plain-language pointer to where the interesting thing is happening right now.
+function guide(state: RunState): { text: string; tab?: TabKey; panel?: 'sandbox' | 'cart' | 'live' } {
+  switch (state.phase) {
+    case 'idle':
+    case 'planning':
+      return { text: 'The agent is reading your brief and proposing stacks. Its reasoning streams in the left panel.', tab: 'decisions' }
+    case 'writing':
+      return { text: 'The agent is writing real code for each stack. Open Code to watch the files appear.', tab: 'code' }
+    case 'testing':
+      return { text: 'The code is running inside a CreateOS sandbox. Terminal shows the commands; the Sandbox card shows the box itself.', tab: 'terminal', panel: 'sandbox' }
+    case 'fixing':
+      return { text: 'A test failed, so the agent is fixing its own code. Compare the error and the patch in Code.', tab: 'code' }
+    case 'awaiting_approval':
+      return { text: 'Every stack has been measured. Check Comparisons, then approve the cart on the right to buy it through Stripe Projects.', tab: 'comparisons', panel: 'cart' }
+    case 'buying':
+      return { text: 'Stripe Projects is provisioning the chosen services. Follow it in the Provisioning card.', panel: 'cart' }
+    case 'live':
+    case 'finished':
+      return { text: 'Done. Open the live URL on the right, or review why each choice was made in Decisions.', tab: 'decisions', panel: 'live' }
+    default:
+      return { text: 'Something went wrong. Terminal has the details.', tab: 'terminal' }
+  }
+}
+
+const PANEL_ID = { sandbox: 'panel-sandbox', cart: 'panel-cart', live: 'panel-live' } as const
 
 interface BuildScreenProps {
   mode: Mode
@@ -81,7 +109,32 @@ export function BuildScreen({ mode, state, onApprove, approving, demoControls, l
     setTab(t)
   }
 
+  const g = guide(state)
+  const flashPanel = (key: keyof typeof PANEL_ID) => {
+    const el = document.getElementById(PANEL_ID[key])
+    if (!el) return
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    el.classList.remove('bb-flash')
+    void el.offsetWidth
+    el.classList.add('bb-flash')
+  }
+
   return (
+    <div className="flex min-h-0 flex-1 flex-col">
+    <div role="status" aria-live="polite" className="mx-4 mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 rounded border border-blue/40 bg-blue/10 px-4 py-2.5 text-sm text-ink">
+      <Eye className="size-4 shrink-0 text-blue-soft" aria-hidden="true" />
+      <span className="min-w-0 flex-1">{g.text}</span>
+      {g.tab && g.tab !== tab && (
+        <button type="button" onClick={() => pick(g.tab!)} className="inline-flex items-center gap-1 rounded border border-blue/50 px-2.5 py-1 text-xs font-medium text-blue-soft transition-colors hover:bg-blue/20 focus-visible:outline-2 focus-visible:outline-blue">
+          Open {TAB_LABEL[g.tab]} <ArrowRight className="size-3" aria-hidden="true" />
+        </button>
+      )}
+      {g.panel && (
+        <button type="button" onClick={() => flashPanel(g.panel!)} className="inline-flex items-center gap-1 rounded border border-gold/50 px-2.5 py-1 text-xs font-medium text-gold transition-colors hover:bg-gold/15 focus-visible:outline-2 focus-visible:outline-gold">
+          Show {g.panel === 'sandbox' ? 'sandbox' : g.panel === 'cart' ? 'cart' : 'live URL'} <ArrowRight className="size-3" aria-hidden="true" />
+        </button>
+      )}
+    </div>
     <div className="grid min-h-0 flex-1 grid-cols-[300px_minmax(0,1fr)_340px] gap-4 p-4">
       <div className="min-h-0 min-w-0">
         <AgentPanel mode={mode} state={state} demo={demoControls} live={liveControls} />
@@ -90,10 +143,10 @@ export function BuildScreen({ mode, state, onApprove, approving, demoControls, l
       <div className="flex min-h-0 min-w-0 flex-col rounded bg-surface p-3">
         <Tabs value={tab} onValueChange={(v) => pick(v as TabKey)} className="flex min-h-0 min-w-0 flex-1 flex-col">
           <TabsList className="self-start">
-            <TabsTrigger value="code" className="gap-1.5"><Code2 className="size-3.5" /> Code</TabsTrigger>
-            <TabsTrigger value="terminal" className="gap-1.5"><TerminalIcon className="size-3.5" /> Terminal</TabsTrigger>
-            <TabsTrigger value="comparisons" className="gap-1.5"><Columns3 className="size-3.5" /> Comparisons</TabsTrigger>
-            <TabsTrigger value="decisions" className="gap-1.5"><ListChecks className="size-3.5" /> Decisions</TabsTrigger>
+            <TabsTrigger value="code" className="gap-1.5"><Code2 className="size-3.5" /> Code{g.tab === "code" && tab !== "code" && <span className="bb-ping ml-0.5 size-1.5 rounded-full bg-blue-soft" aria-label="activity here" />}</TabsTrigger>
+            <TabsTrigger value="terminal" className="gap-1.5"><TerminalIcon className="size-3.5" /> Terminal{g.tab === "terminal" && tab !== "terminal" && <span className="bb-ping ml-0.5 size-1.5 rounded-full bg-blue-soft" aria-label="activity here" />}</TabsTrigger>
+            <TabsTrigger value="comparisons" className="gap-1.5"><Columns3 className="size-3.5" /> Comparisons{g.tab === "comparisons" && tab !== "comparisons" && <span className="bb-ping ml-0.5 size-1.5 rounded-full bg-blue-soft" aria-label="activity here" />}</TabsTrigger>
+            <TabsTrigger value="decisions" className="gap-1.5"><ListChecks className="size-3.5" /> Decisions{g.tab === "decisions" && tab !== "decisions" && <span className="bb-ping ml-0.5 size-1.5 rounded-full bg-blue-soft" aria-label="activity here" />}</TabsTrigger>
           </TabsList>
           <TabsContent value="code" className="mt-3 min-h-0 min-w-0 flex-1"><CodeTab state={state} mode={mode} /></TabsContent>
           <TabsContent value="terminal" className="mt-3 min-h-0 min-w-0 flex-1"><TerminalTab state={state} /></TabsContent>
@@ -103,12 +156,15 @@ export function BuildScreen({ mode, state, onApprove, approving, demoControls, l
       </div>
 
       <div className="flex min-h-0 min-w-0 flex-col gap-3 overflow-y-auto pr-0.5 [&>*]:shrink-0">
-        {recorded ? <div className="rounded bg-surface p-4 text-sm"><h2 className="font-semibold">Verified sandbox run</h2><p className="mt-2 text-muted">Executed in CreateOS with Neon Postgres. Both trial sandboxes were destroyed after testing.</p><p className="mt-2">29 requests · 384 ms p95 · 0 errors</p><p className="mt-2 text-muted">2 concurrent requests for 5.34 seconds. Target users in the table are a planning input, not verified capacity.</p><p className="mt-2 text-muted">Recorded October 17, 2026. Approval and permanent deployment are not available in this replay.</p></div> : <SandboxCard state={state} />}
-        <CartCard state={state} onApprove={onApprove} approving={approving} recorded={recorded} />
-        <BomCard state={state} />
-        <ProvisioningCard state={state} />
-        <LiveUrlCard state={state} />
+        <div id="panel-sandbox" className="rounded">{recorded ? <div className="rounded bg-surface p-4 text-sm"><h2 className="font-semibold">Verified sandbox run</h2><p className="mt-2 text-muted">Executed in CreateOS with Neon Postgres. Both trial sandboxes were destroyed after testing.</p><p className="mt-2">29 requests · 384 ms p95 · 0 errors</p><p className="mt-2 text-muted">2 concurrent requests for 5.34 seconds. Target users in the table are a planning input, not verified capacity.</p><p className="mt-2 text-muted">Recorded October 17, 2026. Approval and permanent deployment are not available in this replay.</p></div> : <SandboxCard state={state} />}</div>
+        <div id="panel-cart" className="flex flex-col gap-3 rounded">
+          <CartCard state={state} onApprove={onApprove} approving={approving} recorded={recorded} />
+          <BomCard state={state} />
+          <ProvisioningCard state={state} />
+        </div>
+        <div id="panel-live" className="rounded"><LiveUrlCard state={state} /></div>
       </div>
+    </div>
     </div>
   )
 }

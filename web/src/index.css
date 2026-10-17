@@ -127,3 +127,9 @@ body { margin: 0; -webkit-font-smoothing: antialiased; }
     scroll-behavior: auto !important;
   }
 }
+
+/* Guide: pulse a dot on the tab where things are happening, flash a panel when the guide points at it. */
+@keyframes bb-ping { 0%, 100% { opacity: 1; transform: scale(1) } 50% { opacity: .35; transform: scale(1.6) } }
+.bb-ping { display: inline-block; animation: bb-ping 1.4s ease-in-out infinite; }
+@keyframes bb-flash { 0% { box-shadow: 0 0 0 0 var(--color-gold) } 30% { box-shadow: 0 0 0 3px var(--color-gold) } 100% { box-shadow: 0 0 0 0 transparent } }
+.bb-flash { animation: bb-flash 1.2s var(--ease-out); }
