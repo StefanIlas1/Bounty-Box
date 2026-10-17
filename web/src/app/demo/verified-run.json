@@ -1,0 +1,266 @@
+{
+  "snapshot": {
+    "id": "4074090e-f546-4faf-bdad-125d735db587",
+    "mode": "live",
+    "brief": {
+      "description": "A small email waitlist for Bounty-Box. Persist normalized unique emails in Neon Postgres.",
+      "monthlyBudgetUsd": 30,
+      "targetUsers": 100,
+      "load": {
+        "concurrency": 2,
+        "durationSeconds": 5,
+        "maxP95Ms": 2000,
+        "maxErrorRate": 0.01
+      }
+    },
+    "status": "awaiting_approval",
+    "candidates": [
+      {
+        "id": "createos-neon",
+        "name": "CreateOS + Neon Postgres",
+        "description": "Waitlist application with operator-owned isolated trial database; production deployment is separate.",
+        "services": [
+          {
+            "id": "createos/project",
+            "name": "createos/project",
+            "role": "host",
+            "monthlyCostUsd": 0
+          },
+          {
+            "id": "neon/postgres",
+            "name": "neon/postgres",
+            "role": "database",
+            "monthlyCostUsd": 0
+          }
+        ],
+        "estimatedMonthlyCostUsd": 0,
+        "costAssumptions": [
+          "Stripe Projects reports this account's CreateOS free plan and project complete; base subscription price is zero.",
+          "Hackathon trial only: existing credits fund sandbox runtime. This is not an unlimited hosting or production capacity quote.",
+          "Live demo is capped at 5 concurrent requests for 30 seconds; production deployment and overages require a separate estimate.",
+          "Quote verified 2026-10-17T22:30:00.000Z; expires 2026-10-18T22:30:00.000Z.",
+          "Stripe Projects provisioned a dedicated Neon free plan and Postgres database for this trial; no paid upgrade enabled.",
+          "Synthetic demo records only, within free-plan usage limits. Target users are a demo scope cap, not a throughput guarantee.",
+          "Quote verified 2026-10-17T22:30:00.000Z; expires 2026-10-18T22:30:00.000Z."
+        ],
+        "pricingSources": [
+          "https://projects.dev/llms.txt",
+          "https://neon.com/pricing"
+        ],
+        "partner": false,
+        "mode": "live",
+        "requiredEnvNames": [
+          "NEON_DATABASE_URL"
+        ]
+      }
+    ],
+    "attempts": [
+      {
+        "number": 1,
+        "stack": {
+          "id": "createos-neon",
+          "name": "CreateOS + Neon Postgres",
+          "description": "Waitlist application with operator-owned isolated trial database; production deployment is separate.",
+          "services": [
+            {
+              "id": "createos/project",
+              "name": "createos/project",
+              "role": "host",
+              "monthlyCostUsd": 0
+            },
+            {
+              "id": "neon/postgres",
+              "name": "neon/postgres",
+              "role": "database",
+              "monthlyCostUsd": 0
+            }
+          ],
+          "estimatedMonthlyCostUsd": 0,
+          "costAssumptions": [
+            "Stripe Projects reports this account's CreateOS free plan and project complete; base subscription price is zero.",
+            "Hackathon trial only: existing credits fund sandbox runtime. This is not an unlimited hosting or production capacity quote.",
+            "Live demo is capped at 5 concurrent requests for 30 seconds; production deployment and overages require a separate estimate.",
+            "Quote verified 2026-10-17T22:30:00.000Z; expires 2026-10-18T22:30:00.000Z.",
+            "Stripe Projects provisioned a dedicated Neon free plan and Postgres database for this trial; no paid upgrade enabled.",
+            "Synthetic demo records only, within free-plan usage limits. Target users are a demo scope cap, not a throughput guarantee.",
+            "Quote verified 2026-10-17T22:30:00.000Z; expires 2026-10-18T22:30:00.000Z."
+          ],
+          "pricingSources": [
+            "https://projects.dev/llms.txt",
+            "https://neon.com/pricing"
+          ],
+          "partner": false,
+          "mode": "live",
+          "requiredEnvNames": [
+            "NEON_DATABASE_URL"
+          ]
+        },
+        "revision": 1,
+        "result": {
+          "passed": false,
+          "requests": 35,
+          "throughputRps": 3.5299171214046923,
+          "p95Ms": 5001.109541999991,
+          "errorRate": 0.05714285714285714,
+          "durationSeconds": 9.915246958000003,
+          "logs": [
+            "workspace: exit 0. Process output withheld.",
+            "database connectivity: exit 0. Process output withheld.",
+            "Application started as a managed process. Process output withheld.",
+            "generated diagnostic (non-authoritative): exit 0. Process output withheld.",
+            "Independent worker benchmark completed. Sandbox is destroyed after measurement."
+          ],
+          "mode": "live",
+          "failureReason": "Independent benchmark did not meet acceptance criteria."
+        },
+        "decision": "Independent benchmark did not meet acceptance criteria.; p95 must be at most 2000 ms; Error rate must be at most 0.01. Repair code and retest."
+      },
+      {
+        "number": 2,
+        "stack": {
+          "id": "createos-neon",
+          "name": "CreateOS + Neon Postgres",
+          "description": "Waitlist application with operator-owned isolated trial database; production deployment is separate.",
+          "services": [
+            {
+              "id": "createos/project",
+              "name": "createos/project",
+              "role": "host",
+              "monthlyCostUsd": 0
+            },
+            {
+              "id": "neon/postgres",
+              "name": "neon/postgres",
+              "role": "database",
+              "monthlyCostUsd": 0
+            }
+          ],
+          "estimatedMonthlyCostUsd": 0,
+          "costAssumptions": [
+            "Stripe Projects reports this account's CreateOS free plan and project complete; base subscription price is zero.",
+            "Hackathon trial only: existing credits fund sandbox runtime. This is not an unlimited hosting or production capacity quote.",
+            "Live demo is capped at 5 concurrent requests for 30 seconds; production deployment and overages require a separate estimate.",
+            "Quote verified 2026-10-17T22:30:00.000Z; expires 2026-10-18T22:30:00.000Z.",
+            "Stripe Projects provisioned a dedicated Neon free plan and Postgres database for this trial; no paid upgrade enabled.",
+            "Synthetic demo records only, within free-plan usage limits. Target users are a demo scope cap, not a throughput guarantee.",
+            "Quote verified 2026-10-17T22:30:00.000Z; expires 2026-10-18T22:30:00.000Z."
+          ],
+          "pricingSources": [
+            "https://projects.dev/llms.txt",
+            "https://neon.com/pricing"
+          ],
+          "partner": false,
+          "mode": "live",
+          "requiredEnvNames": [
+            "NEON_DATABASE_URL"
+          ]
+        },
+        "revision": 2,
+        "result": {
+          "passed": true,
+          "requests": 29,
+          "throughputRps": 5.427351234462985,
+          "p95Ms": 383.8284589999821,
+          "errorRate": 0,
+          "durationSeconds": 5.343306291999994,
+          "logs": [
+            "workspace: exit 0. Process output withheld.",
+            "database connectivity: exit 0. Process output withheld.",
+            "Application started as a managed process. Process output withheld.",
+            "generated diagnostic (non-authoritative): exit 0. Process output withheld.",
+            "Independent worker benchmark completed. Sandbox is destroyed after measurement."
+          ],
+          "mode": "live"
+        },
+        "decision": "Passed measured performance criteria within estimated monthly budget."
+      }
+    ],
+    "events": [
+      {
+        "id": 1,
+        "at": "2026-10-17T22:56:20.744Z",
+        "stage": "queued",
+        "message": "Queued live run."
+      },
+      {
+        "id": 2,
+        "at": "2026-10-17T22:56:20.774Z",
+        "stage": "planning",
+        "message": "Comparing candidate stacks against the $30/month estimated budget. Live evidence required."
+      },
+      {
+        "id": 3,
+        "at": "2026-10-17T22:56:20.775Z",
+        "stage": "planning",
+        "message": "1 candidates match the run mode and estimated budget; 0 excluded. Partner offers require a passing non-partner comparison."
+      },
+      {
+        "id": 4,
+        "at": "2026-10-17T22:56:20.775Z",
+        "stage": "generating",
+        "message": "Generating CreateOS + Neon Postgres; attempt 1/3."
+      },
+      {
+        "id": 5,
+        "at": "2026-10-17T22:56:51.546Z",
+        "stage": "testing",
+        "message": "Testing CreateOS + Neon Postgres, generated revision 1."
+      },
+      {
+        "id": 6,
+        "at": "2026-10-17T22:57:16.889Z",
+        "stage": "repairing",
+        "message": "Independent benchmark did not meet acceptance criteria.; p95 must be at most 2000 ms; Error rate must be at most 0.01. Repair code and retest."
+      },
+      {
+        "id": 7,
+        "at": "2026-10-17T22:57:16.889Z",
+        "stage": "repairing",
+        "message": "Repairing CreateOS + Neon Postgres; attempt 2/3."
+      },
+      {
+        "id": 8,
+        "at": "2026-10-17T22:57:48.056Z",
+        "stage": "testing",
+        "message": "Testing CreateOS + Neon Postgres, generated revision 2."
+      },
+      {
+        "id": 9,
+        "at": "2026-10-17T22:58:01.744Z",
+        "stage": "testing",
+        "message": "Passed measured performance criteria within estimated monthly budget."
+      },
+      {
+        "id": 10,
+        "at": "2026-10-17T22:58:01.745Z",
+        "stage": "awaiting_approval",
+        "message": "CreateOS + Neon Postgres passed within the estimated budget. Approval of proposal c20fda18-c72c-4d7e-95f5-f8eefd5162c1 is required before provisioning."
+      }
+    ],
+    "createdAt": "2026-10-17T22:56:20.744Z",
+    "updatedAt": "2026-10-17T22:58:01.745Z"
+  },
+  "files": [
+    {
+      "path": "diagnostic.mjs",
+      "content": "const namespace = process.env.BOUNTYBOX_TRIAL_NAMESPACE;\nlet databaseConfigured = false;\ntry {\n  const url = new URL(process.env.NEON_DATABASE_URL);\n  databaseConfigured = ['postgres:', 'postgresql:'].includes(url.protocol) && url.hostname.endsWith('.neon.tech') && url.hostname.split('.').length >= 4 && url.hostname.startsWith('ep-');\n} catch {}\nconst checks = {\n  nodeSupported: Number(process.versions.node.split('.')[0]) >= 22,\n  databaseConfigured,\n  ingressConfigured: Boolean(process.env.BOUNTYBOX_INGRESS_TOKEN),\n  namespaceValid: typeof namespace === 'string' && /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(namespace)\n};\nconsole.log(JSON.stringify({ diagnosticOnly: true, checks }));\nprocess.exitCode = Object.values(checks).every(Boolean) ? 0 : 1;\n"
+    },
+    {
+      "path": "Dockerfile",
+      "content": "FROM node:22-alpine\nWORKDIR /app\nCOPY package.json package-lock.json ./\nRUN npm ci --omit=dev --ignore-scripts\nCOPY --chown=node:node server.mjs diagnostic.mjs ./\nUSER node\nEXPOSE 3000\nCMD [\"node\", \"server.mjs\"]\n"
+    },
+    {
+      "path": "package-lock.json",
+      "content": "{\n  \"name\": \"bounty-box-waitlist\",\n  \"version\": \"1.0.0\",\n  \"lockfileVersion\": 3,\n  \"requires\": true,\n  \"packages\": {\n    \"\": {\n      \"name\": \"bounty-box-waitlist\",\n      \"version\": \"1.0.0\"\n    }\n  }\n}\n"
+    },
+    {
+      "path": "package.json",
+      "content": "{\n  \"name\": \"bounty-box-waitlist\",\n  \"version\": \"1.0.0\",\n  \"private\": true,\n  \"type\": \"module\",\n  \"engines\": { \"node\": \">=22\" }\n}\n"
+    },
+    {
+      "path": "server.mjs",
+      "content": "import http from 'node:http';\nimport { createHash, timingSafeEqual } from 'node:crypto';\n\nconst token = process.env.BOUNTYBOX_INGRESS_TOKEN;\nconst namespace = process.env.BOUNTYBOX_TRIAL_NAMESPACE;\nconst connection = process.env.NEON_DATABASE_URL;\nif (!token || !connection || !namespace || !/^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(namespace)) {\n  console.error('Required configuration is missing or invalid.');\n  process.exit(1);\n}\nlet endpoint;\ntry {\n  const url = new URL(connection);\n  if (!['postgres:', 'postgresql:'].includes(url.protocol) || !url.hostname.endsWith('.neon.tech')) throw new Error();\n  const labels = url.hostname.split('.');\n  if (labels.length < 4 || !labels[0].startsWith('ep-')) throw new Error();\n  labels[0] = 'api';\n  endpoint = `https://${labels.join('.')}/sql`;\n} catch {\n  console.error('Database configuration is invalid.');\n  process.exit(1);\n}\nconst port = Number(process.env.PORT ?? 3000);\nif (!Number.isInteger(port) || port < 1 || port > 65535) {\n  console.error('Port configuration is invalid.');\n  process.exit(1);\n}\nconst table = `\"waitlist_${createHash('sha256').update(namespace).digest('hex').slice(0, 48)}\"`;\nconst expectedAuth = createHash('sha256').update(`Bearer ${token}`).digest();\n\n// All statements used here are safe to retry, including inserts with ON CONFLICT.\n// Bound both attempts so a stalled database request cannot consume five seconds.\nasync function sql(query, params = [], startup = false) {\n  const deadline = Date.now() + (startup ? 20000 : 1700);\n  for (let attempt = 0; attempt < 2; attempt++) {\n    const remaining = deadline - Date.now();\n    if (remaining <= 0) break;\n    try {\n      const response = await fetch(endpoint, {\n        method: 'POST',\n        redirect: 'error',\n        signal: AbortSignal.timeout(Math.max(1, Math.min(startup ? 10000 : 800, remaining))),\n        headers: {\n          'Neon-Connection-String': connection,\n          'Content-Type': 'application/json',\n          'Neon-Array-Mode': 'true',\n          'Neon-Raw-Text-Output': 'true'\n        },\n        body: JSON.stringify({ query, params })\n      });\n      if (!response.ok) {\n        await response.body?.cancel();\n        if (response.status < 500 && response.status !== 429) break;\n        continue;\n      }\n      const result = await response.json();\n      if (!Array.isArray(result.rows)) break;\n      return result;\n    } catch {\n      // Never expose transport errors, response bodies, or connection details.\n    }\n  }\n  throw new Error('Database request failed');\n}\n\nfunction reply(res, status, value) {\n  res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });\n  res.end(JSON.stringify(value));\n}\n\nasync function readBody(req) {\n  const chunks = [];\n  let size = 0;\n  for await (const chunk of req.iterator({ destroyOnReturn: false })) {\n    size += chunk.length;\n    if (size > 16384) {\n      req.resume();\n      throw Object.assign(new Error('Body too large'), { status: 413 });\n    }\n    chunks.push(chunk);\n  }\n  return Buffer.concat(chunks).toString('utf8');\n}\n\nfunction validEmail(email) {\n  if (email.length > 254) return false;\n  const parts = email.split('@');\n  if (parts.length !== 2) return false;\n  const [local, domain] = parts;\n  if (!local || local.length > 64 || !/^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+$/.test(local)) return false;\n  if (local.startsWith('.') || local.endsWith('.') || local.includes('..')) return false;\n  const labels = domain.split('.');\n  return labels.length >= 2 && labels.every(label => /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(label));\n}\n\ntry {\n  await sql(`CREATE TABLE IF NOT EXISTS ${table} (email TEXT PRIMARY KEY, created_at TIMESTAMPTZ NOT NULL DEFAULT now())`, [], true);\n  await sql(`SELECT COUNT(*) FROM ${table}`, [], true);\n} catch {\n  console.error('Database initialization failed.');\n  process.exit(1);\n}\n\nconst server = http.createServer(async (req, res) => {\n  const suppliedAuth = createHash('sha256').update(req.headers.authorization ?? '').digest();\n  if (!timingSafeEqual(expectedAuth, suppliedAuth)) {\n    req.resume();\n    reply(res, 401, { error: 'Unauthorized' });\n    return;\n  }\n  if (req.headers['content-length'] !== undefined && (!/^\\d+$/.test(req.headers['content-length']) || Number(req.headers['content-length']) > 16384)) {\n    req.resume();\n    reply(res, 413, { error: 'Request body too large' });\n    return;\n  }\n  try {\n    const path = new URL(req.url, 'http://localhost').pathname;\n    const raw = await readBody(req);\n    if (req.method === 'GET' && path === '/health') {\n      reply(res, 200, { ok: true, artifactDigest: process.env.BOUNTYBOX_ARTIFACT_DIGEST });\n    } else if (req.method === 'GET' && path === '/stats') {\n      const result = await sql(`SELECT COUNT(*) FROM ${table}`);\n      const count = Number(result.rows[0][0]);\n      if (!Number.isSafeInteger(count) || count < 0) throw new Error('Invalid count');\n      reply(res, 200, { count });\n    } else if (req.method === 'POST' && path === '/signups') {\n      let body;\n      try { body = JSON.parse(raw); }\n      catch { throw Object.assign(new Error('Invalid JSON'), { status: 400 }); }\n      const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : '';\n      if (!validEmail(email)) {\n        reply(res, 400, { error: 'A valid email is required' });\n        return;\n      }\n      const result = await sql(`INSERT INTO ${table} (email) VALUES ($1) ON CONFLICT (email) DO NOTHING RETURNING email`, [email]);\n      const row = result.rows[0];\n      reply(res, row ? 201 : 200, { email: row ? row[0] : email, created: Boolean(row) });\n    } else {\n      reply(res, 404, { error: 'Not found' });\n    }\n  } catch (error) {\n    if (!res.destroyed && !res.headersSent) {\n      const status = error.status === 413 ? 413 : error.status === 400 ? 400 : 503;\n      reply(res, status, { error: status === 413 ? 'Request body too large' : status === 400 ? 'Invalid JSON' : 'Service unavailable' });\n    }\n  }\n});\nserver.requestTimeout = 10000;\nserver.headersTimeout = 10000;\nserver.keepAliveTimeout = 60000;\nserver.on('error', () => {\n  console.error('HTTP server failed.');\n  process.exit(1);\n});\nserver.listen(port, '0.0.0.0');\nfor (const signal of ['SIGINT', 'SIGTERM']) {\n  process.on(signal, () => {\n    server.close(() => process.exit(0));\n    setTimeout(() => process.exit(0), 10000).unref();\n  });\n}\n"
+    }
+  ],
+  "digest": "1ca61b42c3836c6682d7512ede5405d16ccae2226011c38d723a04679674dae8"
+}

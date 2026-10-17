@@ -5,8 +5,21 @@
   "buildCommand": "npm run build --prefix web",
   "outputDirectory": "web/dist",
   "rewrites": [
-    { "source": "/login", "destination": "/index.html" },
-    { "source": "/saas", "destination": "/index.html" },
-    { "source": "/app/:path*", "destination": "/index.html" }
+    {
+      "source": "/demo",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/saas",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/app/:path*",
+      "destination": "/index.html"
+    }
   ]
 }

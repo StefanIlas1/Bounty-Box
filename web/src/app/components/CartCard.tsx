@@ -6,14 +6,14 @@ import { BorderBeam } from '@/components/ui/border-beam'
 import { cn } from '@/lib/utils'
 import type { RunState } from '../state/reducer'
 
-export function CartCard({ state, onApprove, approving }: { state: RunState; onApprove: () => void; approving?: boolean }) {
+export function CartCard({ state, onApprove, approving, recorded }: { state: RunState; onApprove: () => void; approving?: boolean; recorded?: boolean }) {
   const stackId = state.awaitingApproval?.stackId ?? state.stackOrder.slice().reverse().find((id) => state.stacks[id]?.status === 'passed') ?? state.currentStackId
   const stack = stackId ? state.stacks[stackId] : null
   const budget = state.awaitingApproval?.budgetMonthly ?? state.brief?.budgetMonthly ?? 0
   const cost = state.awaitingApproval?.monthlyCost ?? stack?.monthlyCost ?? (stack ? stack.stack.services.reduce((sum, s) => sum + s.monthlyCost, 0) : 0)
   const pct = budget > 0 ? Math.min(100, (cost / budget) * 100) : 0
   const overBudget = budget > 0 && cost > budget
-  const canApprove = state.phase === 'awaiting_approval' && !approving
+  const canApprove = state.phase === 'awaiting_approval' && !approving && !recorded
 
   return (
     <Card className="relative border-line bg-surface">
@@ -55,9 +55,9 @@ export function CartCard({ state, onApprove, approving }: { state: RunState; onA
       </CardContent>
       <CardFooter className="flex flex-col items-stretch gap-2">
         <Button onClick={onApprove} disabled={!canApprove} className="w-full bg-gold text-on-gold hover:bg-gold/85">
-          {approving ? 'Approving…' : 'Approve'}
+          {recorded ? 'Recorded proposal' : approving ? 'Approving…' : 'Approve'}
         </Button>
-        <p className="text-center text-[11px] text-muted">Nothing is bought until you approve.</p>
+        <p className="text-center text-[11px] text-muted">{recorded ? 'Read-only demo. No purchase or deployment.' : 'Nothing is bought until you approve.'}</p>
       </CardFooter>
     </Card>
   )

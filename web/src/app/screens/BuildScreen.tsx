@@ -44,6 +44,7 @@ interface BuildScreenProps {
   mode: Mode
   state: RunState
   onApprove: () => void
+  recorded?: boolean
   approving?: boolean
   demoControls?: {
     stage: DemoStage
@@ -56,7 +57,7 @@ interface BuildScreenProps {
   liveControls?: { cancel: () => void; canCancel: boolean }
 }
 
-export function BuildScreen({ mode, state, onApprove, approving, demoControls, liveControls }: BuildScreenProps) {
+export function BuildScreen({ mode, state, onApprove, approving, demoControls, liveControls, recorded }: BuildScreenProps) {
   const [tab, setTab] = useState<TabKey>('code')
   const manualRef = useRef(false)
   const prevRunRef = useRef<string | null>(null)
@@ -102,8 +103,8 @@ export function BuildScreen({ mode, state, onApprove, approving, demoControls, l
       </div>
 
       <div className="flex min-h-0 min-w-0 flex-col gap-3 overflow-y-auto pr-0.5 [&>*]:shrink-0">
-        <SandboxCard state={state} />
-        <CartCard state={state} onApprove={onApprove} approving={approving} />
+        {recorded ? <div className="rounded bg-surface p-4 text-sm"><h2 className="font-semibold">Verified sandbox run</h2><p className="mt-2 text-muted">Executed in CreateOS with Neon Postgres. Both trial sandboxes were destroyed after testing.</p><p className="mt-2">29 requests · 384 ms p95 · 0 errors</p><p className="mt-2 text-muted">2 concurrent requests for 5.34 seconds. Target users in the table are a planning input, not verified capacity.</p><p className="mt-2 text-muted">Recorded October 17, 2026. Approval and permanent deployment are not available in this replay.</p></div> : <SandboxCard state={state} />}
+        <CartCard state={state} onApprove={onApprove} approving={approving} recorded={recorded} />
         <BomCard state={state} />
         <ProvisioningCard state={state} />
         <LiveUrlCard state={state} />

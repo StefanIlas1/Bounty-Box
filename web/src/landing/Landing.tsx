@@ -149,7 +149,7 @@ function NavBar() {
 
         <div className="hidden items-center gap-3 lg:flex">
           <Button asChild variant="outline" className={cn(CTA_OUTLINE, 'py-2')}>
-            <Link to="/app?mode=demo">Try the demo</Link>
+            <Link to="/demo">Try the demo</Link>
           </Button>
           <Button asChild className={cn(CTA_GOLD, 'py-2')}>
             <Link to="/app?mode=live">Start a build</Link>
@@ -187,7 +187,7 @@ function NavBar() {
               </a>
               <div className="mt-2 flex flex-col gap-3">
                 <Button asChild variant="outline" className={cn(CTA_OUTLINE, 'justify-center py-2.5')}>
-                  <Link to="/app?mode=demo">Try the demo</Link>
+                  <Link to="/demo">Try the demo</Link>
                 </Button>
                 <Button asChild className={cn(CTA_GOLD, 'justify-center py-2.5')}>
                   <Link to="/app?mode=live">Start a build</Link>
@@ -240,7 +240,7 @@ function Hero() {
             </Link>
           </Button>
           <Button asChild variant="outline" className={CTA_OUTLINE}>
-            <Link to={mode === 'hardware' ? '/app?mode=demo&hardware=1' : '/app?mode=demo'}>
+            <Link to={mode === 'hardware' ? '/demo' : '/demo'}>
               Watch the demo <Play className="h-4 w-4" />
             </Link>
           </Button>
@@ -427,7 +427,7 @@ function FinalCta() {
             </Link>
           </Button>
           <Button asChild variant="outline" className={CTA_OUTLINE}>
-            <Link to="/app?mode=demo">
+            <Link to="/demo">
               Watch the demo <Play className="h-4 w-4" />
             </Link>
           </Button>
