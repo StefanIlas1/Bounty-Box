@@ -9,3 +9,6 @@ node_modules/
 __pycache__/
 *.tsbuildinfo
 !.env.example
+.projects/state.test.json
+.projects/state.local.test.json
+web/dist/

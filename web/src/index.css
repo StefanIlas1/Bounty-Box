@@ -1,0 +1,114 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Brand tokens: mirror of design/tokens.css (source of truth). */
+@theme {
+  /* Oxblood/brown/gold base with Stripe accents (blurple, navy, #f6f9fc paper). No green, no red. */
+  --color-bg: #1e1013;        /* oxblood night: page background */
+  --color-surface: #2a171b;   /* cards */
+  --color-surface-2: #351e23; /* raised / hover */
+  --color-line: #44292d;      /* borders */
+  --color-ink: #f3e7e2;       /* ivory: text */
+  --color-muted: #a68f8c;     /* secondary text */
+  --color-paper: #f6f9fc;     /* light sections */
+  --color-paper-ink: #0a2540; /* text on light sections */
+  --color-gold: #e9b949;      /* gold: primary action */
+  --color-on-gold: #1a1200;
+  --color-navy: #0a2540;      /* Stripe navy: code panels, deep accents */
+  --color-navy-2: #10304f;
+  --color-orange: #e8833a;    /* warm accent */
+  --color-blue: #635bff;      /* Stripe blurple: data, links, focus, pass */
+  --color-blue-soft: #8f89ff;
+  --color-brown: #7a4a2a;     /* chest wood: logo outline, warm surfaces */
+  --color-brown-soft: #a0693f;
+  --color-ok: #8f89ff;        /* pass = blurple (never green) */
+  --color-bad: #f2994a;       /* fail = amber (never red) */
+
+  --font-display: "Fraunces", Georgia, serif;
+  --font-sans: "Geist", system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+
+  --radius-DEFAULT: 6px;
+  --radius-sm: 4px;
+  --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+}
+
+:root {
+  color-scheme: dark;
+  /* shadcn/ui variables mapped to the Bounty-Box brand (single dark theme). */
+  --background: #1e1013; --foreground: #f3e7e2;
+  --card: #2a171b; --card-foreground: #f3e7e2;
+  --popover: #2a171b; --popover-foreground: #f3e7e2;
+  --primary: #e9b949; --primary-foreground: #1a1200;
+  --secondary: #351e23; --secondary-foreground: #f3e7e2;
+  --muted: #351e23; --muted-foreground: #a68f8c;
+  --accent: #351e23; --accent-foreground: #f3e7e2;
+  --destructive: #f2994a;
+  --border: #44292d; --input: #44292d; --ring: #635bff;
+  --chart-1: #635bff; --chart-2: #e9b949; --chart-3: #7a4a2a; --chart-4: #8f89ff; --chart-5: #a68f8c;
+  --radius: 6px;
+  --sidebar: #2a171b; --sidebar-foreground: #f3e7e2; --sidebar-primary: #e9b949; --sidebar-primary-foreground: #1a1200;
+  --sidebar-accent: #351e23; --sidebar-accent-foreground: #f3e7e2; --sidebar-border: #44292d; --sidebar-ring: #635bff;
+}
+html, body { background: var(--color-bg); color: var(--color-ink); font-family: var(--font-sans); }
+body { margin: 0; -webkit-font-smoothing: antialiased; }
+::selection { background: var(--color-blue); color: white; }
+
+@theme inline {
+  --font-heading: "Fraunces", Georgia, serif;
+  --font-sans: 'Geist Variable', sans-serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}

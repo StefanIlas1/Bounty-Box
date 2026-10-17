@@ -1,0 +1,39 @@
+/* Bounty-Box brand tokens (locked 2026-10-17). Source of truth for the MVP UI. */
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap");
+
+:root {
+  /* Palette (v2, 17 Oct): Stripe navy base, blurple data, off-white text; brown + orange-gold accents. No green, no red. */
+  --bb-bg: #0a2540;        /* Stripe navy */
+  --bb-surface: #0f2e4f;
+  --bb-surface-2: #163a60;
+  --bb-line: #24496f;
+  --bb-ink: #f6f9fc;       /* Stripe off-white */
+  --bb-muted: #9fb3c8;
+  --bb-paper: #f6f9fc;     /* light sections */
+  --bb-gold: #f0a93b;      /* orange-gold primary action */
+  --bb-on-gold: #1f1300;
+  --bb-orange: #e8833a;
+  --bb-blue: #635bff;      /* Stripe blurple */
+  --bb-brown: #7a4a2a;     /* logo outline, warm surfaces */
+  --bb-ok: #8f89ff;        /* pass = blurple */
+  --bb-bad: #f2994a;       /* fail = amber */
+
+  /* Type: Fraunces display, Geist body, Geist Mono for logs/numbers */
+  --bb-font-display: "Fraunces", Georgia, serif;
+  --bb-font-body: "Geist", system-ui, sans-serif;
+  --bb-font-mono: "Geist Mono", ui-monospace, monospace;
+
+  /* Shape: 6px neat, 4px for small controls */
+  --bb-radius: 6px;
+  --bb-radius-sm: 4px;
+
+  /* Density: airy */
+  --bb-space-1: 8px; --bb-space-2: 16px; --bb-space-3: 24px;
+  --bb-space-4: 40px; --bb-space-5: 64px; --bb-space-6: 112px;
+
+  /* Motion: springy */
+  --bb-ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+  --bb-dur: 420ms;
+
+  color-scheme: dark;
+}

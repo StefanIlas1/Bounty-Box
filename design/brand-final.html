@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bounty-Box Brand Decisions</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="tokens.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:var(--bb-bg);color:var(--bb-ink);font:16px/1.6 var(--bb-font-body);
+  background-image:radial-gradient(900px 480px at 80% -8%,rgba(99,91,255,.14),transparent 60%),radial-gradient(700px 420px at 0% 30%,rgba(233,185,73,.06),transparent 60%)}
+a{color:var(--bb-blue)}
+.wrap{max-width:1160px;margin:0 auto;padding-inline:24px}
+.mono{font-family:var(--bb-font-mono)}
+.eyebrow{font:500 12px var(--bb-font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--bb-gold)}
+h1,h2,h3{font-family:var(--bb-font-display);font-weight:800;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h2{font-size:clamp(28px,3.4vw,40px);line-height:1.1}
+h3{font-size:20px;font-weight:600}
+p{margin:0}
+.muted{color:var(--bb-muted)}
+
+/* top bar */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:22px;border-bottom:1px solid var(--bb-line);flex-wrap:wrap}
+.status{font:500 12px var(--bb-font-mono);padding:5px 12px;border-radius:99px;border:1px solid var(--bb-line);color:var(--bb-muted)}
+.status b{color:var(--bb-ok);font-weight:500}
+
+/* wordmark */
+.wm{font-family:var(--bb-font-display);font-weight:800;color:var(--bb-ink);-webkit-text-stroke:.035em var(--bb-brown);paint-order:stroke fill;text-shadow:.05em .05em 0 var(--bb-gold);display:inline-flex;align-items:center;white-space:nowrap;line-height:1}
+.wm .kh{width:.42em;height:.62em;margin:0 .06em;flex:none;transform:translateY(.04em)}
+
+section{padding-block:var(--bb-space-6) 0}
+.sec-head{display:grid;grid-template-columns:200px 1fr;gap:24px;align-items:baseline;margin-bottom:var(--bb-space-4)}
+.sec-head .eyebrow{padding-top:6px}
+.sec-head p{max-width:62ch;margin-top:10px;color:var(--bb-muted)}
+@media (max-width:760px){.sec-head{grid-template-columns:1fr;gap:8px}}
+
+.card{background:var(--bb-surface);border:1px solid var(--bb-line);border-radius:var(--bb-radius);padding:var(--bb-space-3)}
+.grid{display:grid;gap:var(--bb-space-2)}
+.locked{display:inline-flex;align-items:center;gap:6px;font:500 11px var(--bb-font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--bb-ok)}
+.locked::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--bb-ok)}
+.deferred{display:inline-flex;align-items:center;gap:6px;font:500 11px var(--bb-font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--bb-blue)}
+.deferred::before{content:"";width:7px;height:7px;border-radius:50%;border:1.5px solid var(--bb-blue)}
+
+/* hero concept (after reference: floating tiles around a centred headline) */
+.hero{position:relative;display:grid;grid-template-columns:1fr minmax(0,700px) 1fr;grid-template-rows:auto auto auto;text-align:center;overflow:hidden;border-bottom:1px solid var(--bb-line);padding-inline:24px}
+.band{grid-column:1/-1;position:relative;height:170px;max-width:1160px;width:100%;justify-self:center}
+.band .tile{position:absolute}
+.band.bottom{margin-top:28px}
+.side{grid-row:2;align-self:center;justify-self:center;position:relative;width:92px;height:92px}
+.side.l{grid-column:1}.side.r{grid-column:3}
+.side .tile{position:absolute}
+.side .swap-tag{position:absolute;top:118px;left:50%;transform:translateX(-50%)}
+.hero-copy{grid-column:2;grid-row:2}
+.hero-copy{position:relative;z-index:2;padding:var(--bb-space-2) 0}
+.hero h1{font-size:clamp(44px,7vw,84px);line-height:1}
+.hero h1 em{font-style:normal;color:var(--bb-gold)}
+.hero p{font-size:19px;color:var(--bb-muted);max-width:56ch;margin:22px auto 0}
+.cta{display:flex;gap:12px;justify-content:center;margin-top:32px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:var(--bb-radius);padding:12px 20px;font:600 15px var(--bb-font-body);text-decoration:none;border:1px solid transparent;transition:transform var(--bb-dur) var(--bb-ease-spring)}
+.btn:hover{transform:translateY(-2px)}
+.btn.gold{background:var(--bb-gold);color:var(--bb-on-gold)}
+.btn.ghost{border-color:var(--bb-line);color:var(--bb-ink)}
+.tile{width:92px;height:92px;border-radius:18px;display:grid;place-items:center;text-align:center;font:600 12px/1.2 var(--bb-font-mono);box-shadow:0 18px 40px rgba(0,0,0,.35);transform:rotate(var(--r));animation:float 7s var(--bb-ease-spring) infinite alternate;animation-delay:var(--d)}
+.tile svg{width:30px;height:30px;display:block;margin:0 auto 6px}
+.tile.swap{outline:2px dashed var(--bb-gold);outline-offset:5px}
+@keyframes float{to{transform:rotate(calc(var(--r) * -.6)) translateY(-14px)}}
+@media (prefers-reduced-motion:reduce){.tile{animation:none}}
+@media (max-width:1180px){.side{display:none}.hero{grid-template-columns:minmax(0,1fr)}.hero-copy{grid-column:1}.band{grid-column:1}}
+@media (max-width:760px){.band{height:120px}.tile{width:64px;height:64px;border-radius:14px;font-size:9px}.tile svg{width:20px;height:20px;margin-bottom:3px}.tile.opt-md{display:none}.band .tile:nth-child(4){left:auto!important;right:6%}}
+.swap-tag{z-index:3;font:500 11px var(--bb-font-mono);background:var(--bb-surface);border:1px solid var(--bb-line);color:var(--bb-ink);padding:5px 9px;border-radius:var(--bb-radius-sm);white-space:nowrap}
+
+/* iteration strip under hero */
+.iter{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--bb-space-2);margin-top:var(--bb-space-4)}
+.iter .card{display:flex;flex-direction:column;gap:6px}
+.iter .n{font:500 11px var(--bb-font-mono);color:var(--bb-muted);letter-spacing:.08em}
+.iter .res{font:500 13px var(--bb-font-mono)}
+.iter .win{border-color:var(--bb-gold);box-shadow:0 0 0 1px var(--bb-gold)}
+@media (max-width:860px){.iter{grid-template-columns:1fr 1fr}}
+
+/* palette */
+.pal{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+.sw{border:1px solid var(--bb-line);border-radius:var(--bb-radius);overflow:hidden;background:var(--bb-surface)}
+.sw i{display:block;height:84px}
+.sw div{padding:10px 12px}
+.sw b{display:block;font-size:14px}
+.sw span{font:12px var(--bb-font-mono);color:var(--bb-muted)}
+
+/* type */
+.type{grid-template-columns:1.3fr 1fr}
+@media (max-width:860px){.type{grid-template-columns:1fr}}
+.spec-xl{font-family:var(--bb-font-display);font-weight:800;font-size:clamp(48px,6vw,72px);line-height:1}
+.scale div{display:flex;align-items:baseline;gap:16px;border-bottom:1px solid var(--bb-line);padding-block:10px}
+.scale .lbl{font:12px var(--bb-font-mono);color:var(--bb-muted);width:92px;flex:none}
+
+/* logo */
+.logos{grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr)}
+@media (max-width:1100px){.logos{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.logos>:first-child{grid-column:1/-1}}
+@media (max-width:600px){.logos{grid-template-columns:minmax(0,1fr)}}
+.logo-stage{overflow:hidden}
+.logo-stage{display:grid;place-items:center;min-height:220px;border-radius:var(--bb-radius)}
+
+/* system tiles */
+.sys{grid-template-columns:repeat(3,1fr)}
+@media (max-width:860px){.sys{grid-template-columns:1fr}}
+.demo-box{height:90px;border:1px dashed var(--bb-line);border-radius:var(--bb-radius);display:flex;align-items:center;gap:12px;padding:12px;margin-top:14px}
+.spring-dot{width:40px;height:40px;border-radius:var(--bb-radius);background:var(--bb-gold);transition:transform var(--bb-dur) var(--bb-ease-spring)}
+.demo-box:hover .spring-dot{transform:translateX(160px)}
+
+/* login */
+.login{display:grid;grid-template-columns:1.25fr 1fr;border:1px solid var(--bb-line);border-radius:var(--bb-radius);overflow:hidden;min-height:440px}
+.login .vis{background:linear-gradient(150deg,#3a2025, #1e1013 60%);position:relative;padding:var(--bb-space-4);display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden}
+.login .vis .big{font-family:var(--bb-font-display);font-weight:800;font-size:clamp(32px,4vw,52px);line-height:1.02;position:relative;z-index:1}
+.login .vis .big em{font-style:normal;color:var(--bb-gold)}
+.login .form{background:var(--bb-surface);padding:var(--bb-space-4);display:flex;flex-direction:column;justify-content:center;gap:14px}
+.in{border:1px solid var(--bb-line);background:var(--bb-bg);border-radius:var(--bb-radius-sm);padding:12px 14px;color:var(--bb-muted);font-size:15px}
+@media (max-width:760px){.login{grid-template-columns:1fr}.login .vis{min-height:220px}.login .vis>svg{display:none}}
+
+/* voice */
+.voice{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.voice .card p.q{font-size:15.5px;margin-top:8px}
+.ctx{font:500 11px var(--bb-font-mono);color:var(--bb-blue);letter-spacing:.06em;text-transform:uppercase}
+
+/* rules */
+.rules{grid-template-columns:repeat(2,1fr)}
+@media (max-width:760px){.rules{grid-template-columns:1fr}}
+.rule{display:flex;gap:14px}
+.rule .x{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:600 14px var(--bb-font-mono)}
+.rule .x.no{background:rgba(242,153,74,.15);color:var(--bb-bad)}
+.rule .x.yes{background:rgba(63,207,142,.15);color:var(--bb-ok)}
+
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--bb-line);vertical-align:top}
+th{font:500 11px var(--bb-font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--bb-muted)}
+.tbl{overflow-x:auto}
+footer{padding-block:var(--bb-space-6) var(--bb-space-5);color:var(--bb-muted);font-size:14px}
+
+/* ---------- feedback panels ---------- */
+.fb{margin-top:var(--bb-space-4);border:1px dashed var(--bb-line);border-radius:var(--bb-radius);padding:var(--bb-space-3);background:rgba(42,23,27,.55)}
+.fb-head{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.fb-head b{font:500 12px var(--bb-font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--bb-blue)}
+.verdict{display:flex;gap:6px;flex-wrap:wrap}
+.verdict button,.fb-actions button,.fb-del,#copyAll,#clearAll{font:500 13px var(--bb-font-body);border:1px solid var(--bb-line);background:transparent;color:var(--bb-ink);border-radius:var(--bb-radius-sm);padding:6px 12px;cursor:pointer}
+.verdict button[aria-pressed="true"][data-v="approve"]{background:var(--bb-ok);border-color:var(--bb-ok);color:#082418}
+.verdict button[aria-pressed="true"][data-v="change"]{background:var(--bb-bad);border-color:var(--bb-bad);color:#2a1300}
+.verdict button[aria-pressed="true"][data-v="question"]{background:var(--bb-blue);border-color:var(--bb-blue);color:#fff}
+.fb textarea{width:100%;min-height:140px;margin-top:14px;resize:vertical;border:1px solid var(--bb-line);background:var(--bb-bg);color:var(--bb-ink);border-radius:var(--bb-radius);padding:14px 16px;font:15px/1.55 var(--bb-font-body)}
+.fb textarea:focus-visible,.fb button:focus-visible{outline:2px solid var(--bb-blue);outline-offset:2px}
+.fb-actions{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.fb-actions .add{background:var(--bb-gold);border-color:var(--bb-gold);color:var(--bb-on-gold);font-weight:600}
+.fb-actions span{font-size:12.5px;color:var(--bb-muted)}
+.fb-list{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.fb-list:empty{display:none}
+.fb-item{display:flex;gap:12px;align-items:flex-start;background:var(--bb-surface);border:1px solid var(--bb-line);border-radius:var(--bb-radius);padding:12px 14px}
+.fb-item p{flex:1;white-space:pre-wrap;overflow-wrap:anywhere}
+.fb-item time{font:12px var(--bb-font-mono);color:var(--bb-muted);white-space:nowrap}
+.fb-del{padding:2px 8px;color:var(--bb-muted)}
+.fb-hero{margin-top:var(--bb-space-4)}
+.export{position:sticky;bottom:0;z-index:20;background:rgba(30,16,19,.94);backdrop-filter:blur(8px);border-top:1px solid var(--bb-line);padding-block:12px calc(12px + env(safe-area-inset-bottom,0px))}
+.export .wrap{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.export .count{font:500 13px var(--bb-font-mono);color:var(--bb-muted);margin-right:auto}
+#copyAll{background:var(--bb-gold);border-color:var(--bb-gold);color:var(--bb-on-gold);font-weight:600}
+#allOut{display:none;width:100%;min-height:200px;margin-top:10px;background:var(--bb-bg);color:var(--bb-ink);border:1px solid var(--bb-line);border-radius:var(--bb-radius);padding:12px;font:13px var(--bb-font-mono)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="bar">
+    <span class="wm" style="font-size:26px">[bounty<svg class="kh" viewBox="0 0 24 36" aria-hidden="true"><circle cx="12" cy="10" r="8" fill="var(--bb-gold)" stroke="var(--bb-brown)" stroke-width="2.4"/><path d="M7.5 15h9l2.6 17H4.9Z" fill="var(--bb-gold)" stroke="var(--bb-brown)" stroke-width="2.4" stroke-linejoin="round"/></svg>box]</span>
+    <span class="status">Brand decisions · <b>locked</b> 17 Oct 2026 · v1</span>
+  </div>
+</div>
+
+<!-- HERO CONCEPT -->
+<header class="hero" id="hero">
+  <div class="band top" aria-hidden="true">
+    <div class="tile" style="left:6%;top:34px;--r:-9deg;--d:0s;background:#e9b949;color:#1a1200"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5.5" rx="7" ry="2.5"/><path d="M5 5.5v13c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-13M5 12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5"/></svg>Postgres</div></div>
+    <div class="tile opt-md" style="left:30%;top:6px;--r:7deg;--d:-1.5s;background:#635bff;color:#fff"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/><circle cx="12" cy="12" r="9"/></svg>Edge host</div></div>
+    <div class="tile opt-md" style="left:56%;top:40px;--r:-6deg;--d:-3s;background:#f3e7e2;color:#140b0d"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Auth</div></div>
+    <div class="tile" style="left:82%;top:10px;--r:11deg;--d:-.8s;background:#2a181c;color:#e9b949;border:1px solid #4a2c30"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>Email</div></div>
+  </div>
+  <div class="side l" aria-hidden="true"><div class="tile" style="left:0;top:0;--r:6deg;--d:-2.2s;background:#7a4a2a;color:#f3e7e2"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h10"/></svg>Queue</div></div></div>
+  <div class="side r" aria-hidden="true"><div class="tile swap" style="left:0;top:0;--r:-12deg;--d:-4s;background:#3fcf8e;color:#082418"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16v12H4zM8 7V4h8v3"/></svg>Redis</div></div><span class="swap-tag">↻ swapped in · p95 140ms</span></div>
+  <div class="hero-copy">
+    <div class="eyebrow">Landing hero · concept 1</div>
+    <h1 style="margin-top:18px">Building big <em>under budget.</em></h1>
+    <p>Describe your app and a monthly budget. Bounty-Box picks the stack, load-tests it in a sandbox, swaps out what fails, then buys it through Stripe Projects and hands you a live URL.</p>
+    <div class="cta"><a class="btn gold" href="#hero">Start a build</a><a class="btn ghost" href="#iteration">Watch a run</a></div>
+  </div>
+  <div class="band bottom" aria-hidden="true">
+    <div class="tile" style="left:8%;top:20px;--r:-14deg;--d:-1s;background:#1f1215;color:#f3e7e2;border:1px solid #3d2629"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 17V7l8-4 8 4v10l-8 4z"/></svg>Storage</div></div>
+    <div class="tile opt-md" style="left:33%;top:46px;--r:9deg;--d:-3.4s;background:#c9a227;color:#1a1200"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg>Search</div></div>
+    <div class="tile opt-md" style="left:58%;top:14px;--r:-7deg;--d:-2.6s;background:#4b44d6;color:#fff"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="4"/></svg>Vector DB</div></div>
+    <div class="tile" style="left:83%;top:40px;--r:13deg;--d:-.3s;background:#f3e7e2;color:#7a4a2a"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Cron</div></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ITERATION DEPTH -->
+  <section id="iteration" style="padding-top:var(--bb-space-5)">
+    <div class="sec-head">
+      <span class="eyebrow">Below the hero</span>
+      <div><h2>Show the depth of the search, simply.</h2>
+      <p>Right under the hero, one run plays out as four cards. The visitor sees that the agent tried, measured, failed, swapped and stayed under budget, without reading any code.</p></div>
+    </div>
+    <div class="iter">
+      <div class="card"><span class="n">ATTEMPT 1</span><b>SQLite + free host</b><span class="res" style="color:var(--bb-bad)">✕ fails at 800 users</span><span class="muted mono" style="font-size:13px">$0/mo</span></div>
+      <div class="card"><span class="n">ATTEMPT 2</span><b>Postgres + VM</b><span class="res" style="color:var(--bb-ok)">✓ 1,000 users · p95 90ms</span><span class="muted mono" style="font-size:13px">$48/mo · over budget</span></div>
+      <div class="card"><span class="n">ATTEMPT 3</span><b>Postgres + edge, no cache</b><span class="res" style="color:var(--bb-bad)">✕ p95 1.4s under load</span><span class="muted mono" style="font-size:13px">$22/mo</span></div>
+      <div class="card win"><span class="n" style="color:var(--bb-gold)">CHOSEN</span><b>Postgres + edge + Redis</b><span class="res" style="color:var(--bb-ok)">✓ 1,000 users · p95 140ms</span><span class="mono" style="font-size:13px">$27.40/mo · $2.60 under</span></div>
+    </div>
+    <p class="muted" style="margin-top:14px;font-size:14px">Example figures. In the product every number comes from a real sandbox run the user can open.</p>
+  </section>
+
+  <!-- LOGO -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">01 · Logo <span class="locked" style="margin-left:6px"></span></span>
+      <div><h2>[bounty-box], with a keyhole for the hyphen.</h2>
+      <p>The brackets make it read like a package name. The keyhole makes the word look like a locked chest. Letters are ivory with a brown outline and a gold drop shadow. At favicon size it becomes just the keyhole.</p></div>
+    </div>
+    <div class="grid logos">
+      <div class="card logo-stage"><span class="wm" style="font-size:clamp(34px,6vw,76px)">[bounty<svg class="kh" viewBox="0 0 24 36" aria-hidden="true"><circle cx="12" cy="10" r="8" fill="var(--bb-gold)" stroke="var(--bb-brown)" stroke-width="2.4"/><path d="M7.5 15h9l2.6 17H4.9Z" fill="var(--bb-gold)" stroke="var(--bb-brown)" stroke-width="2.4" stroke-linejoin="round"/></svg>box]</span></div>
+      <div class="card logo-stage" style="background:#f3e7e2"><span class="wm" style="font-size:clamp(26px,2.6vw,34px);color:#1e1013;-webkit-text-stroke:0;text-shadow:.05em .05em 0 var(--bb-gold)">[bounty<svg class="kh" viewBox="0 0 24 36" aria-hidden="true"><circle cx="12" cy="10" r="8" fill="var(--bb-gold)" stroke="var(--bb-brown)" stroke-width="2.4"/><path d="M7.5 15h9l2.6 17H4.9Z" fill="var(--bb-gold)" stroke="var(--bb-brown)" stroke-width="2.4" stroke-linejoin="round"/></svg>box]</span></div>
+      <div class="card logo-stage" style="gap:14px;display:flex;flex-direction:column;justify-content:center;align-items:center"><div style="display:flex;gap:18px;align-items:flex-end"><img src="favicon.svg" width="64" height="64" alt="Favicon, keyhole mark"><img src="favicon.svg" width="32" height="32" alt=""><img src="favicon.svg" width="16" height="16" alt=""></div><span class="muted mono" style="font-size:12px">favicon · 64 / 32 / 16</span></div>
+    </div>
+  </section>
+
+  <!-- PALETTE -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">02 · Colour <span class="locked" style="margin-left:6px"></span></span>
+      <div><h2>Ruby Lock, with Stripe blue where the red was.</h2>
+      <p>An oxblood night background, gold for actions, and blue for data and links. Red has been removed everywhere: failed tests use amber.</p></div>
+    </div>
+    <div class="grid pal">
+      <div class="sw"><i style="background:#1e1013"></i><div><b>Oxblood night</b><span>#1E1013 · background</span></div></div>
+      <div class="sw"><i style="background:#2a171b"></i><div><b>Surface</b><span>#2A171B · cards</span></div></div>
+      <div class="sw"><i style="background:#44292d"></i><div><b>Line</b><span>#44292D · borders</span></div></div>
+      <div class="sw"><i style="background:#f3e7e2"></i><div><b>Ivory</b><span>#F3E7E2 · text</span></div></div>
+      <div class="sw"><i style="background:#a68f8c"></i><div><b>Muted</b><span>#A68F8C · secondary</span></div></div>
+      <div class="sw"><i style="background:#e9b949"></i><div><b>Gold</b><span>#E9B949 · actions</span></div></div>
+      <div class="sw"><i style="background:#635bff"></i><div><b>Stripe blue</b><span>#635BFF · data, links</span></div></div>
+      <div class="sw"><i style="background:#7a4a2a"></i><div><b>Chest brown</b><span>#7A4A2A · logo outline</span></div></div>
+      <div class="sw"><i style="background:#3fcf8e"></i><div><b>Pass</b><span>#3FCF8E · tests pass</span></div></div>
+      <div class="sw"><i style="background:#f2994a"></i><div><b>Fail</b><span>#F2994A · amber, not red</span></div></div>
+    </div>
+  </section>
+
+  <!-- TYPE -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">03 · Type <span class="locked" style="margin-left:6px"></span></span>
+      <div><h2>Fraunces for headlines, Geist for everything else.</h2>
+      <p>A soft serif brings the treasure feel; Geist and Geist Mono keep the product reading like a dev tool. Mono is for logs, prices and test results.</p></div>
+    </div>
+    <div class="grid type">
+      <div class="card"><div class="spec-xl">Building big under budget.</div><p class="muted" style="margin-top:16px">Fraunces 800 · display</p>
+        <p style="margin-top:24px;font-size:17px;max-width:52ch">Geist 400 · body. Bounty-Box writes the code, runs it in a CreateOS sandbox and fixes what breaks before anything is bought.</p>
+        <p class="mono" style="margin-top:16px;color:var(--bb-ok)">✓ load test · 1,000 users · p95 140ms · $27.40/mo</p></div>
+      <div class="card scale">
+        <div><span class="lbl">Display</span><span style="font:800 40px/1 var(--bb-font-display)">Aa</span><span class="muted mono" style="font-size:12px">clamp 44–84</span></div>
+        <div><span class="lbl">H2</span><span style="font:800 28px/1 var(--bb-font-display)">Section</span><span class="muted mono" style="font-size:12px">28–40</span></div>
+        <div><span class="lbl">H3</span><span style="font:600 20px/1 var(--bb-font-display)">Card title</span><span class="muted mono" style="font-size:12px">20</span></div>
+        <div><span class="lbl">Body</span><span style="font-size:16px">Body copy</span><span class="muted mono" style="font-size:12px">16</span></div>
+        <div><span class="lbl">Mono</span><span class="mono" style="font-size:13px">$27.40/mo</span><span class="muted mono" style="font-size:12px">13</span></div>
+        <div style="border:0"><span class="lbl">Eyebrow</span><span class="eyebrow">Label</span><span class="muted mono" style="font-size:12px">12 caps</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLOGAN -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">04 · Slogan <span class="locked" style="margin-left:6px"></span></span>
+      <div><h2>“Building big under budget.”</h2>
+      <p>This is the one slogan. The liked runners-up become supporting lines in posts, ads and section headers.</p></div>
+    </div>
+    <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))">
+      <div class="card"><span class="ctx">Supporting line</span><h3 style="margin-top:8px">Set the bounty. Get the build.</h3><p class="muted" style="margin-top:6px;font-size:14px">Use for: the CTA section, LinkedIn launch post</p></div>
+      <div class="card"><span class="ctx">Supporting line</span><h3 style="margin-top:8px">X marks the stack.</h3><p class="muted" style="margin-top:6px;font-size:14px">Use for: social graphics, demo video title card</p></div>
+      <div class="card"><span class="ctx">Supporting line</span><h3 style="margin-top:8px">The agent that buys its own infrastructure.</h3><p class="muted" style="margin-top:6px;font-size:14px">Use for: YC one-liner, README, judges' pitch</p></div>
+    </div>
+  </section>
+
+  <!-- SYSTEM -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">05 · System <span class="locked" style="margin-left:6px"></span></span>
+      <div><h2>Airy, neat corners, springy motion.</h2></div>
+    </div>
+    <div class="grid sys">
+      <div class="card"><h3>Density: Airy</h3><p class="muted" style="margin-top:6px">Marketing-page spacing, with Zen moments for the hero and approval screen. Spacing scale 8 / 16 / 24 / 40 / 64 / 112.</p>
+        <div class="demo-box" style="gap:24px"><div style="flex:1;height:100%;border-radius:var(--bb-radius);background:var(--bb-surface-2)"></div><div style="flex:1;height:100%;border-radius:var(--bb-radius);background:var(--bb-surface-2)"></div></div></div>
+      <div class="card"><h3>Corners: 6px</h3><p class="muted" style="margin-top:6px">6px on cards, inputs and buttons. 4px on small controls like tags and inputs inside dense panels.</p>
+        <div class="demo-box"><span class="btn gold" style="padding:8px 14px">Approve</span><span class="btn ghost" style="padding:8px 14px">Edit stack</span></div></div>
+      <div class="card"><h3>Motion: Springy</h3><p class="muted" style="margin-top:6px">A slight overshoot on cards, toasts and stack swaps. 420ms. Hover the box.</p>
+        <div class="demo-box"><div class="spring-dot"></div></div></div>
+    </div>
+  </section>
+
+  <!-- LOGIN -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">06 · Login <span class="locked" style="margin-left:6px"></span></span>
+      <div><h2>Full-bleed visual on the left, a short form on the right.</h2>
+      <p>The visual side carries the slogan and a faint chest motif. The form is GitHub first, then an email magic link.</p></div>
+    </div>
+    <div class="login">
+      <div class="vis">
+        <svg viewBox="0 0 200 180" aria-hidden="true" style="position:absolute;right:-30px;top:-20px;width:46%;opacity:.16"><path d="M20 80h160v84a6 6 0 0 1-6 6H26a6 6 0 0 1-6-6Z" fill="none" stroke="#e9b949" stroke-width="3"/><path d="M20 80V60a80 46 0 0 1 160 0v20" fill="none" stroke="#e9b949" stroke-width="3"/><circle cx="100" cy="100" r="9" fill="#e9b949"/><path d="M95 106h10l3 22H92Z" fill="#e9b949"/></svg>
+        <div class="big">Building big<br><em>under budget.</em></div>
+        <p class="muted" style="margin-top:14px;position:relative">Your last run: waitlist app · live · $27.40/mo</p>
+      </div>
+      <div class="form">
+        <span class="wm" style="font-size:24px">[bounty<svg class="kh" viewBox="0 0 24 36" aria-hidden="true"><circle cx="12" cy="10" r="8" fill="var(--bb-gold)" stroke="var(--bb-brown)" stroke-width="2.4"/><path d="M7.5 15h9l2.6 17H4.9Z" fill="var(--bb-gold)" stroke="var(--bb-brown)" stroke-width="2.4" stroke-linejoin="round"/></svg>box]</span>
+        <h3 style="font-size:26px;margin-top:8px">Sign in</h3>
+        <span class="btn gold" style="justify-content:center">Continue with GitHub</span>
+        <span class="muted" style="text-align:center;font-size:13px">or</span>
+        <div class="in">you@team.dev</div>
+        <span class="btn ghost" style="justify-content:center">Email me a sign-in link</span>
+        <p class="muted" style="font-size:13px">Nothing is bought until you approve the stack.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- VOICE -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">07 · Voice <span class="locked" style="margin-left:6px"></span></span>
+      <div><h2>Precise in the product, a little adventurous in marketing.</h2>
+      <p>Inside the app the agent talks like an accountant, an engineer or a procurement officer: numbers first, no hype. Marketing can borrow the bounty-hunter and map-reader voices.</p></div>
+    </div>
+    <div class="grid voice">
+      <div class="card"><span class="ctx">In app · accountant</span><p class="q">Stack B costs $4.10/mo more but survives launch traffic. Still $2.60 under budget.</p></div>
+      <div class="card"><span class="ctx">In app · calm engineer</span><p class="q">Stack A showed strain at 800 users. Stack B is under test now.</p></div>
+      <div class="card"><span class="ctx">In app · procurement</span><p class="q">Option A rejected: capacity below requirement. Requesting a quote for Option B.</p></div>
+      <div class="card"><span class="ctx">Marketing · bounty hunter</span><p class="q">Your database couldn't hold 800 users. We put a bounty on a better one.</p></div>
+      <div class="card"><span class="ctx">Marketing · map-reader</span><p class="q">Dead end at 800 users. Charting a new route through Stack B.</p></div>
+    </div>
+  </section>
+
+  <!-- BUILD SCREEN -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">08 · Build screen <span class="deferred" style="margin-left:6px">Next iteration</span></span>
+      <div><h2>Requirements are set. The layout comes next.</h2>
+      <p>The final layout is deferred. These are the requirements it must meet, taken from the liked options: shopping cart, log + receipt, single narrative, and code · terminal · cost.</p></div>
+    </div>
+    <div class="grid rules">
+      <div class="card rule"><span class="x yes">✓</span><div><h3>Inspect the code</h3><p class="muted">Every file the agent wrote can be opened and read, along with the terminal output that tested it.</p></div></div>
+      <div class="card rule"><span class="x yes">✓</span><div><h3>See every decision</h3><p class="muted">Each infra choice shows the requirement it served (users, latency, budget) and the alternatives it beat.</p></div></div>
+      <div class="card rule"><span class="x yes">✓</span><div><h3>Show the comparisons</h3><p class="muted">Side-by-side test results for every stack tried, including the ones that failed.</p></div></div>
+      <div class="card rule"><span class="x yes">✓</span><div><h3>Cart at the end</h3><p class="muted">The final stack reads as a cart with one total and one Approve button.</p></div></div>
+      <div class="card rule"><span class="x no">✕</span><div><h3>Never expose partner pricing</h3><p class="muted">Show the user's total and why the pick is best. Never show a vendor's discounted partner rate.</p></div></div>
+      <div class="card rule"><span class="x no">✕</span><div><h3>Never make a claim that can't be checked</h3><p class="muted">Every "fastest" or "cheapest" links to the sandbox run that measured it. Judges and users will fact-check.</p></div></div>
+    </div>
+  </section>
+
+  <!-- DECISION LOG -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">Decision log</span>
+      <div><h2>Everything in one table.</h2></div>
+    </div>
+    <div class="tbl card" style="padding:0 var(--bb-space-2)">
+      <table>
+        <thead><tr><th>Area</th><th>Decision</th><th>Status</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Palette</td><td>Ruby Lock base, red swapped for Stripe blue #635BFF</td><td><span class="locked">Locked</span></td><td class="muted">Emerald Vault kept as the alternate. No red anywhere; no gold on pure black.</td></tr>
+          <tr><td>Fonts</td><td>Fraunces + Geist (+ Geist Mono)</td><td><span class="locked">Locked</span></td><td class="muted">Mono for logs, prices, test results</td></tr>
+          <tr><td>Slogan</td><td>Building big under budget.</td><td><span class="locked">Locked</span></td><td class="muted">Three supporting lines for marketing</td></tr>
+          <tr><td>Logo</td><td>[bounty-box], keyhole as the hyphen</td><td><span class="locked">Locked</span></td><td class="muted">Brown outline, gold shadow; favicon is the keyhole alone</td></tr>
+          <tr><td>Density</td><td>Airy</td><td><span class="locked">Locked</span></td><td class="muted">Zen for hero and approval</td></tr>
+          <tr><td>Corners</td><td>6px</td><td><span class="locked">Locked</span></td><td class="muted">4px for small controls</td></tr>
+          <tr><td>Login</td><td>Full-bleed visual</td><td><span class="locked">Locked</span></td><td class="muted">GitHub first, magic link second</td></tr>
+          <tr><td>Motion</td><td>Springy, 420ms</td><td><span class="locked">Locked</span></td><td class="muted"></td></tr>
+          <tr><td>Voice</td><td>Accountant / engineer / procurement in app; bounty hunter / map-reader in marketing</td><td><span class="locked">Locked</span></td><td class="muted"></td></tr>
+          <tr><td>Landing hero</td><td>Floating service tiles around the headline (concept 1, above)</td><td><span class="deferred">Draft</span></td><td class="muted">Based on the reference screenshot. Open to more creative takes.</td></tr>
+          <tr><td>Build screen</td><td>Requirements set, layout open</td><td><span class="deferred">Next iteration</span></td><td class="muted">See section 08</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section data-fb="General notes">
+    <div class="sec-head">
+      <span class="eyebrow">Open notes</span>
+      <div><h2>Anything else.</h2><p>Ideas that don't belong to one section: new directions, things to cut, questions for each other.</p></div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  Tokens live in <span class="mono">design/tokens.css</span>; logo in <span class="mono">design/logo.svg</span>; favicon in <span class="mono">design/favicon.svg</span>. Build the MVP from these files.
+</footer>
+<div class="export"><div class="wrap"><span class="count" id="fbCount">0 comments</span><button id="clearAll" type="button">Clear all</button><button id="copyAll" type="button">Copy all feedback</button><textarea id="allOut" readonly aria-label="All feedback"></textarea></div></div>
+<script>
+(function(){
+  const KEY="bb-brand-feedback-v1";
+  let store={}; try{store=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){}
+  const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(store))}catch(e){} count();};
+  const targets=[...document.querySelectorAll("#hero, main section")];
+  const names=[];
+  targets.forEach((sec,i)=>{
+    const h=sec.querySelector("h2, h1"); const eb=sec.querySelector(".eyebrow");
+    const name=sec.dataset.fb||(eb?eb.childNodes[0].textContent.trim():"")+(h?" — "+h.textContent.trim():"");
+    const id="s"+i; names.push([id,name]); store[id]=store[id]||{verdict:null,items:[],draft:""};
+    const box=document.createElement("div"); box.className="fb";
+    box.innerHTML=`<div class="fb-head"><b>Feedback</b><div class="verdict" role="group" aria-label="Verdict">
+      <button type="button" data-v="approve" aria-pressed="false">✓ Approve</button>
+      <button type="button" data-v="change" aria-pressed="false">✎ Needs changes</button>
+      <button type="button" data-v="question" aria-pressed="false">? Question</button></div></div>
+      <div class="fb-list"></div>
+      <textarea id="fb-${id}" placeholder="Write as much as you like. What works, what to change, ideas, references…"></textarea>
+      <div class="fb-actions"><button type="button" class="add">Add comment</button><span>Cmd+Enter to add · drafts save automatically</span></div>`;
+    if(sec.classList.contains("hero")){const w=document.createElement("div");w.className="wrap fb-hero";w.appendChild(box);sec.after(w);} else sec.appendChild(box);
+    const ta=box.querySelector("textarea"), list=box.querySelector(".fb-list");
+    ta.value=store[id].draft||"";
+    const render=()=>{
+      box.querySelectorAll(".verdict button").forEach(b=>b.setAttribute("aria-pressed",String(store[id].verdict===b.dataset.v)));
+      list.textContent="";
+      store[id].items.forEach((it,k)=>{const d=document.createElement("div");d.className="fb-item";const p=document.createElement("p");p.textContent=it.text;const t=document.createElement("time");t.textContent=new Date(it.at).toLocaleString([], {month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});const x=document.createElement("button");x.type="button";x.className="fb-del";x.textContent="✕";x.setAttribute("aria-label","Delete comment");x.onclick=()=>{store[id].items.splice(k,1);persist();render();};d.append(p,t,x);list.appendChild(d);});
+    };
+    const add=()=>{const v=ta.value.trim(); if(!v) return; store[id].items.push({text:v,at:Date.now()}); store[id].draft=""; ta.value=""; persist(); render();};
+    box.querySelector(".add").onclick=add;
+    ta.addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.metaKey||e.ctrlKey)){e.preventDefault();add();}});
+    ta.addEventListener("input",()=>{store[id].draft=ta.value; persist();});
+    box.querySelectorAll(".verdict button").forEach(b=>b.onclick=()=>{store[id].verdict=store[id].verdict===b.dataset.v?null:b.dataset.v; persist(); render();});
+    render();
+  });
+  function count(){const n=names.reduce((a,[id])=>a+(store[id]?store[id].items.length:0),0); document.getElementById("fbCount").textContent=n+(n===1?" comment":" comments");}
+  function exportText(){
+    const V={approve:"APPROVED",change:"NEEDS CHANGES",question:"QUESTION"};
+    let out="BOUNTY-BOX BRAND DECISIONS · FEEDBACK\n";
+    names.forEach(([id,name])=>{const s=store[id]; if(!s||(!s.verdict&&!s.items.length&&!s.draft)) return;
+      out+=`\n## ${name}${s.verdict?"  ["+V[s.verdict]+"]":""}\n`; s.items.forEach(it=>out+=`- ${it.text}\n`); if(s.draft) out+=`- (draft) ${s.draft}\n`;});
+    return out;
+  }
+  document.getElementById("copyAll").onclick=()=>{const t=exportText(), o=document.getElementById("allOut"); o.value=t;
+    navigator.clipboard.writeText(t).then(()=>{document.getElementById("copyAll").textContent="Copied ✓";setTimeout(()=>document.getElementById("copyAll").textContent="Copy all feedback",1600)}).catch(()=>{o.style.display="block";o.select();});};
+  let armed=false; const ca=document.getElementById("clearAll");
+  ca.onclick=()=>{ if(!armed){armed=true;ca.textContent="Click again to clear";setTimeout(()=>{armed=false;ca.textContent="Clear all"},2500);return;}
+    store={}; persist(); location.reload(); };
+  count();
+})();
+</script>
+</body>
+</html>
