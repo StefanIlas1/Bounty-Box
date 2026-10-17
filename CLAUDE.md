@@ -7,6 +7,13 @@ Team: Mohsen Sarrafan (GitHub `mohsensc`) and Stefan Ilas (`StefanIlas1`).
 
 ## How agents work here
 
+- **Current session coordination:** three Codex agents share this checkout.
+  Read `docs/coordination.md` and use the localhost board at port 4317 before
+  editing. Agent 1 owns core/integration, agent 2 orchestration, agent 3 providers. Mohsen owns the separate frontend; these agents do not edit it. Software delivery is first, followed by hardware integration.
+  New agents register and request an unclaimed task. Respect file ownership;
+  do not switch branches or spawn additional agents. The user selected Codex
+  for this session; the model preferences below do not require other tools.
+
 - **Planning and design thinking**: use Fable or Opus, whichever the problem needs.
 - **Writing code**: use Sonnet for implementation subagents by default.
 - **Speed over polish**: ship working features fast. Skip code review, QA passes, and extra test suites unless someone specifically asks for QA. A quick manual run to confirm it works is enough.
@@ -91,3 +98,7 @@ Also submit to the Stripe Projects leaderboard at https://projects.dev/leaderboa
 - One person runs `init`; the other runs `stripe projects env --pull` after pulling.
 - Commit `.projects/state.json` and `.projects/state.local.json`. Never commit `.env`, `.env.*`, `.projects/vault/`, `.projects/cache/`.
 - Agents: use `--json`, never print env var values, never hand-edit `.projects/` or `.env`, read vars with `stripe projects env`.
+
+<!-- stripe-projects-cli managed:claude-md:start -->
+look at AGENTS.md for your rules
+<!-- stripe-projects-cli managed:claude-md:end -->

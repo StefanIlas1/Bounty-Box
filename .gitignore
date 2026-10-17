@@ -12,3 +12,5 @@ __pycache__/
 .projects/state.test.json
 .projects/state.local.test.json
 web/dist/
+.projects/cache
+.projects/vault

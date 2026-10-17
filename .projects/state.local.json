@@ -1,0 +1,49 @@
+{
+  "version": 4,
+  "project": {
+    "catalog": "prod",
+    "initializedAt": "2026-10-17T21:29:35.425Z",
+    "merchantDisplayName": null,
+    "merchantId": "acct_1URd3c2NnpylAPnj",
+    "projectId": "project_61Vb37vFqtLLnWLzW16Vb10yU1A8q8UqiESkxNAwiEYy",
+    "projectName": "Bounty-Box"
+  },
+  "providers": {
+    "createos": {
+      "accountRequestId": "facctrq_61Vb3EeyOzzVDJCQK16Vb10yU1A8q8UqiESkxNAwiOEy",
+      "configuration": {},
+      "linkedAt": "2026-10-17T21:36:33.248Z",
+      "providerId": "prvdr_61V0eGC6sUPXoATb051se",
+      "providerName": "createos",
+      "redirectUrl": null,
+      "requestedAt": "2026-10-17T21:36:33.248Z",
+      "status": "complete"
+    }
+  },
+  "resources": {
+    "createos-plan": {
+      "configuration": {},
+      "createdAt": "2026-10-17T21:36:35.004Z",
+      "lastRevealedAt": "2026-10-17T21:36:35.360Z",
+      "lastStatus": "complete",
+      "livemode": true,
+      "name": "createos-plan",
+      "providerId": "prvdr_61V0eGC6sUPXoATb051se",
+      "providerName": "createos",
+      "resourceId": "fres_61Vb3Ef2wGmx8JzXa16Vb10yU1A8q8UqiESkxNAwiA0G",
+      "serviceId": "free"
+    },
+    "createos-project": {
+      "configuration": {},
+      "createdAt": "2026-10-17T21:36:42.535Z",
+      "lastRevealedAt": "2026-10-17T21:36:42.908Z",
+      "lastStatus": "complete",
+      "livemode": true,
+      "name": "createos-project",
+      "providerId": "prvdr_61V0eGC6sUPXoATb051se",
+      "providerName": "createos",
+      "resourceId": "fres_61Vb3En4cM5YEbwg016Vb10yU1A8q8UqiESkxNAwiCls",
+      "serviceId": "project"
+    }
+  }
+}
