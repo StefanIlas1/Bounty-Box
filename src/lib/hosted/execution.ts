@@ -13,6 +13,7 @@ async function sql(query:string,params:unknown[]=[]){
 }
 export async function execute(app:GeneratedApp,brief:Brief,log:ExecutionLog,checkpoint:(data:Record<string,unknown>)=>Promise<void>,retain=false, keepTest=false){
  const key=process.env.CREATEOS_PROJECT_API_KEY;if(!key)throw Error('CreateOS sandbox credential is not configured');
+ const fallbackKey=process.env.CREATEOS_FALLBACK_API_KEY;
  const client=new CreateosSandboxClient({apiKey:key,baseUrl:endpoint,retry:false});
  const name=`bb-${randomBytes(7).toString('hex')}`,role=name.replaceAll('-','_'),token=randomBytes(32).toString('hex'),digest=artifactDigest(app);
  const reuseId=process.env.BOUNTYBOX_REUSE_SANDBOX_ID;
@@ -22,7 +23,7 @@ export async function execute(app:GeneratedApp,brief:Brief,log:ExecutionLog,chec
  const timeout=AbortSignal.timeout(210000);
  const pkg=JSON.parse(app.files.find(f=>f.path==='package.json')!.content);
  if(Object.keys(pkg.dependencies??{}).length)throw Error('This hosted runtime supports dependency-free Node applications only');
- const privateValues=[key,process.env.WAITLIST_DATABASE_URL].filter((v):v is string=>!!v);
+ const privateValues=[key,fallbackKey,process.env.WAITLIST_DATABASE_URL].filter((v):v is string=>!!v);
  if(app.files.some(f=>privateValues.some(s=>f.content.includes(s))))throw Error('Generated source contains a private credential');
  const url=new URL(process.env.WAITLIST_DATABASE_URL!);const password=randomBytes(32).toString('hex');
  let sandbox:Awaited<ReturnType<typeof client.createSandbox>>|undefined;let kept=false,roleCreated=false;
@@ -40,7 +41,16 @@ export async function execute(app:GeneratedApp,brief:Brief,log:ExecutionLog,chec
   await log('prepare database','Created isolated database login with no access to existing tables',0);
   if(reuseId){
    stage='sandbox reuse';
-   sandbox=await client.getSandbox(reuseId,{signal:timeout,timeoutMs:15000,retry:false});
+   try{sandbox=await client.getSandbox(reuseId,{signal:timeout,timeoutMs:15000,retry:false});}
+   catch(error){
+    const status=(error as {statusCode?:number}).statusCode;
+    if(!fallbackKey||fallbackKey===key||![401,403,404,429,500,502,503,504].includes(status??0))throw error;
+    const fallbackId=process.env.BOUNTYBOX_FALLBACK_SANDBOX_ID||reuseId;
+    if(!/^sb-[a-z0-9]+$/.test(fallbackId))throw Error('Invalid fallback sandbox configuration');
+    const fallback=new CreateosSandboxClient({apiKey:fallbackKey,baseUrl:endpoint,retry:false});
+    sandbox=await fallback.getSandbox(fallbackId,{signal:timeout,timeoutMs:15000,retry:false});
+    await log('CreateOS credential fallback','Connected to the configured reusable sandbox using the backup credential; no sandbox created',0);
+   }
    const currentEgress=await sandbox.getEgress({signal:timeout,timeoutMs:15000,retry:false});
    if(JSON.stringify([...currentEgress.egress].sort())!==JSON.stringify([...new Set(egress)].sort()))throw Error('Reusable sandbox egress does not match scoped Neon hosts');
    const start=3100+randomBytes(2).readUInt16BE()%880;
@@ -61,9 +71,9 @@ export async function execute(app:GeneratedApp,brief:Brief,log:ExecutionLog,chec
   for(const file of app.files){const folder=file.path.includes('/')?file.path.slice(0,file.path.lastIndexOf('/')):'';const result=await sandbox.runCommand('mkdir',['-p',`${workspace}/${folder}`],{signal:timeout,timeoutMs:10000,retry:false});if(result.result.exit_code!==0)throw Error('Workspace unavailable');await sandbox.files.upload(`${workspace}/${file.path}`,file.content,{signal:timeout,timeoutMs:15000,retry:false});await log('upload',file.path,0);}
   stage='application startup';
   processAttempted=true;
-  const process=await sandbox.processes.create({cmd:'timeout',args:['--signal=TERM','--kill-after=10s',(retain||keepTest)?'86400':'240','node','server.mjs'],cwd:workspace,env:runtime},{signal:timeout,timeoutMs:15000,retry:false});
-  processId=process.process_id;
-  if(process.leader_exited)throw Error('Application exited');
+  const managedProcess=await sandbox.processes.create({cmd:'timeout',args:['--signal=TERM','--kill-after=10s',(retain||keepTest)?'86400':'240','node','server.mjs'],cwd:workspace,env:runtime},{signal:timeout,timeoutMs:15000,retry:false});
+  processId=managedProcess.process_id;
+  if(managedProcess.leader_exited)throw Error('Application exited');
   await log('node server.mjs','Managed application process started',0);
   await sandbox.waitForPortReady(port,{signal:timeout,timeoutMs:45000});
   const base=runtime.BOUNTYBOX_PUBLIC_ORIGIN;
