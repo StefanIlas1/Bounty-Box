@@ -243,7 +243,7 @@ function Hero() {
           </Button>
           <Button asChild variant="outline" className={CTA_OUTLINE}>
             <Link to={mode === 'hardware' ? '/demo?hardware=1' : '/demo'}>
-              Watch the demo <Play className="h-4 w-4" />
+              Try the demo <Play className="h-4 w-4" />
             </Link>
           </Button>
         </div>
@@ -440,7 +440,7 @@ function FinalCta() {
           </Button>
           <Button asChild variant="outline" className={CTA_OUTLINE}>
             <Link to="/demo">
-              Watch the demo <Play className="h-4 w-4" />
+              Try the demo <Play className="h-4 w-4" />
             </Link>
           </Button>
         </div>
