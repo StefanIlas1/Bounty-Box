@@ -25,5 +25,12 @@
       "source": "/app/:path*",
       "destination": "/index.html"
     }
+  ],
+  "redirects": [
+    {
+      "source": "/live-app",
+      "destination": "https://01m569ayf9819747neebb84cse-3000.app.sb.createos.sh",
+      "permanent": false
+    }
   ]
 }

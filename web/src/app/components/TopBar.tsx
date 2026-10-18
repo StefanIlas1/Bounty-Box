@@ -27,12 +27,13 @@ export function TopBar({ mode, onModeChange, reachable, fixtureRun, simulated, o
           <ToggleGroupItem value="demo">Demo</ToggleGroupItem>
           <ToggleGroupItem value="live">Live</ToggleGroupItem>
         </ToggleGroup>
-        {mode === 'demo' && <Badge variant="outline" className="border-gold/40 text-gold">Demo · scripted example run</Badge>}
+        {mode === 'demo' && <Badge variant="outline" className="border-gold/40 text-gold">Scripted demo · simulated purchases and benchmarks</Badge>}
         {fixtureRun && <Badge variant="outline" className="border-gold/40 text-gold">Fixture run (backend test data)</Badge>}
         {simulated && <Badge variant="outline" className="border-bad/40 text-bad">Simulated · catalog prices</Badge>}
       </div>
 
       <div className="flex items-center gap-2">
+        <Button asChild size="sm" variant="outline"><a href="/live-app" target="_blank" rel="noreferrer" title="Real generated app retained for judging for 24 hours">Open real app ↗</a></Button>
         <Button asChild size="sm" variant="outline"><Link to="/">Back to site</Link></Button>
         {mode === 'live' && reachable === false && (
           <Button asChild size="sm" variant="outline" className="border-gold/50 text-gold hover:bg-gold/10">

@@ -164,7 +164,7 @@ export function BuildScreen({ mode, state, onApprove, approving, demoControls, l
           <BomCard state={state} />
           <ProvisioningCard state={state} />
         </div>
-        <div id="panel-live" tabIndex={-1} className="rounded focus-visible:outline-2 focus-visible:outline-gold"><LiveUrlCard state={state} /></div>
+        <div id="panel-live" tabIndex={-1} className="rounded focus-visible:outline-2 focus-visible:outline-gold"><LiveUrlCard state={state} scripted={mode === 'demo'} /></div>
       </div>
     </div>
     {state.liveUrl && <button type="button" onClick={() => flashPanel('live')} aria-label="Link — show live URL at bottom" title="Show the link at the bottom of the side panel" className="fixed bottom-4 right-5 z-50 flex items-center gap-2 rounded-full border border-gold/60 bg-gold px-4 py-2 text-sm font-semibold text-on-gold shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold">

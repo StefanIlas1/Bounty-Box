@@ -339,7 +339,7 @@ export const demoEventsPreApproval: RunEvent[] = buildPreApprovalEvents(false)
 
 export const demoEventsPostApproval: RunEvent[] = [
   { type: 'sandbox', action: 'resumed', sandboxId: SANDBOX_ID, at: at(400) },
-  { type: 'agent_message', text: 'Approved. Provisioning Stack C through Stripe Projects...', at: at(1000) },
+  { type: 'agent_message', text: 'Simulated approval: replaying example provisioning steps. No purchases are made.', at: at(1000) },
   { type: 'provisioning', service: svcNeon, command: 'stripe projects add neon/free', status: 'started', at: at(1600) },
   { type: 'provisioning', service: svcNeon, command: 'stripe projects add neon/free', status: 'done', output: 'neon/free provisioned', at: at(2400) },
   { type: 'provisioning', service: svcUpstash, command: 'stripe projects add upstash/redis', status: 'started', at: at(3000) },
@@ -348,10 +348,10 @@ export const demoEventsPostApproval: RunEvent[] = [
   { type: 'provisioning', service: svcCreateosBeginner, command: 'stripe projects add createos/beginner-monthly', status: 'done', output: 'createos/beginner-monthly provisioned', at: at(5200) },
   { type: 'provisioning', service: svcResend, command: 'stripe projects add resend/free', status: 'started', at: at(5800) },
   { type: 'provisioning', service: svcResend, command: 'stripe projects add resend/free', status: 'done', output: 'resend/free provisioned', at: at(6600) },
-  { type: 'agent_message', text: 'All services provisioned. Deploying Stack C and opening ingress on the CreateOS sandbox...', at: at(7200) },
+  { type: 'agent_message', text: 'Simulated provisioning complete. This replay does not deploy anything. The final link opens a separately verified real app.', at: at(7200) },
   { type: 'log', level: 'ok', message: 'Ingress enabled on sandbox ' + SANDBOX_ID, at: at(8400) },
-  { type: 'live', url: 'https://waitlist-7f3a.sb.createos.sh', at: at(9200) },
-  { type: 'agent_message', text: "Live. The waitlist app is running at https://waitlist-7f3a.sb.createos.sh.", at: at(9600) },
+  { type: 'live', url: 'https://01m569ayf9819747neebb84cse-3000.app.sb.createos.sh', at: at(9200) },
+  { type: 'agent_message', text: "Replay complete. Open the separately generated and verified judging app at https://01m569ayf9819747neebb84cse-3000.app.sb.createos.sh.", at: at(9600) },
   { type: 'run_finished', at: at(10000) },
 ]
 
