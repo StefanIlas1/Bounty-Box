@@ -1,0 +1,200 @@
+{
+  "runId": "5fc6cbf3-0233-49e4-8578-5db11bca4f30",
+  "brief": {
+    "description": "Build Bounty-Box Early Access: a polished dark navy and gold waitlist for founders who want AI to build software within their budget. Heading: Build big. Stay under budget. Capture email with a Join early access button and clear success confirmation. Persist normalized unique emails in Neon Postgres.",
+    "monthlyBudgetUsd": 0,
+    "targetUsers": 100,
+    "load": {
+      "concurrency": 2,
+      "durationSeconds": 5,
+      "maxP95Ms": 2000,
+      "maxErrorRate": 0.01
+    }
+  },
+  "attempts": [
+    {
+      "number": 1,
+      "stack": {
+        "id": "createos-neon",
+        "name": "CreateOS + Neon Postgres",
+        "description": "Waitlist application with operator-owned isolated trial database; production deployment is separate.",
+        "services": [
+          {
+            "id": "createos/project",
+            "name": "createos/project",
+            "role": "host",
+            "monthlyCostUsd": 0
+          },
+          {
+            "id": "neon/postgres",
+            "name": "neon/postgres",
+            "role": "database",
+            "monthlyCostUsd": 0
+          }
+        ],
+        "estimatedMonthlyCostUsd": 0,
+        "costAssumptions": [
+          "Stripe Projects reports this account's CreateOS free plan and project complete; base subscription price is zero.",
+          "Hackathon trial only: existing credits fund sandbox runtime. This is not an unlimited hosting or production capacity quote.",
+          "Live demo is capped at 5 concurrent requests for 30 seconds; production deployment and overages require a separate estimate.",
+          "Quote verified 2026-10-17T22:30:00.000Z; expires 2026-10-18T22:30:00.000Z.",
+          "Stripe Projects provisioned a dedicated Neon free plan and Postgres database for this trial; no paid upgrade enabled.",
+          "Synthetic demo records only, within free-plan usage limits. Target users are a demo scope cap, not a throughput guarantee.",
+          "Quote verified 2026-10-17T22:30:00.000Z; expires 2026-10-18T22:30:00.000Z."
+        ],
+        "pricingSources": [
+          "https://projects.dev/llms.txt",
+          "https://neon.com/pricing"
+        ],
+        "partner": false,
+        "mode": "live",
+        "requiredEnvNames": [
+          "NEON_DATABASE_URL"
+        ]
+      },
+      "revision": 1,
+      "result": {
+        "passed": true,
+        "requests": 26,
+        "throughputRps": 5.130030614690884,
+        "p95Ms": 631.2759580000129,
+        "errorRate": 0,
+        "durationSeconds": 5.06819587499999,
+        "logs": [
+          "workspace: exit 0. Process output withheld.",
+          "database connectivity: exit 0. Process output withheld.",
+          "Application started as a managed process. Process output withheld.",
+          "generated diagnostic (non-authoritative): exit 0. Process output withheld.",
+          "Independent worker benchmark completed. Sandbox is destroyed after measurement."
+        ],
+        "mode": "live"
+      },
+      "decision": "Passed measured performance criteria within estimated monthly budget."
+    },
+    {
+      "number": 2,
+      "revision": 2,
+      "stack": {
+        "id": "createos-neon",
+        "name": "CreateOS + Neon Postgres",
+        "description": "Waitlist application with operator-owned isolated trial database; production deployment is separate.",
+        "services": [
+          {
+            "id": "createos/project",
+            "name": "createos/project",
+            "role": "host",
+            "monthlyCostUsd": 0
+          },
+          {
+            "id": "neon/postgres",
+            "name": "neon/postgres",
+            "role": "database",
+            "monthlyCostUsd": 0
+          }
+        ],
+        "estimatedMonthlyCostUsd": 0,
+        "costAssumptions": [
+          "Stripe Projects reports this account's CreateOS free plan and project complete; base subscription price is zero.",
+          "Hackathon trial only: existing credits fund sandbox runtime. This is not an unlimited hosting or production capacity quote.",
+          "Live demo is capped at 5 concurrent requests for 30 seconds; production deployment and overages require a separate estimate.",
+          "Quote verified 2026-10-17T22:30:00.000Z; expires 2026-10-18T22:30:00.000Z.",
+          "Stripe Projects provisioned a dedicated Neon free plan and Postgres database for this trial; no paid upgrade enabled.",
+          "Synthetic demo records only, within free-plan usage limits. Target users are a demo scope cap, not a throughput guarantee.",
+          "Quote verified 2026-10-17T22:30:00.000Z; expires 2026-10-18T22:30:00.000Z."
+        ],
+        "pricingSources": [
+          "https://projects.dev/llms.txt",
+          "https://neon.com/pricing"
+        ],
+        "partner": false,
+        "mode": "live",
+        "requiredEnvNames": [
+          "NEON_DATABASE_URL"
+        ]
+      },
+      "result": {
+        "passed": true,
+        "requests": 26,
+        "throughputRps": 5.0143776430501275,
+        "p95Ms": 624.1106249999939,
+        "errorRate": 0,
+        "durationSeconds": 5.185090125000002,
+        "logs": [
+          "workspace: exit 0. Process output withheld.",
+          "database connectivity: exit 0. Process output withheld.",
+          "Application started as a managed process. Process output withheld.",
+          "generated diagnostic (non-authoritative): exit 0. Process output withheld.",
+          "Independent worker benchmark completed. Sandbox is destroyed after measurement."
+        ],
+        "mode": "live"
+      },
+      "decision": "Passed real public-origin check and independent database benchmark"
+    }
+  ],
+  "events": [
+    {
+      "id": 1,
+      "at": "2026-10-18T01:12:29.745Z",
+      "stage": "queued",
+      "message": "Queued live run."
+    },
+    {
+      "id": 2,
+      "at": "2026-10-18T01:12:29.978Z",
+      "stage": "planning",
+      "message": "Comparing candidate stacks against the $0/month estimated budget. Live evidence required."
+    },
+    {
+      "id": 3,
+      "at": "2026-10-18T01:12:29.980Z",
+      "stage": "planning",
+      "message": "1 candidates match the run mode and estimated budget; 0 excluded. Partner offers require a passing non-partner comparison."
+    },
+    {
+      "id": 4,
+      "at": "2026-10-18T01:12:29.980Z",
+      "stage": "generating",
+      "message": "Generating CreateOS + Neon Postgres; attempt 1/3."
+    },
+    {
+      "id": 5,
+      "at": "2026-10-18T01:13:16.755Z",
+      "stage": "testing",
+      "message": "Testing CreateOS + Neon Postgres, generated revision 1."
+    },
+    {
+      "id": 6,
+      "at": "2026-10-18T01:13:30.119Z",
+      "stage": "testing",
+      "message": "Passed measured performance criteria within estimated monthly budget."
+    },
+    {
+      "id": 7,
+      "at": "2026-10-18T01:13:30.120Z",
+      "stage": "awaiting_approval",
+      "message": "CreateOS + Neon Postgres passed within the estimated budget. Approval of proposal aef44914-2a1b-4cbd-91d9-732f9004ea9f is required before provisioning."
+    },
+    {
+      "id": 8,
+      "at": "2026-10-18T01:15:57.026Z",
+      "stage": "repairing",
+      "message": "Public same-origin signup rejected with HTTP 403 behind CreateOS reverse proxy. Compare Origin against trusted runtime BOUNTYBOX_PUBLIC_ORIGIN, never Host or forwarded headers. This variable is supplied by sandbox/deployment runner. Preserve the client requested public page."
+    },
+    {
+      "id": 9,
+      "at": "2026-10-18T01:16:37.040Z",
+      "stage": "testing",
+      "message": "Testing model-repaired public signup and Neon persistence in CreateOS"
+    },
+    {
+      "id": 10,
+      "at": "2026-10-18T01:18:01.413Z",
+      "stage": "deployed",
+      "message": "Operator-authorized judging deployment verified: real public signup persisted in Neon, normalized duplicate unique, protected diagnostics and artifact digest verified. Existing credits only; app execution bounded to 24 hours."
+    }
+  ],
+  "artifactDigest": "c3e3bbb35e19355135e4a1ccd8590ac73caa2e1c603883293080ca7cf07ff947",
+  "deployedUrl": "https://01m569ayf9819747neebb84cse-3000.app.sb.createos.sh",
+  "applicationExpiresAt": "2026-10-19T01:17:11.023Z",
+  "limitations": "Application process ends after 24 hours. Idle auto-pause is not a hard sandbox lifetime or billing cap. Retained sandbox must be destroyed manually after judging."
+}

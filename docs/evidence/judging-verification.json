@@ -1,0 +1,18 @@
+{
+  "url": "https://01m569ayf9819747neebb84cse-3000.app.sb.createos.sh",
+  "verifiedAt": "2026-10-18T01:17:33.620Z",
+  "artifactDigest": "c3e3bbb35e19355135e4a1ccd8590ac73caa2e1c603883293080ca7cf07ff947",
+  "checks": [
+    "public HTML form",
+    "no verification token in page",
+    "protected diagnostics",
+    "artifact identity",
+    "cross-origin signup rejected",
+    "invalid email rejected",
+    "same-origin public signup persisted",
+    "normalized duplicate unique"
+  ],
+  "syntheticEmail": "judge-probe-5e1d2942-cc6a-4fc6-88e0-d44a4e3021d5@example.invalid",
+  "syntheticRecordsAdded": 1,
+  "loadTestPerformed": false
+}

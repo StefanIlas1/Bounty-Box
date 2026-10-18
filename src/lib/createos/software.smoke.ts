@@ -65,7 +65,20 @@ const benchmark = async (input: { token: string; artifactDigest: string }) => {
   assert.equal(input.artifactDigest, artifactDigest(app)); assert.equal(input.token.length, 64); measured = true;
   return { passed: true, requests: 20, throughputRps: 20, p95Ms: 10, errorRate: 0, durationSeconds: 1, mode: 'live' as const, logs: [env.NEON_DATABASE_URL], previewUrl: 'https://must-not-persist.invalid' };
 };
-const healthFetch: typeof fetch = async (_url, options) => {
+function publicJoinResponse(url: Parameters<typeof fetch>[0], options?: RequestInit): Response | undefined {
+  if (new URL(String(url)).pathname !== '/join') return undefined;
+  const headers = new Headers(options?.headers);
+  assert.equal(headers.get('Origin'), 'https://fixture.example.invalid');
+  assert.equal(headers.get('Authorization'), null);
+  assert.equal(headers.get('Content-Type'), 'application/json');
+  assert.equal(options?.method, 'POST');
+  assert.equal(options?.redirect, 'error');
+  assert.deepEqual(JSON.parse(String(options?.body)), { email: 'not-an-email' });
+  return Response.json({ error: 'Invalid email' }, { status: 400 });
+}
+const healthFetch: typeof fetch = async (url, options) => {
+  const publicResponse = publicJoinResponse(url, options);
+  if (publicResponse) return publicResponse;
   assert.match(new Headers(options?.headers).get('Authorization') ?? '', /^Bearer [a-f0-9]{64}$/);
   assert.equal(options?.redirect, 'error');
   return Response.json({ ok: true, artifactDigest: artifactDigest(app) });
@@ -94,6 +107,8 @@ assert.equal(unverifiedBenchmarkCalls, 0); assert.equal(destroys, 4);
 let signupCalls = 0;
 const storedEmails = new Set<string>();
 const harnessFetch: typeof fetch = async (url, init) => {
+  const publicResponse = publicJoinResponse(url, init);
+  if (publicResponse) return publicResponse;
   assert.match(new Headers(init?.headers).get('Authorization') ?? '', /^Bearer [a-f0-9]{64}$/);
   if (new URL(String(url)).pathname === '/health') return Response.json({ ok: true, artifactDigest: artifactDigest(app) });
   if (new URL(String(url)).pathname === '/stats') return Response.json({ count: storedEmails.size });
@@ -109,7 +124,9 @@ const defaultRunner = createSandboxRunner({ clientFactory, environment: () => en
 const integrated = await defaultRunner.run({ app, stack, brief });
 assert.ok(signupCalls > 0); assert.equal(integrated.requests, signupCalls); assert.equal(integrated.passed, true); assert.equal(destroys, 5);
 let badStoredCount = 0;
-const brokenAppFetch: typeof fetch = async (url) => {
+const brokenAppFetch: typeof fetch = async (url, init) => {
+  const publicResponse = publicJoinResponse(url, init);
+  if (publicResponse) return publicResponse;
   const path = new URL(String(url)).pathname;
   if (path === '/health') return Response.json({ ok: true, artifactDigest: artifactDigest(app) });
   if (path === '/stats') return Response.json({ count: badStoredCount });

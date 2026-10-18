@@ -129,7 +129,7 @@ export function createSandboxRunner(options: SoftwareRunnerOptions = {}): Sandbo
     const app = structuredClone(originalApp);
     validateBrief(brief);
     const profile = softwareProfile(stack);
-    const install = validateApp(app, [...profile.required, 'PORT', 'BOUNTYBOX_INGRESS_TOKEN', 'BOUNTYBOX_ARTIFACT_DIGEST', 'BOUNTYBOX_TRIAL_NAMESPACE']);
+    const install = validateApp(app, [...profile.required, 'PORT', 'BOUNTYBOX_INGRESS_TOKEN', 'BOUNTYBOX_ARTIFACT_DIGEST', 'BOUNTYBOX_TRIAL_NAMESPACE', 'BOUNTYBOX_PUBLIC_ORIGIN']);
     const env = (options.environment ?? (() => process.env))();
     const trial = resolveSoftwareTrial(stack.id as SoftwareStackId, env);
     const apiKey = env.CREATEOS_PROJECT_API_KEY;
@@ -147,7 +147,7 @@ export function createSandboxRunner(options: SoftwareRunnerOptions = {}): Sandbo
     // CreateOS names are limited to 22 characters.
     const name = `bounty-${randomBytes(7).toString('hex')}`;
     const digest = softwareArtifactDigest(app);
-    const runtime = { ...trial.secrets, PORT: '3000', BOUNTYBOX_INGRESS_TOKEN: token, BOUNTYBOX_ARTIFACT_DIGEST: digest, BOUNTYBOX_TRIAL_NAMESPACE: name.replaceAll('-', '_') };
+    const runtime = { ...trial.secrets, BOUNTYBOX_PUBLIC_ORIGIN: '', PORT: '3000', BOUNTYBOX_INGRESS_TOKEN: token, BOUNTYBOX_ARTIFACT_DIGEST: digest, BOUNTYBOX_TRIAL_NAMESPACE: name.replaceAll('-', '_') };
     const logs: string[] = [];
     let sandbox: SoftwareSandbox | undefined;
     let stage = 'preflight';
@@ -194,6 +194,7 @@ export function createSandboxRunner(options: SoftwareRunnerOptions = {}): Sandbo
         const check = `const connection=process.env.NEON_DATABASE_URL;const host=new URL(connection).hostname.replace(/^[^.]+\\./,'api.');let ok=false;for(let i=0;i<5;i++){try{const r=await fetch('https://'+host+'/sql',{method:'POST',signal:AbortSignal.timeout(5000),headers:{'Content-Type':'application/json','Neon-Connection-String':connection,'Neon-Array-Mode':'true','Neon-Raw-Text-Output':'true'},body:JSON.stringify({query:'SELECT 1',params:[]})});const v=await r.json();if(r.ok&&String(v.rows?.[0]?.[0])==='1'){ok=true;break;}}catch{}await new Promise(r=>setTimeout(r,500));}process.exitCode=ok?0:1;`;
         if (await execute('database connectivity', 'node', ['--input-type=module', '-e', check], 30000, true)) throw new SoftwareRunnerError('Scoped Neon connectivity failed inside sandbox; no generated app or benchmark ran.');
       }
+      runtime.BOUNTYBOX_PUBLIC_ORIGIN = sandbox.previewUrl(3000);
       stage = 'start';
       // Managed processes outlive the exec request; background exec children may be reaped.
       const process = await sandbox.processes.create({ cmd: 'node', args: ['server.mjs'], cwd: '/tmp/bounty-app', env: runtime },
@@ -213,6 +214,10 @@ export function createSandboxRunner(options: SoftwareRunnerOptions = {}): Sandbo
       const healthSignal = AbortSignal.any([controller.signal, AbortSignal.timeout(10_000)]);
       try { await withinDeadline(verifyHealth(options.fetchImpl ?? fetch, baseUrl, token, digest, healthSignal), healthSignal); }
       catch { controller.signal.throwIfAborted(); return failed('Authenticated health did not verify the selected artifact within its bounds; no benchmark ran.'); }
+      stage = 'public browser form verification';
+      const publicResponse = await (options.fetchImpl ?? fetch)(new URL('/join', baseUrl), { method: 'POST', redirect: 'error', signal: AbortSignal.any([controller.signal, AbortSignal.timeout(10000)]), headers: { 'Content-Type': 'application/json', Origin: baseUrl.replace(/\/$/, '') }, body: JSON.stringify({ email: 'not-an-email' }) });
+      await publicResponse.body?.cancel();
+      if (publicResponse.status !== 400) return failed('Public same-origin signup must accept its deployed HTTPS origin and reject an invalid email with HTTP 400; proxy Host headers are not the public origin. Use BOUNTYBOX_PUBLIC_ORIGIN.');
       stage = 'independent benchmark';
       let result: TestResult;
       try { result = await withinDeadline(benchmark({ baseUrl, token, brief: structuredClone(brief), signal: controller.signal, artifactDigest: digest }), controller.signal); }
