@@ -10,6 +10,6 @@
   </g>
   <!-- keyhole replaces the hyphen -->
   <g transform="translate(236 30)" fill="#e9b949" stroke="#7a4a2a" stroke-width="2.4" stroke-linejoin="round">
-    <circle cx="12" cy="10" r="8"/><path d="M7.5 15h9l2.6 17H4.9Z"/>
+    <path d="M12 2a8 8 0 0 0-4.4 14.7L5.2 33h13.6l-2.4-16.3A8 8 0 0 0 12 2Z"/>
   </g>
 </svg>

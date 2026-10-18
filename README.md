@@ -1,29 +1,57 @@
-# Bounty-Box
+<div align="center">
 
-Describe the app you want and set a budget. Bounty-Box picks the stack, writes the code, load-tests it in a CreateOS sandbox, swaps out parts that fail or cost too much, then buys the stack through Stripe Projects and hands you a live URL.
+<img src="design/logo.svg" alt="bounty-box" width="420" />
 
-Built at **Build Agents That Run Code: CreateOS × Stripe Projects** (Oct 17, 2026) by Mohsen Sarrafan ([@mohsensc](https://github.com/mohsensc)) and Stefan Ilas ([@StefanIlas1](https://github.com/StefanIlas1)).
+### Building big under budget.
 
-## What it does
+**Set the bounty. Get the build.** An AI agent that writes your app, load-tests it in a CreateOS sandbox, fixes its own code, and only then buys the stack through Stripe Projects.
 
-1. **Brief:** you give it an app and a budget, e.g. "A waitlist app with email signups that handles 1,000 users, for under $30 a month."
-2. **Draft a stack:** it picks candidate services from the Stripe Projects catalog (database, key-value store, host).
-3. **Write and run:** it writes the app plus a load-test script and runs both in a CreateOS sandbox.
-4. **Self-fix:** if the load test fails or projected cost exceeds the budget, it rewrites the code or swaps a stack component and runs again.
-5. **Approve:** you review the final stack, monthly cost and test results.
-6. **Buy and ship:** it runs `stripe projects add …` for each service, deploys, and returns a live URL.
+[![Stripe Projects](https://img.shields.io/badge/Stripe_Projects-635BFF?style=for-the-badge&logo=stripe&logoColor=white)](https://projects.dev)
+[![CreateOS Sandbox](https://img.shields.io/badge/CreateOS_Sandbox-0A2540?style=for-the-badge)](https://createos.sh)
+[![TypeScript](https://img.shields.io/badge/TypeScript-0A2540?style=for-the-badge&logo=typescript&logoColor=white)](#tech)
 
-### Hardware mode: for physical builders
+</div>
 
-Building something physical? Describe the product, quantity, budget and deadline. Bounty-Box writes a parametric CAD model and a bill of materials, sources each part from eBay and Chinese manufacturers, and calculates the landed cost: shipping, import duty, tariffs and delivery date. Parts that don't fit, miss the deadline or break the budget get swapped automatically. You review the 3D model, blueprints and per-part costs, then buy everything in one checkout.
+---
 
-See [design.md](design.md) for the full pitch, scope and risks.
+## Demo
 
-Backend architecture: [system design and decisions](docs/backend-system-design.md) · [Miro architecture board](https://miro.com/app/board/uXjVEYwmnCA=/).
+<div align="center">
 
-## Backend architecture diagrams
+[![Watch the Bounty-Box demo](media/demo-poster.jpg)](media/bounty-box-demo.mp4)
 
-These diagrams describe the target architecture; implementation is in progress. See the [system design](docs/backend-system-design.md) for failure paths, limits, and architectural decisions, or open the [editable Miro board](https://miro.com/app/board/uXjVEYwmnCA=/).
+**[▶ Play the 2-minute demo](media/bounty-box-demo.mp4)**
+
+</div>
+
+## The problem
+
+Shipping even a small app means picking a database, a host, a cache and an email provider, comparing a dozen pricing pages, and putting a card down on each one **before you know if any of it works**.
+
+## What Bounty-Box does
+
+1. **Set the bounty.** Describe the app and a monthly budget, e.g. *"A music app with playlists and play counts. Handle 1,000 listeners. Under $30 a month."*
+2. **Draft a stack.** The agent picks real services from the **Stripe Projects** catalog and prices them against the budget.
+3. **Write and run.** It writes the app *and* its own load test, then runs both in an isolated **CreateOS Sandbox** with egress locked to an allowlist.
+4. **Fix itself.** When the test fails or the cost runs over, it reads the logs, rewrites the code or swaps a service, forks the sandbox to try fixes in parallel, and runs again.
+5. **Approve.** You see the passing stack, the monthly total and the test evidence, and can open the live sandbox URL before paying anything.
+6. **Buy and ship.** One approval runs `stripe projects add` for exactly the stack that passed and deploys it.
+
+**Hardware mode:** for physical builds, the same loop sources parts, compares landed cost and delivery date, and orders the kit.
+
+**Fair marketplace:** providers can list at a discount they choose, but they are only recommended when they beat the incumbents on the same sandbox test *and* on price. With no partner win, Bounty-Box uses the standard Stripe Projects catalog.
+
+## Hackathon requirements
+
+| Requirement | How Bounty-Box meets it |
+| --- | --- |
+| Agent writes and runs its own code | Generates the app and a load test, runs both, and repairs its code until the test passes |
+| Stack set up with **Stripe Projects** | Services come from the Stripe Projects catalog and are provisioned with `stripe projects add` after approval |
+| Code runs in a **CreateOS Sandbox** | Every generated build and load test runs in a CreateOS sandbox (`devbox:1`) with an egress allowlist, a live preview URL, fork for parallel fixes, and pause while awaiting approval |
+| Demo video | [media/bounty-box-demo.mp4](media/bounty-box-demo.mp4) |
+| Public repo | You are here |
+
+## System design
 
 ### Backend components
 
@@ -54,8 +82,6 @@ flowchart LR
     Verify --> Store
 ```
 
-[Diagram source](docs/diagrams/backend-components.mmd)
-
 ### Run lifecycle
 
 The main success and repair path, with provisioning gated by proposal-specific approval.
@@ -73,8 +99,6 @@ stateDiagram-v2
     provisioning --> deployed: Deployment health check passes
     deployed --> [*]
 ```
-
-[Diagram source](docs/diagrams/run-lifecycle.mmd)
 
 ### Approval and shipping
 
@@ -102,8 +126,6 @@ sequenceDiagram
     Note over W,D: Unknown outcome stops automatic retry and requires reconciliation
 ```
 
-[Diagram source](docs/diagrams/shipping-sequence.mmd)
-
 ### Data relationships
 
 Attempts and proposals bind immutable artifacts; approvals authorize recorded shipping operations.
@@ -121,52 +143,46 @@ erDiagram
     SHIPPING_OPERATION ||--o{ PROVIDER_RECEIPT : records
 ```
 
-[Diagram source](docs/diagrams/data-relationships.mmd)
+Diagram sources live in [`docs/diagrams/`](docs/diagrams). Editable board: [Miro](https://miro.com/app/board/uXjVEYwmnCA=/).
+
+## Run it
+
+Requirements: Node 22, the Stripe CLI with the Projects plugin, and a CreateOS API key.
+
+```bash
+# backend
+npm install
+cp .env.example .env.backend.local     # then fill in values
+stripe projects env --pull             # pulls provider credentials
+npm run dev                            # API
+npm run worker                         # run worker (second terminal)
+
+# web app
+cd web && npm install && npm run dev
+```
+
+The web app runs a scripted demo by default; switch to live mode at `/app?mode=live` once the backend is up. `npm test` runs the backend, orchestrator, benchmark and provider checks.
 
 ## Tech
 
-- **Stripe Projects**: provisions and buys the chosen services (`stripe projects add`).
-- **CreateOS Sandbox**: runs the generated app and load tests, with egress allowlisting, a live ingress URL, and pause/resume while waiting for approval.
-- **Hardware mode**: CadQuery / OpenSCAD for parametric CAD, three.js (react-three-fiber) and Online3DViewer for the 3D view, SVG drawings and KiCad for blueprints, eBay Browse API for sourcing.
+- **Stripe Projects** for the service catalog, provisioning and billing
+- **CreateOS Sandbox** (`@nodeops-createos/sandbox`) for isolated runs, egress control, live URLs, fork and pause
+- **TypeScript / Node 22** backend: run API, job queue, orchestrator, benchmark harness
+- **React + Vite + Tailwind** web app
+- **Hardware mode:** CadQuery / OpenSCAD, three.js, KiCad, eBay Browse API
 
-## How to run
+## Team
 
-Use Node 22 and install the backend dependencies:
+| | |
+| --- | --- |
+| **Mohsen Sarrafan** | [@mohsensc](https://github.com/mohsensc) |
+| **Stefan Ilas** | [@StefanIlas1](https://github.com/StefanIlas1) |
 
-```sh
-nvm use
-npm ci
-```
+---
 
-Set a random `BOUNTYBOX_API_TOKEN` of at least 32 characters in an ignored
-`.env.backend.local` file. Run the API and worker in separate terminals:
+<div align="center">
 
-```sh
-npm run dev
-npm run worker
-```
+Built in one day at **[Build Agents That Run Code: CreateOS × Stripe Projects](https://createos.sh/hackathon)**, October 17, 2026.
+Thanks to **CreateOS** and **Stripe** for the tools, credits and a great event.
 
-The API listens on `127.0.0.1:3000`. All endpoints require bearer authentication.
-See [backend development](docs/backend-development.md) for request examples,
-credential setup, artifact retrieval and worker recovery limits. The frontend lives
-in [`web/`](web/README.md) and has separate dependencies and demo/live modes.
-
-### Implementation status
-
-The live software flow is verified: authenticated API → durable queue → locally
-signed-in Codex generation → CreateOS EU sandbox → Neon persistence → independent
-benchmark → artifact-bound proposal. The latest run passed 33 requests at 549 ms p95
-with zero errors, then destroyed its sandbox. See [live verification](docs/live-verification.md).
-
-Run `npm run demo:live` after following the live settings in
-[backend development](docs/backend-development.md). Generation uses the signed-in
-Codex allowance; sandbox execution uses CreateOS credits. Stripe Projects provisions
-the free CreateOS and Neon resources. Fixture mode remains explicitly simulated.
-
-Permanent deployment and shipping remain unfinished. A live repair still needs a
-demonstration; the verified generated revision passed on its first attempt. Hardware
-modules cover reference firmware/HDL packages and pre-arrival checks, not automated
-physical purchases or verified device operation.
-
-See [implementation phases](docs/implementation-phases.md) and
-[provider setup](docs/provider-setup.md) for the current handoff.
+</div>

@@ -1,4 +1,4 @@
-// Scripted demo run. Fixed example content per CLAUDE.md / task spec, regardless of what the
+// Scripted demo run. Fixed example content per the task spec, regardless of what the
 // user typed on the Brief screen (the UI shows "Demo · scripted example run" for this reason).
 // Two arrays: events up to the approval gate, and events after the user clicks Approve.
 import type { BomItem, RunEvent, Service } from '../../shared/types'
