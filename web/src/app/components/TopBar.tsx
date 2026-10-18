@@ -4,8 +4,6 @@ import { Logo } from '../../shared/Logo'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { cn } from '@/lib/utils'
 import type { Mode } from '../../shared/types'
 
 interface TopBarProps {
@@ -36,19 +34,10 @@ export function TopBar({ mode, onModeChange, reachable, fixtureRun, simulated, o
 
       <div className="flex items-center gap-2">
         <Button asChild size="sm" variant="outline"><Link to="/">Back to site</Link></Button>
-        {mode === 'live' && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Badge
-                variant="outline"
-                className={cn('gap-1 font-sans', reachable === null ? 'border-line text-muted' : reachable ? 'border-blue/30 text-blue' : 'border-bad/30 text-bad')}
-              >
-                <span className={cn('size-1.5 rounded-full', reachable === null ? 'bg-muted' : reachable ? 'bg-blue' : 'bg-bad')} />
-                Backend: 127.0.0.1:3000 via proxy
-              </Badge>
-            </TooltipTrigger>
-            <TooltipContent>{reachable === null ? 'checking…' : reachable ? 'reachable' : 'createOS credits empty, join our waitlist, and try out demo instead!'}</TooltipContent>
-          </Tooltip>
+        {mode === 'live' && reachable === false && (
+          <Button asChild size="sm" variant="outline" className="border-gold/50 text-gold hover:bg-gold/10">
+            <Link to="/login">Join the waitlist</Link>
+          </Button>
         )}
         <Button size="sm" variant="outline" onClick={onNewRun} className="gap-1.5">
           <Plus className="size-3.5" /> New run
