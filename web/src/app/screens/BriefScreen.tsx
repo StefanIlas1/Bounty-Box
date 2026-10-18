@@ -9,7 +9,6 @@ import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Logo } from '../../shared/Logo'
-import { ModeToggle } from '../../shared/ModeToggle'
 import type { Mode } from '../../shared/types'
 import type { StartPayload } from '../live/useLiveRun'
 
@@ -48,13 +47,7 @@ export function BriefScreen({
   const [useFixtures, setUseFixtures] = useState(false)
   const [advancedOpen, setAdvancedOpen] = useState(false)
   const [hardwareOn, setHardwareOn] = useState(!!initialHardware)
-  const [deviceNeeds, setDeviceNeeds] = useState(initialHardware ? 'A door sensor that posts signups from a kiosk' : '')
-
-  const [hardwareName, setHardwareName] = useState('STM32 NUCLEO-F446RE')
-  const [hardwarePrice, setHardwarePrice] = useState(28.19)
-  const [hardwareQty, setHardwareQty] = useState(1)
-
-  const canStart = prompt.trim().length > 0 && budget > 0 && users > 0 && (!hardwareOn || (hardwareName.trim().length > 0 && Number.isFinite(hardwarePrice) && hardwarePrice >= 0 && Number.isInteger(hardwareQty) && hardwareQty > 0 && hardwareQty <= 1000))
+  const canStart = prompt.trim().length > 0 && budget > 0 && users > 0
 
   const start = () =>
     onStart({
@@ -67,8 +60,7 @@ export function BriefScreen({
       maxErrorRate,
       useFixtures,
       hardwareOn,
-      deviceNeeds,
-      hardwareItem: { name: hardwareName.trim(), unitPriceUsd: hardwarePrice, qty: hardwareQty, supplier: 'Demo catalog' },
+      deviceNeeds: hardwareOn ? prompt : undefined,
     })
 
   return (
@@ -121,24 +113,17 @@ export function BriefScreen({
         </div>
 
         <div className="flex flex-col gap-2">
-          <ModeToggle hardware={hardwareOn} onChange={setHardwareOn} className="self-start" />
-          {hardwareOn && mode === 'demo' && <div className="grid grid-cols-2 gap-3">
-            <div className="col-span-2"><Label htmlFor="hardware-item">Hardware item</Label><Input id="hardware-item" value={hardwareName} onChange={e => setHardwareName(e.target.value)} /></div>
-            <div><Label htmlFor="hardware-price">Unit price (USD, one-time)</Label><Input id="hardware-price" type="number" min={0} step={0.01} value={hardwarePrice} onChange={e => setHardwarePrice(Number(e.target.value))} /></div>
-            <div><Label htmlFor="hardware-qty">Quantity</Label><Input id="hardware-qty" type="number" min={1} max={1000} step={1} value={hardwareQty} onChange={e => setHardwareQty(Number(e.target.value))} /></div>
-          </div>}
-          {hardwareOn && (
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="device-needs">Device needs</Label>
-              <Input
-                id="device-needs"
-                value={deviceNeeds}
-                onChange={(e) => setDeviceNeeds(e.target.value)}
-                placeholder="e.g. a door sensor that posts signups from a kiosk"
-              />
-              {mode === 'live' && <p className="text-xs text-muted">Hardware planning runs in demo only for now.</p>}
-            </div>
-          )}
+          <label className="flex cursor-pointer items-center gap-2 text-sm text-ink" htmlFor="hardware-functionality">
+            <input
+              id="hardware-functionality"
+              type="checkbox"
+              checked={hardwareOn}
+              onChange={(e) => setHardwareOn(e.target.checked)}
+              className="size-4 accent-gold"
+            />
+            Hardware functionality
+          </label>
+          {hardwareOn && mode === 'live' && <p className="text-xs text-muted">Hardware planning runs in demo only for now.</p>}
         </div>
 
         {mode === 'live' && (

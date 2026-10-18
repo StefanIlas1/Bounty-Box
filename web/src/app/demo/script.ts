@@ -217,7 +217,7 @@ function hardwareSegment(startAt: number, deviceNeeds: string, item: BomItem): R
   const oneTimeCostUsd = Math.round(item.qty * item.unitPriceUsd * 100) / 100
   return [
     { type: 'agent_message', text: `Reviewing hardware for ${deviceNeeds}. Adding ${item.qty} × ${item.name} from the demo catalog.`, at: startAt + 700 },
-    { type: 'decision', requirement: 'hardware', chosen: item.name, alternatives: [], evidence: `Configured demo item: ${item.qty} × $${item.unitPriceUsd.toFixed(2)} = $${oneTimeCostUsd.toFixed(2)} one-time.`, at: startAt + 2300 },
+    { type: 'decision', requirement: 'hardware', chosen: item.name, alternatives: [], evidence: `Selected from the demo catalog: ${item.qty} × $${item.unitPriceUsd.toFixed(2)} = $${oneTimeCostUsd.toFixed(2)} one-time.`, at: startAt + 2300 },
     { type: 'file_written', stackId: 'C', path: 'hardware/bill-of-materials.json', content: JSON.stringify({ items: [item], oneTimeCostUsd }, null, 2), at: startAt + 3700 },
     { type: 'command', stackId: 'C', cmd: 'demo validate-hardware-plan', output: `Demo hardware plan validated: ${item.qty} × ${item.name}. No physical device or firmware was tested.`, exitCode: 0, at: startAt + 5500 },
     { type: 'agent_message', text: `Added ${item.name}: $${oneTimeCostUsd.toFixed(2)} one-time. Monthly services stay $27.40/month. First month total: $${(27.4 + oneTimeCostUsd).toFixed(2)} (example USD prices, excluding shipping and tax).`, at: startAt + 7000 },
