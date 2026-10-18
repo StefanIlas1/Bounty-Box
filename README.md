@@ -16,13 +16,7 @@
 
 ## Demo
 
-<div align="center">
-
-[![Watch the Bounty-Box demo](media/demo-poster.jpg)](media/bounty-box-demo.mp4)
-
-**[▶ Play the 2-minute demo](media/bounty-box-demo.mp4)**
-
-</div>
+https://github.com/user-attachments/assets/7cd49a59-5503-4934-80a6-02cbc07c6f16
 
 ## The problem
 
