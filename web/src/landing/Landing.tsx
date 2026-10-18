@@ -167,7 +167,7 @@ export function NavBar() {
             <Link to="/demo">Try the demo</Link>
           </Button>
           <Button asChild className={cn(CTA_GOLD, 'py-2')}>
-            <Link to="/app?mode=live">Start a build</Link>
+            <Link to="/waitlist">Start a build</Link>
           </Button>
         </div>
 
@@ -205,7 +205,7 @@ export function NavBar() {
                   <Link to="/demo">Try the demo</Link>
                 </Button>
                 <Button asChild className={cn(CTA_GOLD, 'justify-center py-2.5')}>
-                  <Link to="/app?mode=live">Start a build</Link>
+                  <Link to="/waitlist">Start a build</Link>
                 </Button>
               </div>
             </nav>
@@ -237,7 +237,7 @@ function Hero() {
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Button asChild className={CTA_GOLD}>
-            <Link to={mode === 'hardware' ? '/app?mode=live&hardware=1' : '/app?mode=live'}>
+            <Link to={mode === 'hardware' ? '/waitlist?hardware=1' : '/waitlist'}>
               Start a build <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
@@ -437,7 +437,7 @@ function FinalCta() {
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Button asChild className={CTA_GOLD}>
-            <Link to="/app?mode=live">
+            <Link to="/waitlist">
               Start a build <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>

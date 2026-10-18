@@ -6,6 +6,10 @@
   "outputDirectory": "web/dist",
   "rewrites": [
     {
+      "source": "/waitlist",
+      "destination": "/index.html"
+    },
+    {
       "source": "/demo",
       "destination": "/index.html"
     },
