@@ -5,7 +5,8 @@ import { cn } from '@/lib/utils'
 const SRC = '/media/bounty-box-demo.mp4'
 const POSTER = '/media/demo-poster.jpg'
 
-// Fades in and starts playing (muted, as browsers require) when scrolled into view.
+// Fades in and starts playing with sound when scrolled into view. If the browser blocks
+// sound before the first interaction, it plays muted and unmutes on the first click, tap or key.
 // Pauses when scrolled away; once the viewer pauses it themselves, it stays paused.
 export function DemoVideo({ className }: { className?: string }) {
   const wrap = useRef<HTMLDivElement>(null)
@@ -18,11 +19,25 @@ export function DemoVideo({ className }: { className?: string }) {
     const el = wrap.current
     const v = video.current
     if (!el || !v) return
+    // Turn sound on at the first click, tap or key press if autoplay had to start muted.
+    const unmute = () => {
+      v.muted = false
+      off()
+    }
+    const off = () => ['pointerdown', 'keydown', 'touchstart'].forEach((t) => window.removeEventListener(t, unmute))
+    const start = () => {
+      v.muted = false
+      v.play().catch(() => {
+        v.muted = true
+        v.play().catch(() => {})
+        ;['pointerdown', 'keydown', 'touchstart'].forEach((t) => window.addEventListener(t, unmute, { once: true }))
+      })
+    }
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setShown(true)
-          if (!userPaused.current) v.play().catch(() => {})
+          if (!userPaused.current) start()
         } else if (!v.paused) {
           autoPausing.current = true
           v.pause()
@@ -31,7 +46,10 @@ export function DemoVideo({ className }: { className?: string }) {
       { threshold: 0.45 },
     )
     io.observe(el)
-    return () => io.disconnect()
+    return () => {
+      io.disconnect()
+      off()
+    }
   }, [])
 
   const onPause = () => {
@@ -52,7 +70,6 @@ export function DemoVideo({ className }: { className?: string }) {
         ref={video}
         src={SRC}
         poster={POSTER}
-        muted
         playsInline
         controls
         preload="metadata"
