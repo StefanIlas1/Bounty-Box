@@ -78,6 +78,59 @@
 .bb-ring { animation: bb-ring 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
 @media (prefers-reduced-motion: reduce) { .bb-pop, .bb-ring { animation: none } }
 
+/* ---------- product shots ---------- */
+.bb-shot-frame {
+  border-radius: 10px;
+  border: 1px solid var(--color-line);
+  overflow: hidden;
+  background: var(--color-navy);
+  box-shadow: 0 14px 34px -14px rgba(0, 0, 0, 0.6);
+}
+.bb-shot-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+/* Hero backdrop collage: real product shots, tilted and faded so they read as texture, not UI. */
+.bb-hero-collage {
+  position: absolute;
+  inset: 0;
+  z-index: -20;
+  overflow: hidden;
+  pointer-events: none;
+}
+.bb-hero-shot {
+  position: absolute;
+  border-radius: 12px;
+  border: 1px solid var(--color-line);
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.7);
+  opacity: 0.16;
+  filter: saturate(0.85);
+}
+.bb-hero-shot img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.bb-hero-shot--left {
+  left: -8%;
+  top: 8%;
+  width: min(30vw, 420px);
+  transform: rotate(-9deg);
+  -webkit-mask-image: linear-gradient(115deg, #000 35%, transparent 78%);
+  mask-image: linear-gradient(115deg, #000 35%, transparent 78%);
+}
+.bb-hero-shot--right {
+  right: -8%;
+  bottom: 6%;
+  width: min(26vw, 380px);
+  transform: rotate(7deg);
+  -webkit-mask-image: linear-gradient(-115deg, #000 35%, transparent 78%);
+  mask-image: linear-gradient(-115deg, #000 35%, transparent 78%);
+}
+@media (max-width: 1024px) {
+  .bb-hero-collage { display: none; }
+}
+
 /* Catalog strip: slow seamless scroll of glowing gold app widgets. */
 @keyframes bb-marquee { from { transform: translateX(0) } to { transform: translateX(calc(-50% - 0.5rem)) } }
 .bb-marquee { animation: bb-marquee 40s linear infinite; }
@@ -86,3 +139,5 @@
 .bb-widget { box-shadow: 0 0 24px -6px rgb(233 185 73 / 0.45), inset 0 1px 0 rgb(246 249 252 / 0.06); }
 .bb-widget svg { filter: drop-shadow(0 0 6px rgb(233 185 73 / 0.7)); }
 @media (prefers-reduced-motion: reduce) { .bb-marquee { animation: none; flex-wrap: wrap; justify-content: center; width: auto } }
+/* Every step's product shot gets the same frame height so the row stays even. */
+.bb-shot-frame { height: 9rem; overflow: hidden; }

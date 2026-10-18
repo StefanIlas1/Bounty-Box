@@ -63,6 +63,21 @@ html, body { background: var(--color-bg); color: var(--color-ink); font-family: 
 body { margin: 0; -webkit-font-smoothing: antialiased; }
 ::selection { background: var(--color-blue); color: white; }
 
+/* Subtle film-grain over the whole app so the flat near-black has texture. Sits behind real content. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("/textures/grain.png");
+  background-repeat: repeat;
+  background-size: 180px 180px;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+}
+#root { position: relative; z-index: 1; }
+
 @theme inline {
   --font-heading: "Geist Variable", "Geist", system-ui, sans-serif;
   --font-sans: 'Geist Variable', sans-serif;

@@ -397,6 +397,9 @@ function Trust() {
   return (
     <section id="trust" className="relative isolate scroll-mt-16 overflow-hidden border-b border-line">
       <GridPattern aria-hidden="true" width={56} height={56} className="pointer-events-none absolute inset-0 -z-10 stroke-line/50 [mask-image:radial-gradient(500px_circle_at_80%_20%,white,transparent)]" />
+      <div aria-hidden="true" className="bb-hero-shot bb-hero-shot--left -z-10 hidden lg:block">
+        <img src="/shots/code.png" alt="" loading="lazy" decoding="async" width={900} height={416} />
+      </div>
       <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
         <SectionHead
           eyebrow="Trust"
