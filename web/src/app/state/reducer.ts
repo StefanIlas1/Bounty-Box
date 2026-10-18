@@ -193,7 +193,7 @@ export function runReducer(state: RunState, event: RunEvent): RunState {
       else files.push(entry)
       return {
         ...next,
-        phase: 'writing',
+        phase: event.preservePhase ? next.phase : 'writing',
         stacks: { ...next.stacks, [event.stackId]: { ...s, files } },
       }
     }

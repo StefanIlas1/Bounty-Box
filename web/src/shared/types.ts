@@ -43,7 +43,7 @@ export type RunEvent =
   | { type: 'agent_message'; text: string; at: number }                       // narrative line from the agent
   | { type: 'sandbox'; action: 'created' | 'egress_set' | 'paused' | 'resumed' | 'destroyed'; sandboxId: string; detail?: string; at: number }
   | { type: 'stack_proposed'; stack: Stack; reason: string; at: number }
-  | { type: 'file_written'; stackId: string; path: string; content: string; at: number }
+  | { type: 'file_written'; stackId: string; path: string; content: string; at: number; preservePhase?: boolean }
   | { type: 'command'; stackId: string; cmd: string; output: string; exitCode: number; at: number }
   | { type: 'fix_attempt'; stackId: string; attempt: number; error: string; change: string; at: number }  // self-fix loop
   | { type: 'load_test'; stackId: string; result: LoadResult; at: number }

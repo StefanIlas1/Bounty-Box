@@ -83,7 +83,7 @@ export function useLiveRun({ dispatch, setPhase, resetState, initialRunId }: Use
       void getRunArtifact(snap.id, attempt.number).then(({ app }) => {
         if (epoch !== epochRef.current || app.revision < (artifactRevisionRef.current.get(attempt.stack.id) ?? 0)) return
         artifactRevisionRef.current.set(attempt.stack.id, app.revision)
-        for (const file of app.files) dispatch({ type: 'file_written', stackId: attempt.stack.id, path: file.path, content: file.content, at: Date.now() })
+        for (const file of app.files) dispatch({ type: 'file_written', stackId: attempt.stack.id, path: file.path, content: file.content, at: Date.now(), preservePhase: true })
       }).catch(() => {
         artifactsRef.current.delete(key)
       })

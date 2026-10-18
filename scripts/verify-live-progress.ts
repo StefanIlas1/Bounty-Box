@@ -12,3 +12,11 @@ assert.equal(state.transcript.at(-1)?.text,'Generating the requested app');
 assert.equal(state.stacks['createos-neon'].loadResults.length,0,'No invented benchmark');
 assert.equal(diffSnapshot(snap,snap).length,0,'Polling must not duplicate entries');
 console.log('Pending live run shows stack, estimate, decision and real status without fabricated results.');
+
+for(const phase of ['awaiting_approval','buying','live','error'] as const){
+ const waiting={...state,phase};
+ const hydrated=runReducer(waiting,{type:'file_written',stackId:'createos-neon',path:'server.mjs',content:'// real source',at:1,preservePhase:true});
+ assert.equal(hydrated.phase,phase,'Late source loading must preserve authoritative backend phase');
+ assert.equal(hydrated.stacks['createos-neon'].files.length,1);
+}
+console.log('Late artifact hydration preserves approval and settled phases.');
