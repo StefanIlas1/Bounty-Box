@@ -24,7 +24,7 @@ import {
 } from 'lucide-react'
 import { Logo } from '../shared/Logo'
 import { ModeToggle } from '../shared/ModeToggle'
-import { siNeon, siSupabase, siUpstash, siResend, siVercel, siRailway, siAuth0, siRender, siStripe, siCloudflare, siPosthog, siRedis } from 'simple-icons'
+import { siNeon, siSupabase, siUpstash, siResend, siVercel, siRailway, siAuth0, siRender, siStripe, siCloudflare, siPosthog, siRedis, siTurso, siClickhouse, siPrisma, siFlydotio, siAlgolia, siDatadog, siCloudinary, siOpenrouter, siMongodb, siSentry, siNetlify, siPerplexity } from 'simple-icons'
 import { ProviderGrid, type GridMode } from './ProviderGrid'
 import { IterationStory } from './IterationStory'
 import { FigChart } from './FigChart'
@@ -68,6 +68,10 @@ const CATALOG_PROVIDERS = [
   { name: 'Resend', path: siResend.path }, { name: 'Vercel', path: siVercel.path }, { name: 'Railway', path: siRailway.path },
   { name: 'Auth0', path: siAuth0.path }, { name: 'Render', path: siRender.path }, { name: 'Stripe', path: siStripe.path },
   { name: 'Cloudflare', path: siCloudflare.path }, { name: 'PostHog', path: siPosthog.path }, { name: 'Redis', path: siRedis.path },
+  { name: 'Turso', path: siTurso.path }, { name: 'ClickHouse', path: siClickhouse.path }, { name: 'Prisma', path: siPrisma.path },
+  { name: 'Fly.io', path: siFlydotio.path }, { name: 'Algolia', path: siAlgolia.path }, { name: 'Datadog', path: siDatadog.path },
+  { name: 'Cloudinary', path: siCloudinary.path }, { name: 'OpenRouter', path: siOpenrouter.path }, { name: 'MongoDB', path: siMongodb.path },
+  { name: 'Sentry', path: siSentry.path }, { name: 'Netlify', path: siNetlify.path }, { name: 'Perplexity', path: siPerplexity.path },
 ]
 
 type IterationCard = {
@@ -260,11 +264,11 @@ function CatalogRow() {
       <div className="py-10 text-center">
         <p className="mb-6 text-xs font-medium uppercase tracking-[0.12em] text-muted">Buys from the Stripe Projects catalog</p>
         <div className="bb-marquee-mask overflow-hidden">
-          <ul className="bb-marquee flex w-max gap-4" aria-label="Providers in the Stripe Projects catalog">
+          <ul className="bb-marquee flex w-max gap-7" aria-label="Providers in the Stripe Projects catalog">
             {loop.map((p, i) => (
-              <li key={`${p.name}-${i}`} aria-hidden={i >= CATALOG_PROVIDERS.length} className="bb-widget flex h-20 w-20 shrink-0 flex-col items-center justify-center gap-1.5 rounded-xl border border-gold/25 bg-surface">
-                <svg viewBox="0 0 24 24" className="h-7 w-7 text-gold" fill="currentColor" aria-hidden="true"><path d={p.path} /></svg>
-                <span className="text-[10px] font-medium text-ink/80">{p.name}</span>
+              <li key={`${p.name}-${i}`} aria-hidden={i >= CATALOG_PROVIDERS.length} className="bb-widget flex h-[136px] w-[136px] shrink-0 flex-col items-center justify-center gap-2.5 rounded-2xl border border-gold/25 bg-surface">
+                <svg viewBox="0 0 24 24" className="h-12 w-12 text-gold" fill="currentColor" aria-hidden="true"><path d={p.path} /></svg>
+                <span className="text-[17px] font-medium text-ink/80">{p.name}</span>
               </li>
             ))}
           </ul>
