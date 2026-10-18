@@ -99,15 +99,15 @@ const ITERATIONS: IterationCard[] = [
 
 const STEPS = [
   {
-    n: '01', icon: PenLine, title: 'Describe', detail: 'Your brief and budget become a locked spec.',
+    n: '01', icon: PenLine, title: 'Describe', detail: 'Your brief, budget, and target users become a locked project spec.',
     shot: '/shots/describe.png',
     shotAlt: 'Describe form with a project brief, monthly budget, and target users',
   },
   {
     n: '02',
     icon: FlaskConical,
-    title: 'Test in a CreateOS sandbox',
-    detail: 'Runs behind an egress allowlist; a self-fix loop patches what fails.',
+    title: 'Test',
+    detail: 'The agent tests and fixes code in a CreateOS sandbox with an egress allowlist.',
     shot: '/shots/terminal.png',
     shotAlt: 'Terminal tab showing a failed test, a self-fix, then a passing load test inside the CreateOS sandbox',
   },
@@ -122,8 +122,8 @@ const STEPS = [
   {
     n: '04',
     icon: Rocket,
-    title: 'Buy and ship with Stripe Projects',
-    detail: 'Each service is bought with stripe projects add, then you get a live ingress URL.',
+    title: 'Buy and ship',
+    detail: 'Buy services through Stripe Projects, then get your live project URL.',
     shot: '/shots/sandbox-cart.png',
     shotAlt: 'Sandbox and cart panel with an egress allowlist, a paused sandbox, and a Stripe Projects approve button',
   },
@@ -383,7 +383,7 @@ function HowItWorks() {
                 </div>
                 <span className="text-xs tabular-nums text-muted/70">{s.n}</span>
               </div>
-              <h3 className="text-base font-semibold text-ink">{s.title}</h3>
+              <h3 className="text-lg font-semibold leading-6 tracking-tight text-ink">{s.title}</h3>
               <p className="text-sm leading-relaxed text-muted">{s.detail}</p>
               {s.shot && (
                 <div className="bb-shot-frame bb-step-shot">
