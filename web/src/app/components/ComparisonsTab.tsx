@@ -1,8 +1,9 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { StatusPill, type PillStatus } from './StatusPill'
+import type { Mode } from '../../shared/types'
 import type { RunState } from '../state/reducer'
 
-export function ComparisonsTab({ state }: { state: RunState }) {
+export function ComparisonsTab({ state, mode = 'demo' }: { state: RunState; mode?: Mode }) {
   const rows = state.stackOrder.map((id) => state.stacks[id])
 
   if (rows.length === 0) {
@@ -18,7 +19,7 @@ export function ComparisonsTab({ state }: { state: RunState }) {
             <TableHead className="w-[27%]">Services</TableHead>
             <TableHead className="w-[9%]">p95</TableHead>
             <TableHead className="w-[10%]">Error rate</TableHead>
-            <TableHead className="w-[12%]">Users</TableHead>
+            <TableHead className="w-[12%]">{mode === 'live' ? 'Concurrency' : 'Users'}</TableHead>
             <TableHead className="w-[9%]">$/mo</TableHead>
             <TableHead className="w-[17%]">Status</TableHead>
           </TableRow>
@@ -26,7 +27,6 @@ export function ComparisonsTab({ state }: { state: RunState }) {
         <TableBody>
           {rows.map((s) => {
             const last = s.loadResults[s.loadResults.length - 1]
-            const bestUsers = s.loadResults.reduce((max, r) => (r.passed && r.users > max ? r.users : max), 0)
             return (
               <TableRow key={s.stack.id}>
                 <TableCell className="truncate font-semibold">
@@ -40,7 +40,7 @@ export function ComparisonsTab({ state }: { state: RunState }) {
                 </TableCell>
                 <TableCell className="truncate font-mono">{last ? `${last.p95Ms}ms` : '—'}</TableCell>
                 <TableCell className="truncate font-mono">{last ? `${(last.errorRate * 100).toFixed(1)}%` : '—'}</TableCell>
-                <TableCell className="truncate font-mono">{last ? (last.passed ? last.users.toLocaleString() : `~${bestUsers || Math.round(last.users * 0.8)}`) : '—'}</TableCell>
+                <TableCell className="truncate font-mono">{last ? last.users.toLocaleString() : '—'}</TableCell>
                 <TableCell className="truncate font-mono">{s.monthlyCost != null ? `$${s.monthlyCost.toFixed(2)}` : '—'}</TableCell>
                 <TableCell className="truncate">{s.status ? <StatusPill status={s.status as PillStatus} /> : <StatusPill status="pending" />}</TableCell>
               </TableRow>
@@ -48,6 +48,7 @@ export function ComparisonsTab({ state }: { state: RunState }) {
           })}
         </TableBody>
       </Table>
+      {mode === 'live' && <p className="border-t border-line px-4 py-3 text-xs text-muted">Concurrency is the tested number of simultaneous requests, not verified user capacity. Results come from this run; no performance estimate is substituted for a failed test.</p>}
       {!!state.bom?.length && <section className="border-t border-line p-4" aria-label="Hardware comparison">
         <h3 className="mb-2 text-sm font-semibold">Hardware · one-time costs</h3>
         <Table>

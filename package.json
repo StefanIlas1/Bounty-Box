@@ -16,7 +16,8 @@
     "test:orchestrator": "node --import tsx src/lib/orchestrator/smoke.cjs",
     "test:benchmark": "tsx src/lib/benchmark/smoke.ts",
     "test:providers": "tsx src/lib/createos/software.smoke.ts",
-    "test": "npm run test:backend && npm run test:orchestrator && npm run test:benchmark && npm run test:providers"
+    "test": "npm run test:backend && npm run test:orchestrator && npm run test:benchmark && npm run test:providers",
+    "test:hosted": "tsx --test src/lib/hosted/*.test.ts"
   },
   "dependencies": {
     "@nodeops-createos/sandbox": "^0.8.2"

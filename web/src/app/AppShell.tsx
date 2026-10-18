@@ -94,7 +94,7 @@ export default function AppShell({ defaultMode }: { defaultMode?: Mode }) {
           <div className="flex items-center gap-3 border-b border-bad/30 bg-bad/10 px-5 py-2.5 text-sm text-ink">
             <AlertTriangle className="size-4 shrink-0 text-bad" />
             <span className="flex-1">
-              createOS credits empty, join our waitlist, and try out demo instead!
+              The live backend is currently unavailable. Retry shortly or explore the scripted demo.
             </span>
             <Button size="sm" variant="outline" onClick={() => setMode('demo')}>Switch to Demo</Button>
           </div>
@@ -110,7 +110,7 @@ export default function AppShell({ defaultMode }: { defaultMode?: Mode }) {
             mode={mode}
             state={state}
             onApprove={handleApprove}
-            approving={false}
+            approving={mode === 'live' && liveRun.approving}
             demoControls={
               mode === 'demo'
                 ? {

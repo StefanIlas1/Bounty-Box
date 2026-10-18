@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Mic, ArrowRight, ChevronDown } from 'lucide-react'
 import { GridPattern } from '@/components/ui/grid-pattern'
 import { Button } from '@/components/ui/button'
@@ -6,16 +6,15 @@ import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import { Switch } from '@/components/ui/switch'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Logo } from '../../shared/Logo'
 import type { Mode } from '../../shared/types'
 import type { StartPayload } from '../live/useLiveRun'
 
 const EXAMPLES = [
-  'A waitlist app with email signups that survives 1,000 concurrent users',
-  'A link shortener with click analytics for a small marketing team',
-  'An internal feedback form that notifies Slack on every submission',
+  'A task tracker for a student team with priorities and completion status',
+  'A portfolio for a landscape photographer with a project gallery',
+  'An event interest form for a campus robotics club',
 ]
 
 // ADR-10 defaults.
@@ -37,17 +36,23 @@ export function BriefScreen({
   startError?: string | null
   initialHardware?: boolean
 }) {
-  const [prompt, setPrompt] = useState(mode === 'live' ? 'A small email waitlist with normalized unique emails persisted in Neon Postgres.' : EXAMPLES[0])
+  const [prompt, setPrompt] = useState(mode === 'live' ? '' : EXAMPLES[0])
   const [budget, setBudget] = useState(30)
-  const [users, setUsers] = useState(mode === 'live' ? 100 : 1000)
-  const [concurrency, setConcurrency] = useState(mode === 'live' ? 2 : DEFAULT_CONCURRENCY)
+  const [users, setUsers] = useState(mode === 'live' ? 1 : 1000)
+  const [concurrency, setConcurrency] = useState(mode === 'live' ? 1 : DEFAULT_CONCURRENCY)
   const [durationSeconds, setDurationSeconds] = useState(mode === 'live' ? 5 : DEFAULT_DURATION_S)
-  const [maxP95Ms, setMaxP95Ms] = useState(mode === 'live' ? 2000 : DEFAULT_MAX_P95)
+  const [maxP95Ms, setMaxP95Ms] = useState(mode === 'live' ? 10000 : DEFAULT_MAX_P95)
   const [maxErrorRate, setMaxErrorRate] = useState(DEFAULT_MAX_ERROR_RATE)
-  const [useFixtures, setUseFixtures] = useState(false)
   const [advancedOpen, setAdvancedOpen] = useState(false)
   const [hardwareOn, setHardwareOn] = useState(!!initialHardware)
-  const canStart = prompt.trim().length > 0 && budget > 0 && users > 0
+  useEffect(() => {
+    setPrompt(mode === 'live' ? '' : EXAMPLES[0])
+    setUsers(mode === 'live' ? 1 : 1000)
+    setConcurrency(mode === 'live' ? 1 : DEFAULT_CONCURRENCY)
+    setDurationSeconds(mode === 'live' ? 5 : DEFAULT_DURATION_S)
+    setMaxP95Ms(mode === 'live' ? 10000 : DEFAULT_MAX_P95)
+  }, [mode])
+  const canStart = prompt.trim().length > 0 && Number.isFinite(budget) && budget >= 0 && Number.isInteger(users) && users > 0 && (mode !== 'live' || (users <= 100 && Number.isInteger(concurrency) && concurrency >= 1 && concurrency <= 2 && durationSeconds >= 1 && durationSeconds <= 5 && maxP95Ms > 0 && maxErrorRate >= 0 && maxErrorRate <= 1))
 
   const start = () =>
     onStart({
@@ -58,7 +63,7 @@ export function BriefScreen({
       durationSeconds,
       maxP95Ms,
       maxErrorRate,
-      useFixtures,
+      useFixtures: false,
       hardwareOn,
       deviceNeeds: hardwareOn ? prompt : undefined,
     })
@@ -86,7 +91,7 @@ export function BriefScreen({
             id="brief-prompt"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Describe the app..."
+            placeholder="Describe your end goal, who the app is for, and what it should do..."
             className="min-h-28 text-base"
           />
         </div>
@@ -104,11 +109,11 @@ export function BriefScreen({
         <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="budget">Budget ($/mo)</Label>
-            <Input id="budget" type="number" min={1} value={budget} onChange={(e) => setBudget(Number(e.target.value))} />
+            <Input id="budget" type="number" min={0} value={budget} onChange={(e) => setBudget(Number(e.target.value))} />
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="users">Target users</Label>
-            <Input id="users" type="number" min={1} value={users} onChange={(e) => setUsers(Number(e.target.value))} />
+            <Input id="users" type="number" min={1} max={mode === 'live' ? 100 : undefined} value={users} onChange={(e) => setUsers(Number(e.target.value))} />
           </div>
         </div>
 
@@ -144,17 +149,11 @@ export function BriefScreen({
                 <Field label="Max error rate" value={maxErrorRate} onChange={setMaxErrorRate} step={0.01} />
               </div>
             )}
-            <div className="flex items-center justify-between border-t border-line px-3 py-2.5">
-              <div className="flex flex-col">
-                <span className="text-sm text-ink">Use backend fixtures</span>
-                <span className="text-xs text-muted">Deterministic test data instead of a live run.</span>
-              </div>
-              <Switch checked={useFixtures} onCheckedChange={setUseFixtures} />
-            </div>
+
           </div>
         )}
 
-        {mode === 'live' && <p className="text-xs text-muted">Live trial: up to 100 target users, 5 concurrent test requests and 30 seconds. Target users are a planning input, not measured capacity. Default test: 2 concurrent requests for 5 seconds.</p>}
+        {mode === 'live' && <p className="text-xs text-muted">Live builds generate a small web app from your goal and run bounded checks in CreateOS. Up to 100 planned users; default test is 2 concurrent requests for 5 seconds. Planned users are not measured capacity.</p>}
         {startError && <p className="text-sm text-bad">{startError}</p>}
 
         <div className="flex items-center gap-2">
@@ -182,8 +181,8 @@ export function BriefScreen({
           {[
             ['Agent', 'left panel: its reasoning, live'],
             ['Code', 'files it writes and fixes'],
-            ['Terminal + Sandbox', 'real runs in CreateOS'],
-            ['Cart', 'buy the winner via Stripe'],
+            ['Terminal + Sandbox', mode === 'live' ? 'real runs in CreateOS' : 'scripted example output'],
+            ['Cart', 'review costs before deployment'],
           ].map(([t, d], i) => (
             <li key={t} className="rounded border border-line/70 px-2.5 py-2">
               <span className="font-medium text-ink"><span className="mr-1 tabular-nums text-gold">{i + 1}</span>{t}</span>

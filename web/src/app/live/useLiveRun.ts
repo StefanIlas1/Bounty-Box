@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { RunEvent, BomItem } from '../../shared/types'
 import type { RunSnapshot } from '../../shared/backend'
 import type { Phase } from '../state/reducer'
-import { approveRun, cancelRun, createRun, getRun, probeBackendReachable } from './client'
+import { advanceRun, approveRun, cancelRun, createRun, getRun, getRunArtifact, safeApiError, probeBackendReachable } from './client'
 import { diffSnapshot, STAGE_TO_PHASE, backendBriefToUiBrief } from './snapshotAdapter'
 
 export interface StartPayload {
@@ -33,11 +33,25 @@ export function useLiveRun({ dispatch, setPhase, resetState, initialRunId }: Use
   const [runId, setRunId] = useState<string | null>(null)
   const [snapshotMode, setSnapshotMode] = useState<RunSnapshot['mode'] | null>(null)
   const [starting, setStarting] = useState(false)
+  const [approving, setApproving] = useState(false)
+  const approvalRef = useRef(false)
+  const artifactsRef = useRef(new Set<string>())
+  const artifactRevisionRef = useRef(new Map<string, number>())
   const [startError, setStartError] = useState<string | null>(null)
   const snapshotRef = useRef<RunSnapshot | null>(null)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const runIdRef = useRef<string | null>(null)
   const epochRef = useRef(0)
+  const advanceRef = useRef<{ id: string; epoch: number } | null>(null)
+
+  const advance = useCallback((snap: RunSnapshot) => {
+    if (SETTLED.has(snap.status) || snap.mode !== 'live' || advanceRef.current) return
+    const task = { id: snap.id, epoch: epochRef.current }
+    advanceRef.current = task
+    void advanceRun(snap.id).catch(error => {
+      if (task.epoch === epochRef.current) setStartError(safeApiError(error))
+    }).finally(() => { if (advanceRef.current === task) advanceRef.current = null })
+  }, [])
 
   useEffect(() => {
     let disposed = false
@@ -60,7 +74,20 @@ export function useLiveRun({ dispatch, setPhase, resetState, initialRunId }: Use
     setPhase(STAGE_TO_PHASE[snap.status])
     setSnapshotMode(snap.mode)
     snapshotRef.current = snap
-    setStartError(snap.error ?? null)
+    setStartError(snap.error ? safeApiError(new Error(snap.error)) : null)
+    const epoch = epochRef.current
+    for (const attempt of snap.attempts) {
+      const key = `${snap.id}:${attempt.number}`
+      if (artifactsRef.current.has(key)) continue
+      artifactsRef.current.add(key)
+      void getRunArtifact(snap.id, attempt.number).then(({ app }) => {
+        if (epoch !== epochRef.current || app.revision < (artifactRevisionRef.current.get(attempt.stack.id) ?? 0)) return
+        artifactRevisionRef.current.set(attempt.stack.id, app.revision)
+        for (const file of app.files) dispatch({ type: 'file_written', stackId: attempt.stack.id, path: file.path, content: file.content, at: Date.now() })
+      }).catch(() => {
+        artifactsRef.current.delete(key)
+      })
+    }
   }, [dispatch, setPhase])
 
   const poll = useCallback(async () => {
@@ -72,25 +99,35 @@ export function useLiveRun({ dispatch, setPhase, resetState, initialRunId }: Use
       if (epoch !== epochRef.current) return
       applySnapshot(snap)
       if (SETTLED.has(snap.status)) stopPolling()
+      else advance(snap)
     } catch (error) {
-      if (epoch === epochRef.current) setStartError('createOS credits empty, join our waitlist, and try out demo instead!')
+      if (epoch === epochRef.current) setStartError(safeApiError(error))
     }
-  }, [applySnapshot, stopPolling])
+  }, [advance, applySnapshot, stopPolling])
 
   const watch = useCallback((snap: RunSnapshot) => {
     stopPolling()
     runIdRef.current = snap.id
     setRunId(snap.id)
     applySnapshot(snap)
-    if (!SETTLED.has(snap.status)) pollRef.current = setInterval(poll, POLL_MS)
-  }, [applySnapshot, poll, stopPolling])
+    if (!SETTLED.has(snap.status)) {
+      pollRef.current = setInterval(poll, POLL_MS)
+      advance(snap)
+    }
+  }, [advance, applySnapshot, poll, stopPolling])
 
   const stop = useCallback(() => {
     epochRef.current += 1
     stopPolling()
+    advanceRef.current = null
     runIdRef.current = null
     snapshotRef.current = null
     setRunId(null)
+    setStarting(false)
+    setApproving(false)
+    approvalRef.current = false
+    artifactsRef.current.clear()
+    artifactRevisionRef.current.clear()
     setSnapshotMode(null)
     setStartError(null)
   }, [stopPolling])
@@ -101,7 +138,7 @@ export function useLiveRun({ dispatch, setPhase, resetState, initialRunId }: Use
     void getRun(initialRunId).then(snap => {
       if (epoch === epochRef.current) watch(snap)
     }).catch(error => {
-      if (epoch === epochRef.current) setStartError('createOS credits empty, join our waitlist, and try out demo instead!')
+      if (epoch === epochRef.current) setStartError(safeApiError(error))
     })
     return () => { epochRef.current += 1; stopPolling() }
   }, [initialRunId, watch, stopPolling])
@@ -120,7 +157,7 @@ export function useLiveRun({ dispatch, setPhase, resetState, initialRunId }: Use
       }, payload.useFixtures ? 'fixture' : 'live')
       if (epoch === epochRef.current) watch(snap)
     } catch (error) {
-      if (epoch === epochRef.current) setStartError('createOS credits empty, join our waitlist, and try out demo instead!')
+      if (epoch === epochRef.current) setStartError(safeApiError(error))
     } finally {
       if (epoch === epochRef.current) setStarting(false)
     }
@@ -128,18 +165,31 @@ export function useLiveRun({ dispatch, setPhase, resetState, initialRunId }: Use
 
   const approve = useCallback(async () => {
     const snap = snapshotRef.current
-    if (!snap?.proposal) return
-    try { watch(await approveRun(snap.id, snap.proposal.id)) }
-    catch (error) { setStartError(error instanceof Error ? error.message : 'Approve failed.') }
+    if (!snap?.proposal || approvalRef.current) return
+    const epoch = epochRef.current
+    approvalRef.current = true
+    setApproving(true)
+    setStartError(null)
+    try {
+      const approved = await approveRun(snap.id, snap.proposal.id)
+      if (epoch === epochRef.current) watch(approved)
+    } catch (error) {
+      if (epoch === epochRef.current) setStartError(safeApiError(error))
+    } finally {
+      if (epoch === epochRef.current) { approvalRef.current = false; setApproving(false) }
+    }
   }, [watch])
 
   const cancel = useCallback(async () => {
     const id = runIdRef.current
     if (!id) return
-    try { watch(await cancelRun(id)) }
-    catch (error) { setStartError(error instanceof Error ? error.message : 'Cancel failed.') }
+    const epoch = epochRef.current
+    try {
+      const cancelled = await cancelRun(id)
+      if (epoch === epochRef.current) watch(cancelled)
+    } catch (error) { if (epoch === epochRef.current) setStartError(safeApiError(error)) }
   }, [watch])
 
   useEffect(() => () => { epochRef.current += 1; stopPolling() }, [stopPolling])
-  return { reachable, runId, snapshotMode, simulated: false, starting, startError, begin, approve, cancel, stop }
+  return { reachable, runId, snapshotMode, simulated: false, starting, approving, startError, begin, approve, cancel, stop }
 }

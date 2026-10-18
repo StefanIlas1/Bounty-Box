@@ -49,6 +49,11 @@ export interface BackendTestResult {
 }
 
 export interface BackendRunEvent {
+  kind?: 'command'
+  command?: string
+  output?: string
+  exitCode?: number
+  stackId?: string
   id: number
   at: string
   stage: BackendRunStatus

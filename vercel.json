@@ -1,10 +1,18 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vite",
-  "installCommand": "npm ci --prefix web",
+  "installCommand": "npm ci && npm ci --prefix web",
   "buildCommand": "npm run build --prefix web",
   "outputDirectory": "web/dist",
+  "functions": {
+    "api/builder.ts": { "maxDuration": 300 },
+    "api/product.ts": { "maxDuration": 30 }
+  },
   "rewrites": [
+    { "source": "/api/health", "destination": "/api/builder?path=health" },
+    { "source": "/api/runs", "destination": "/api/builder" },
+    { "source": "/api/runs/:path*", "destination": "/api/builder?path=:path*" },
+    { "source": "/product-v1/:slug", "destination": "/api/product?slug=:slug" },
     {
       "source": "/waitlist",
       "destination": "/index.html"

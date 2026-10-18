@@ -152,7 +152,7 @@ export function BuildScreen({ mode, state, onApprove, approving, demoControls, l
           </TabsList>
           <TabsContent value="code" className="mt-3 min-h-0 min-w-0 flex-1"><CodeTab state={state} mode={mode} /></TabsContent>
           <TabsContent value="terminal" className="mt-3 min-h-0 min-w-0 flex-1"><TerminalTab state={state} /></TabsContent>
-          <TabsContent value="comparisons" className="mt-3 min-h-0 min-w-0 flex-1"><ComparisonsTab state={state} /></TabsContent>
+          <TabsContent value="comparisons" className="mt-3 min-h-0 min-w-0 flex-1"><ComparisonsTab state={state} mode={mode} /></TabsContent>
           <TabsContent value="decisions" className="mt-3 min-h-0 min-w-0 flex-1"><DecisionsTab state={state} /></TabsContent>
         </Tabs>
       </div>
