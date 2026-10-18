@@ -29,3 +29,6 @@ try{
   if(!stopping&&Date.now()<deadline)await pause(2000);
  }
 }finally{clearInterval(heartbeat);console.log('Local worker stopped. Retained judging applications remain available until their configured expiry.');}
+
+// SDK keep-alive timers must not leave a stopped worker process behind.
+process.exit(0);
