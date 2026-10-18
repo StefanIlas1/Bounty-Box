@@ -377,13 +377,13 @@ function HowItWorks() {
         <div className="bb-steps-grid grid gap-x-8 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((s) => (
             <div key={s.n} className="bb-step">
-              <div className="flex items-center justify-between">
+              <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-line bg-surface text-blue-soft">
                   <s.icon className="h-5 w-5" strokeWidth={1.75} />
                 </div>
+                <h3 className="text-lg font-semibold leading-6 tracking-tight text-ink">{s.title}</h3>
                 <span className="text-xs tabular-nums text-muted/70">{s.n}</span>
               </div>
-              <h3 className="text-lg font-semibold leading-6 tracking-tight text-ink">{s.title}</h3>
               <p className="text-sm leading-relaxed text-muted">{s.detail}</p>
               {s.shot && (
                 <div className="bb-shot-frame bb-step-shot">
