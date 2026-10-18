@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { Volume2, VolumeX } from 'lucide-react'
 import { BorderBeam } from '@/components/ui/border-beam'
 import { cn } from '@/lib/utils'
 
@@ -14,7 +13,6 @@ export function DemoVideo({ className }: { className?: string }) {
   const userPaused = useRef(false)
   const autoPausing = useRef(false)
   const [shown, setShown] = useState(false)
-  const [muted, setMuted] = useState(true)
 
   useEffect(() => {
     const el = wrap.current
@@ -41,17 +39,6 @@ export function DemoVideo({ className }: { className?: string }) {
     else userPaused.current = true
   }
 
-  const toggleSound = () => {
-    const v = video.current
-    if (!v) return
-    v.muted = !v.muted
-    setMuted(v.muted)
-    if (!v.muted && v.paused) {
-      userPaused.current = false
-      v.play().catch(() => {})
-    }
-  }
-
   return (
     <div
       ref={wrap}
@@ -72,20 +59,7 @@ export function DemoVideo({ className }: { className?: string }) {
         className="block aspect-video w-full bg-black object-cover"
         onPlay={() => (userPaused.current = false)}
         onPause={onPause}
-        onVolumeChange={(e) => setMuted(e.currentTarget.muted)}
       />
-      <button
-        type="button"
-        onClick={toggleSound}
-        aria-label={muted ? 'Turn sound on' : 'Mute'}
-        className={cn(
-          'absolute right-4 top-4 flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold backdrop-blur transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue',
-          muted ? 'border-gold/60 bg-gold text-on-gold shadow-[0_0_0_6px_rgba(233,185,73,0.18)] hover:scale-105' : 'border-line bg-bg/70 text-ink hover:bg-bg/90',
-        )}
-      >
-        {muted ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-        {muted ? 'Tap for sound' : 'Mute'}
-      </button>
       <BorderBeam duration={8} size={160} />
     </div>
   )
