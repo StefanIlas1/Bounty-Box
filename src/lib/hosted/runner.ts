@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import * as db from './store.js';
-import { execute } from './execution.js';
+import { execute, type Deployment } from './execution.js';
 import { artifactDigest } from '../server/artifacts.js';
 import { createCreateosGenerator, CREATEOS_APP_INSTRUCTIONS } from '../generation/createos.js';
 import { createCodexGenerator } from '../generation/codex.js';
@@ -48,8 +48,8 @@ export async function advance(id:string,owner:string){
   }
   if(run.status==='testing'){
    const attempt=run.attempts.at(-1)!;const app=record.artifacts[String(attempt.number)].app;
-   let outcome:{result?:TestResult};
-   try{outcome=await execute(app,run.brief,command,checkpoint);}
+   let outcome:{result?:TestResult;deployment?:Deployment};
+   try{outcome=await execute(app,run.brief,command,checkpoint,false,true);}
    catch(error){
     const message=error instanceof Error?error.message:'';
     if(!/failed during (application startup|identity verification|generated diagnostic)/.test(message))throw error;
@@ -57,11 +57,12 @@ export async function advance(id:string,owner:string){
    }
    if(!outcome.result)throw Error('Execution produced no measurement');
    attempt.result=outcome.result;
+   if(outcome.deployment)record.privateState.deployment=outcome.deployment;
    if(outcome.result.passed){
     attempt.decision='Generated diagnostic and independent public-page benchmark passed. Business workflow coverage is limited to the generated diagnostic.';
     run.proposal={id:randomUUID(),artifactDigest:artifactDigest(app),approvalExpiresAt:new Date(Date.now()+15*60000).toISOString(),stack:attempt.stack,result:outcome.result,estimatedMonthlyCostUsd:attempt.stack.estimatedMonthlyCostUsd};
     await emit('awaiting_approval','Tests passed. Approve deployment of this exact artifact using existing credits. No paid subscription is purchased. The judging deployment runs for up to 24 hours.');
-   }else if(attempt.number<2){attempt.decision=`Measured test failed; repair once with ${process.env.BOUNTYBOX_GENERATOR==='codex'?'local Codex':'CreateOS AI'}.`;await emit('repairing',outcome.result.failureReason??'Test failed; repairing generated source.');}
+   }else if(attempt.number<1){attempt.decision=`Measured test failed; repair once with ${process.env.BOUNTYBOX_GENERATOR==='codex'?'local Codex':'CreateOS AI'}.`;await emit('repairing',outcome.result.failureReason??'Test failed; repairing generated source.');}
    else{attempt.decision='Test did not pass after repair';run.error=outcome.result.failureReason;await emit('failed',run.error??'Tests failed. No deployment created.');}
    return;
   }
@@ -69,7 +70,11 @@ export async function advance(id:string,owner:string){
    const attempt=run.attempts.at(-1)!;const artifact=record.artifacts[String(attempt.number)];
    if(!run.proposal||artifact.digest!==run.proposal.artifactDigest||!attempt.result?.passed)throw Error('Approved artifact is not the tested artifact');
    await command('deploy approved artifact','Starting the real CreateOS deployment using existing credits. No paid purchase is being made.');
-   const outcome=await execute(artifact.app,run.brief,command,checkpoint,true);
+   const existing=record.privateState.deployment as Deployment|undefined;
+   if(!existing||existing.digest!==artifact.digest||Date.parse(existing.expiresAt)<=Date.now())throw Error('The tested deployment is unavailable; no additional sandbox created.');
+   const health=await fetch(new URL('/health',existing.url),{headers:{Authorization:`Bearer ${existing.token}`},redirect:'error',signal:AbortSignal.timeout(10000)});
+   const identity=await health.json();if(!health.ok||identity.artifactDigest!==artifact.digest)throw Error('Retained deployment verification failed');
+   const outcome={deployment:existing};
    if(!outcome.deployment)throw Error('Deployment returned no verified URL');
    const source=artifact.app.files.map(f=>f.content).join('\n');
    const title=source.match(/<title[^>]*>([^<]{1,100})<\/title>/i)?.[1]??run.brief.description;

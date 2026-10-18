@@ -11,7 +11,7 @@ async function sql(query:string,params:unknown[]=[]){
  const r=await fetch(`https://${host}/sql`,{method:'POST',redirect:'error',signal:AbortSignal.timeout(15000),headers:{'Content-Type':'application/json','Neon-Connection-String':connection,'Neon-Array-Mode':'true','Neon-Raw-Text-Output':'true'},body:JSON.stringify({query,params})});
  const data=await r.json();if(!r.ok||!Array.isArray(data.rows))throw Error('Scoped database operation failed');return data.rows as string[][];
 }
-export async function execute(app:GeneratedApp,brief:Brief,log:ExecutionLog,checkpoint:(data:Record<string,unknown>)=>Promise<void>,retain=false){
+export async function execute(app:GeneratedApp,brief:Brief,log:ExecutionLog,checkpoint:(data:Record<string,unknown>)=>Promise<void>,retain=false, keepTest=false){
  const key=process.env.CREATEOS_PROJECT_API_KEY;if(!key)throw Error('CreateOS sandbox credential is not configured');
  const client=new CreateosSandboxClient({apiKey:key,baseUrl:endpoint,retry:false});
  const name=`bb-${randomBytes(7).toString('hex')}`,role=name.replaceAll('-','_'),token=randomBytes(32).toString('hex'),digest=artifactDigest(app);
@@ -36,14 +36,14 @@ export async function execute(app:GeneratedApp,brief:Brief,log:ExecutionLog,chec
   await log('prepare database','Created isolated database login with no access to existing tables',0);
   stage='sandbox creation';await checkpoint({phase:'creating',name,role});
   createAttempted=true;
-  sandbox=await client.createSandbox({name,shape:'s-1vcpu-1gb',rootfs:'devbox:1',ingress_enabled:true,auto_pause_after_seconds:retain?86400:300,egress,envs:Object.fromEntries(Object.keys(runtime).map(k=>[k,'']))},{signal:timeout,timeoutMs:60000,retry:false});
+  sandbox=await client.createSandbox({name,shape:'s-1vcpu-1gb',rootfs:'devbox:1',ingress_enabled:true,auto_pause_after_seconds:(retain||keepTest)?86400:300,egress,envs:Object.fromEntries(Object.keys(runtime).map(k=>[k,'']))},{signal:timeout,timeoutMs:60000,retry:false});
   await checkpoint({phase:'created',name,role,sandboxId:sandbox.id});
   runtime.BOUNTYBOX_PUBLIC_ORIGIN=sandbox.previewUrl(3000);
   await log('createos sandbox create',`Sandbox ${sandbox.id} created; outbound network restricted to Neon`,0);
   stage='source upload';
   for(const file of app.files){const folder=file.path.includes('/')?file.path.slice(0,file.path.lastIndexOf('/')):'';const result=await sandbox.runCommand('mkdir',['-p',`/tmp/app/${folder}`],{signal:timeout,timeoutMs:10000,retry:false});if(result.result.exit_code!==0)throw Error('Workspace unavailable');await sandbox.files.upload(`/tmp/app/${file.path}`,file.content,{signal:timeout,timeoutMs:15000,retry:false});await log('upload',file.path,0);}
   stage='application startup';
-  const process=await sandbox.processes.create({cmd:'timeout',args:['--signal=TERM','--kill-after=10s',retain?'86400':'240','node','server.mjs'],cwd:'/tmp/app',env:runtime},{signal:timeout,timeoutMs:15000,retry:false});
+  const process=await sandbox.processes.create({cmd:'timeout',args:['--signal=TERM','--kill-after=10s',(retain||keepTest)?'86400':'240','node','server.mjs'],cwd:'/tmp/app',env:runtime},{signal:timeout,timeoutMs:15000,retry:false});
   if(process.leader_exited)throw Error('Application exited');
   await log('node server.mjs','Managed application process started',0);
   await sandbox.waitForPortReady(3000,{signal:timeout,timeoutMs:45000});
@@ -68,6 +68,10 @@ export async function execute(app:GeneratedApp,brief:Brief,log:ExecutionLog,chec
   const passed=diagnosticPassed&&samples.length>0&&p95<=brief.load.maxP95Ms&&errorRate<=brief.load.maxErrorRate;
   const result:TestResult={passed,requests:samples.length,throughputRps:samples.length/duration,p95Ms:p95,errorRate,durationSeconds:duration,mode:'live',logs:[`CreateOS execution and artifact verified. Generated diagnostic exit ${diagnostic.result.exit_code}.`,`Independent public-page benchmark: ${samples.length} requests, ${brief.load.concurrency} concurrent, ${duration.toFixed(2)}s. This measures HTTP delivery, not every business workflow.`],...(passed?{}:{failureReason:diagnosticPassed?'Measured HTTP performance did not meet requested criteria':'Generated diagnostic failed with nonzero exit; inspect and repair source'})};
   await log('HTTP benchmark',`${result.requests} requests; p95 ${p95.toFixed(1)}ms; ${(errorRate*100).toFixed(1)}% errors`,passed?0:1);
+  if(keepTest&&passed){
+   const deployment:Deployment={url:base,sandboxId:sandbox.id,name,token,digest,role,expiresAt:new Date(Date.now()+86400000).toISOString()};
+   await checkpoint({phase:'retained',...deployment});kept=true;return {result,deployment};
+  }
   return {result};
  }catch{
   await log(stage,`Execution failed during ${stage}; provider details withheld`,1);
