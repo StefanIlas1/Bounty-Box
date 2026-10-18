@@ -41,14 +41,14 @@ export function ComparisonsTab({ state, mode = 'demo' }: { state: RunState; mode
                 <TableCell className="truncate font-mono">{last ? `${last.p95Ms}ms` : '—'}</TableCell>
                 <TableCell className="truncate font-mono">{last ? `${(last.errorRate * 100).toFixed(1)}%` : '—'}</TableCell>
                 <TableCell className="truncate font-mono">{last ? last.users.toLocaleString() : '—'}</TableCell>
-                <TableCell className="truncate font-mono">{s.monthlyCost != null ? `$${s.monthlyCost.toFixed(2)}` : '—'}</TableCell>
+                <TableCell className="truncate font-mono">{`$${(s.monthlyCost ?? s.stack.services.reduce((total, service) => total + service.monthlyCost, 0)).toFixed(2)}`}</TableCell>
                 <TableCell className="truncate">{s.status ? <StatusPill status={s.status as PillStatus} /> : <StatusPill status="pending" />}</TableCell>
               </TableRow>
             )
           })}
         </TableBody>
       </Table>
-      {mode === 'live' && <p className="border-t border-line px-4 py-3 text-xs text-muted">Concurrency is the tested number of simultaneous requests, not verified user capacity. Results come from this run; no performance estimate is substituted for a failed test.</p>}
+      {mode === 'live' && <p className="border-t border-line px-4 py-3 text-xs text-muted">Pending rows show the selected plan and estimated base fee; AI and compute credits are additional. Performance stays blank until measured. Concurrency is the tested number of simultaneous requests, not verified user capacity. Results come from this run; no performance estimate is substituted for a failed test.</p>}
       {!!state.bom?.length && <section className="border-t border-line p-4" aria-label="Hardware comparison">
         <h3 className="mb-2 text-sm font-semibold">Hardware · one-time costs</h3>
         <Table>

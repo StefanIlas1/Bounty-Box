@@ -59,6 +59,7 @@ export function diffSnapshot(prev: RunSnapshot | null, next: RunSnapshot): RunEv
   for (const c of next.candidates) {
     if (seenCandidates.has(c.id)) continue
     out.push({ type: 'stack_proposed', stack: candidateToStack(c), reason: c.description, at: nextAt() })
+    out.push({ type: 'decision', requirement: 'Initial stack and cost estimate', chosen: c.name, alternatives: [], evidence: `${c.description} Estimated base fee: $${c.estimatedMonthlyCostUsd}/month. ${c.costAssumptions.join(' ')}`, at: nextAt() })
   }
 
   // 1. New backend narration events -> agent_message (stage also drives phase, handled separately).

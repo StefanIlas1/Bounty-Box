@@ -22,6 +22,7 @@ function suggestTab(state: RunState): TabKey | null {
   if (!event) return null
   switch (event.type) {
     case 'stack_proposed':
+      return 'comparisons'
     case 'file_written':
     case 'fix_attempt':
       return 'code'
@@ -50,15 +51,15 @@ function guide(state: RunState): { text: string; tab?: TabKey; panel?: 'sandbox'
     case 'planning':
       return { text: 'The agent is reading your brief and proposing stacks. Its reasoning streams in the left panel.', tab: 'decisions' }
     case 'writing':
-      return { text: 'The agent is writing real code for each stack. Open Code to watch the files appear.', tab: 'code' }
+      return { text: 'Your application is being generated. Comparisons shows the selected stack and estimate; Terminal shows live status. Source files arrive when generation completes.', tab: 'code' }
     case 'testing':
       return { text: 'The code is running inside a CreateOS sandbox. Terminal shows the commands; the Sandbox card shows the box itself.', tab: 'terminal', panel: 'sandbox' }
     case 'fixing':
       return { text: 'A test failed, so the agent is fixing its own code. Compare the error and the patch in Code.', tab: 'code' }
     case 'awaiting_approval':
-      return { text: 'Every stack has been measured. Check Comparisons, then approve the cart on the right to buy it through Stripe Projects.', tab: 'comparisons', panel: 'cart' }
+      return { text: 'The supported stack passed its recorded checks. Review the results, then approve the tested application using existing credits.', tab: 'comparisons', panel: 'cart' }
     case 'buying':
-      return { text: 'Stripe Projects is provisioning the chosen services. Follow it in the Provisioning card.', panel: 'cart' }
+      return { text: 'The approved application is being verified for deployment. The public link appears after verification.', panel: 'cart' }
     case 'live':
     case 'finished':
       return { text: 'Done. Open the live URL on the right, or review why each choice was made in Decisions.', tab: 'decisions', panel: 'live' }
@@ -87,7 +88,15 @@ interface BuildScreenProps {
 }
 
 export function BuildScreen({ mode, state, onApprove, approving, demoControls, liveControls, recorded }: BuildScreenProps) {
-  const [tab, setTab] = useState<TabKey>('code')
+  const [tab, setTab] = useState<TabKey>(mode === 'live' ? 'comparisons' : 'code')
+  const [generationStarted, setGenerationStarted] = useState<number | null>(null)
+  const [elapsed, setElapsed] = useState(0)
+  useEffect(() => {
+    if (state.phase !== 'writing') { setGenerationStarted(null); setElapsed(0); return }
+    const start = Date.now(); setGenerationStarted(start)
+    const timer = setInterval(() => setElapsed(Math.floor((Date.now() - start) / 1000)), 1000)
+    return () => clearInterval(timer)
+  }, [state.phase])
   const manualRef = useRef(false)
   const prevRunRef = useRef<string | null>(null)
 
@@ -95,9 +104,9 @@ export function BuildScreen({ mode, state, onApprove, approving, demoControls, l
     if (state.runId !== prevRunRef.current) {
       manualRef.current = false
       prevRunRef.current = state.runId
-      setTab('code')
+      setTab(mode === 'live' ? 'comparisons' : 'code')
     }
-  }, [state.runId])
+  }, [state.runId, mode])
 
   useEffect(() => {
     if (manualRef.current) return
@@ -126,6 +135,7 @@ export function BuildScreen({ mode, state, onApprove, approving, demoControls, l
     <div role="status" aria-live="polite" className="mx-4 mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 rounded border border-blue/40 bg-blue/10 px-4 py-2.5 text-sm text-ink">
       <Eye className="size-4 shrink-0 text-blue-soft" aria-hidden="true" />
       <span className="min-w-0 flex-1">{g.text}</span>
+      {mode === 'live' && generationStarted !== null && <span className="rounded bg-navy px-3 py-1 font-mono text-xs">Generating · {elapsed}s elapsed</span>}
       {g.tab && g.tab !== tab && (
         <button type="button" onClick={() => pick(g.tab!)} className="inline-flex items-center gap-1 rounded border border-blue/50 px-2.5 py-1 text-xs font-medium text-blue-soft transition-colors hover:bg-blue/20 focus-visible:outline-2 focus-visible:outline-blue">
           Open {TAB_LABEL[g.tab]} <ArrowRight className="size-3" aria-hidden="true" />

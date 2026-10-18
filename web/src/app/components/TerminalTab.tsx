@@ -15,7 +15,7 @@ export function TerminalTab({ state }: { state: RunState }) {
   }, [rows.length])
 
   if (rows.length === 0) {
-    return <div className="flex h-full items-center justify-center text-sm text-muted">No commands run yet.</div>
+    return <ScrollArea className="h-full rounded border border-line bg-navy"><div className="space-y-4 p-4 font-mono text-xs"><p className="text-blue">Live build events · execution has not started</p>{state.transcript.filter(t => t.kind === 'agent_message' || t.kind === 'log').map(t => <p key={t.id} className="whitespace-pre-wrap text-muted">{t.text}</p>)}<p className="text-muted">Actual command output will appear here when the generated application starts running. No benchmark results are available yet.</p></div></ScrollArea>
   }
 
   return (

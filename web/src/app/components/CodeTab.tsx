@@ -26,7 +26,7 @@ export function CodeTab({ state, mode }: { state: RunState; mode: Mode }) {
   }
 
   if (mode === 'live' && files.length === 0) {
-    return <div className="flex h-full items-center justify-center text-center text-sm text-muted">Generated files appear here when the backend exposes them.</div>
+    return <div className="flex h-full items-center justify-center text-center text-sm text-muted">Code generation is in progress. Files appear together when the model returns a complete, validated application. Open Comparisons for the selected stack and estimate, or Terminal for live build events.</div>
   }
 
   const activeFile = files.find((f) => f.path === selected)
