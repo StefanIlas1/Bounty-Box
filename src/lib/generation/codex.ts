@@ -3,7 +3,7 @@ import { mkdtemp, writeFile, readFile, stat, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import type { Generator } from '../contracts';
-import { GENERATION_SCHEMA, GENERATION_INSTRUCTIONS, generationInput, validateGeneratedApp, GenerationError, MAX_SOURCE_BYTES } from './index';
+import { GENERATION_SCHEMA, GENERATION_INSTRUCTIONS, generationInput, validateGeneratedApp, GenerationError, MAX_SOURCE_BYTES } from './index.js';
 
 export interface CodexGeneratorOptions {
   env?: NodeJS.ProcessEnv;
