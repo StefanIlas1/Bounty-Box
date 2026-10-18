@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="design/logo.svg" alt="bounty-box" width="420" />
+<img src="design/logo-banner.png" alt="bounty-box" width="520" />
 
 ### Building big under budget.
 
