@@ -60,21 +60,6 @@ const HARDWARE: Provider[] = [
 
 export type GridMode = 'software' | 'hardware'
 
-const ZONE_LABELS: Record<GridMode, Record<Zone, string>> = {
-  software: {
-    db: 'Databases',
-    cloud: 'Cloud & hosting',
-    auth: 'Email, auth & payments',
-    data: 'Search, AI & data',
-  },
-  hardware: {
-    db: 'Boards & microcontrollers',
-    cloud: 'Compute & chips',
-    auth: 'Parts suppliers',
-    data: '',
-  },
-}
-
 const CELL = 72
 const SLOTS = 9
 const FLICKER = 26
@@ -86,7 +71,6 @@ const rand = (n: number) => Math.floor(Math.random() * n)
 
 export function ProviderGrid({ exclude = { w: 760, h: 470 }, mode = 'software' }: { exclude?: { w: number; h: number }; mode?: GridMode }) {
   const LIST = mode === 'hardware' ? HARDWARE : PROVIDERS
-  const ZONE_LABEL = ZONE_LABELS[mode]
   const ref = useRef<HTMLDivElement>(null)
   const [size, setSize] = useState({ w: 0, h: 0 })
   const [tiles, setTiles] = useState<Tile[]>([])
@@ -172,13 +156,6 @@ export function ProviderGrid({ exclude = { w: 760, h: 470 }, mode = 'software' }
     return () => window.clearInterval(id)
   }, [cols, rows])
 
-  const labelPos: Record<Zone, React.CSSProperties> = {
-    db: { left: 24, top: 26 },
-    cloud: { right: 24, top: 26, textAlign: 'right' },
-    auth: { left: '50%', top: 26, transform: 'translateX(-50%)' },
-    data: { left: '50%', bottom: 18, transform: 'translateX(-50%)' },
-  }
-
   return (
     <div ref={ref} aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden [mask-image:radial-gradient(ellipse_75%_70%_at_center,white_55%,transparent)]">
       {size.w > 0 && (
@@ -195,12 +172,6 @@ export function ProviderGrid({ exclude = { w: 760, h: 470 }, mode = 'software' }
           ))}
         </svg>
       )}
-
-      {(Object.keys(ZONE_LABEL) as Zone[]).map((z) => (
-        <span key={z} style={labelPos[z]} className="absolute hidden font-mono text-[10px] uppercase tracking-[0.18em] text-muted/45 lg:block">
-          {ZONE_LABEL[z]}
-        </span>
-      ))}
 
       {tiles.map((t) => (
         <div
