@@ -98,7 +98,11 @@ const ITERATIONS: IterationCard[] = [
 ]
 
 const STEPS = [
-  { n: '01', icon: PenLine, title: 'Describe', detail: 'Your brief and budget become a locked spec.' },
+  {
+    n: '01', icon: PenLine, title: 'Describe', detail: 'Your brief and budget become a locked spec.',
+    shot: '/shots/describe.png',
+    shotAlt: 'Describe form with a project brief, monthly budget, and target users',
+  },
   {
     n: '02',
     icon: FlaskConical,
@@ -106,7 +110,6 @@ const STEPS = [
     detail: 'Runs behind an egress allowlist; a self-fix loop patches what fails.',
     shot: '/shots/terminal.png',
     shotAlt: 'Terminal tab showing a failed test, a self-fix, then a passing load test inside the CreateOS sandbox',
-    shotRatio: 900 / 416,
   },
   {
     n: '03',
@@ -115,7 +118,6 @@ const STEPS = [
     detail: 'The sandbox pauses — nothing runs or costs money while you review the stack.',
     shot: '/shots/comparisons.png',
     shotAlt: 'Comparisons table scoring three stacks on latency, error rate and monthly cost',
-    shotRatio: 900 / 306,
   },
   {
     n: '04',
@@ -124,7 +126,6 @@ const STEPS = [
     detail: 'Each service is bought with stripe projects add, then you get a live ingress URL.',
     shot: '/shots/sandbox-cart.png',
     shotAlt: 'Sandbox and cart panel with an egress allowlist, a paused sandbox, and a Stripe Projects approve button',
-    shotRatio: 620 / 1049,
   },
 ]
 
@@ -373,9 +374,9 @@ function HowItWorks() {
           title="Four steps from idea to live URL."
           body="Everything the agent does is visible: what it tried, what it measured, and what it bought."
         />
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="bb-steps-grid grid gap-x-8 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((s) => (
-            <div key={s.n} className="flex flex-col gap-3">
+            <div key={s.n} className="bb-step">
               <div className="flex items-center justify-between">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-line bg-surface text-blue-soft">
                   <s.icon className="h-5 w-5" strokeWidth={1.75} />
@@ -385,8 +386,8 @@ function HowItWorks() {
               <h3 className="text-base font-semibold text-ink">{s.title}</h3>
               <p className="text-sm leading-relaxed text-muted">{s.detail}</p>
               {s.shot && (
-                <div className="bb-shot-frame mt-1" style={{ aspectRatio: s.shotRatio }}>
-                  <img src={s.shot} alt={s.shotAlt} width={900} height={Math.round(900 / s.shotRatio!)} loading="lazy" decoding="async" />
+                <div className="bb-shot-frame bb-step-shot">
+                  <img src={s.shot} alt={s.shotAlt} width={900} height={563} loading="lazy" decoding="async" />
                 </div>
               )}
             </div>

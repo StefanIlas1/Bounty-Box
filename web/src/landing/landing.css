@@ -141,3 +141,29 @@
 @media (prefers-reduced-motion: reduce) { .bb-marquee { animation: none; flex-wrap: wrap; justify-content: center; width: auto } }
 /* Every step's product shot gets the same frame height so the row stays even. */
 .bb-shot-frame { height: 9rem; overflow: hidden; }
+
+/* Shared text tracks keep all four previews aligned despite wrapped copy. */
+.bb-step {
+  display: grid;
+  grid-row: span 4;
+  grid-template-rows: subgrid;
+  gap: 0.75rem;
+  min-width: 0;
+  padding-bottom: 1.25rem;
+}
+.bb-shot-frame.bb-step-shot {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  margin-top: 0.5rem;
+  border: 1px solid rgba(129, 140, 248, 0.48);
+  border-radius: 12px;
+  background: #0b1425;
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.12),
+    0 0 28px rgba(99, 102, 241, 0.2),
+    0 14px 36px -12px rgba(59, 130, 246, 0.3);
+}
+.bb-step-shot img {
+  object-fit: cover;
+  object-position: top center;
+}
