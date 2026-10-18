@@ -1,5 +1,5 @@
-import type { Generator } from '../contracts';
-import { GENERATION_SCHEMA, GenerationError, MAX_SOURCE_BYTES, generationInput, validateGeneratedApp } from './index';
+import type { Generator } from '../contracts.js';
+import { GENERATION_SCHEMA, GenerationError, MAX_SOURCE_BYTES, generationInput, validateGeneratedApp } from './index.js';
 
 // Official gateway endpoint: https://createos.sh/products/gateway
 const BASE = 'https://createosllm.nodeops.xyz/v1';

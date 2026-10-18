@@ -1,7 +1,7 @@
 import { randomBytes, randomUUID, createHash } from 'node:crypto';
-import * as db from '../src/lib/hosted/store';
-import { advance } from '../src/lib/hosted/runner';
-import type { Brief, RunSnapshot } from '../src/lib/contracts';
+import * as db from '../src/lib/hosted/store.js';
+import { advance } from '../src/lib/hosted/runner.js';
+import type { Brief, RunSnapshot } from '../src/lib/contracts.js';
 export function parseBrief(value: unknown): Brief {
  const b=value as Brief;
  if(!b||typeof b!=='object'||Array.isArray(b)||typeof b.description!=='string'||!b.description.trim()||b.description.length>8000||

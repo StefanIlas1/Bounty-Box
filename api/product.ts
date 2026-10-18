@@ -1,4 +1,4 @@
-import { getDeployment } from '../src/lib/hosted/store';
+import { getDeployment } from '../src/lib/hosted/store.js';
 
 const escape = (value: string) => value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]!));
 export default { async fetch(request: Request): Promise<Response> {

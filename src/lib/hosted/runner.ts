@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto';
-import * as db from './store';
-import { execute } from './execution';
-import { artifactDigest } from '../server/artifacts';
-import { createCreateosGenerator } from '../generation/createos';
-import { liveCandidate } from './catalog';
-import type { RunStatus, TestResult } from '../contracts';
+import * as db from './store.js';
+import { execute } from './execution.js';
+import { artifactDigest } from '../server/artifacts.js';
+import { createCreateosGenerator } from '../generation/createos.js';
+import { liveCandidate } from './catalog.js';
+import type { RunStatus, TestResult } from '../contracts.js';
 
 export async function advance(id:string,owner:string){
  if(!await db.acquire(id))return;

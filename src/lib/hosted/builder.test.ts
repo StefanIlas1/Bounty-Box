@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import builder, { parseBrief } from '../../../api/builder';
+import builder, { parseBrief } from '../../../api/builder.js';
 
 const brief = { description:'  A task tracker  ', monthlyBudgetUsd:10, targetUsers:1,
  load:{concurrency:1,durationSeconds:1,maxP95Ms:1000,maxErrorRate:0} };

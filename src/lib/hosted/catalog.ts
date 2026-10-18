@@ -1,4 +1,4 @@
-import type { Brief, CandidateStack } from '../contracts';
+import type { Brief, CandidateStack } from '../contracts.js';
 
 // Same public read-only catalog route/version used by Stripe Projects CLI 0.50.
 // It does not require a Stripe secret key and never provisions or purchases.

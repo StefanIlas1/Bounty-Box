@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import product from '../../../api/product';
+import product from '../../../api/product.js';
 
 test('product wrapper isolates the real app, validates addresses and handles unavailable records',async()=>{
  const originalFetch=globalThis.fetch, originalDb=process.env.WAITLIST_DATABASE_URL;

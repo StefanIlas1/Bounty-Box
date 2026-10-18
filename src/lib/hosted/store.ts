@@ -1,4 +1,4 @@
-import type { GeneratedApp, RunSnapshot } from '../contracts';
+import type { GeneratedApp, RunSnapshot } from '../contracts.js';
 
 export type ArtifactMap = Record<string, { digest: string; app: GeneratedApp }>;
 export interface HostedRecord {

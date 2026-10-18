@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { CreateosSandboxClient } from '@nodeops-createos/sandbox';
-import type { GeneratedApp, Brief, TestResult } from '../contracts';
-import { artifactDigest } from '../server/artifacts';
+import type { GeneratedApp, Brief, TestResult } from '../contracts.js';
+import { artifactDigest } from '../server/artifacts.js';
 const endpoint='https://api-eu.sb.createos.sh';
 export type ExecutionLog=(command:string,output:string,exitCode?:number)=>Promise<void>;
 export interface Deployment {url:string;sandboxId:string;name:string;token:string;digest:string;role:string;expiresAt:string;}
