@@ -27,6 +27,7 @@ import { ModeToggle } from '../shared/ModeToggle'
 import { siNeon, siSupabase, siUpstash, siResend, siVercel, siRailway, siAuth0, siRender, siStripe, siCloudflare, siPosthog, siRedis, siTurso, siClickhouse, siPrisma, siFlydotio, siAlgolia, siDatadog, siCloudinary, siOpenrouter, siMongodb, siSentry, siNetlify, siPerplexity } from 'simple-icons'
 import { ProviderGrid, type GridMode } from './ProviderGrid'
 import { IterationStory } from './IterationStory'
+import { DemoVideoSection } from './DemoVideo'
 import { FigChart } from './FigChart'
 import { GithubMark } from './GithubMark'
 import { Button } from '@/components/ui/button'
@@ -485,6 +486,7 @@ export default function Landing() {
       <div className="min-h-screen bg-bg text-ink">
         <NavBar />
         <Hero />
+        <DemoVideoSection />
         <CatalogRow />
         <IterationStory />
         <HowItWorks />
