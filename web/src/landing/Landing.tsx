@@ -144,10 +144,10 @@ const CTA_OUTLINE =
 export function NavBar() {
   const [open, setOpen] = useState(false)
   return (
-    <header className="sticky top-0 z-50 h-16 border-b border-line bg-bg/90 backdrop-blur">
-      <div className="flex h-16 w-full items-center justify-between px-6 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:px-12 2xl:px-16">
+    <header className="sticky top-0 z-50 h-17 border-b border-line bg-bg/90 backdrop-blur">
+      <div className="flex h-full w-full items-center justify-between px-6 lg:grid lg:grid-cols-[1fr_auto_1fr]">
         <Link to="/" className="shrink-0 justify-self-start" aria-label="Bounty-Box home">
-          <Logo size={20} />
+          <Logo size={24} />
         </Link>
 
         <nav className="hidden items-center gap-10 lg:flex">
