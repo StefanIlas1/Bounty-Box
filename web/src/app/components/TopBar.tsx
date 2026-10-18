@@ -36,7 +36,7 @@ export function TopBar({ mode, onModeChange, reachable, fixtureRun, simulated, o
         <Button asChild size="sm" variant="outline"><Link to="/">Back to site</Link></Button>
         {mode === 'live' && reachable === false && (
           <Button asChild size="sm" variant="outline" className="border-gold/50 text-gold hover:bg-gold/10">
-            <Link to="/login">Join the waitlist</Link>
+            <Link to="/waitlist">Join the waitlist</Link>
           </Button>
         )}
         <Button size="sm" variant="outline" onClick={onNewRun} className="gap-1.5">
