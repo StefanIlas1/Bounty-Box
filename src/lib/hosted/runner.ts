@@ -2,7 +2,8 @@ import { randomUUID } from 'node:crypto';
 import * as db from './store.js';
 import { execute } from './execution.js';
 import { artifactDigest } from '../server/artifacts.js';
-import { createCreateosGenerator } from '../generation/createos.js';
+import { createCreateosGenerator, CREATEOS_APP_INSTRUCTIONS } from '../generation/createos.js';
+import { createCodexGenerator } from '../generation/codex.js';
 import { liveCandidate } from './catalog.js';
 import type { RunStatus, TestResult } from '../contracts.js';
 
@@ -34,12 +35,15 @@ export async function advance(id:string,owner:string){
   }
   if(run.status==='planning'||run.status==='repairing'){
    const previous=run.attempts.at(-1);const previousApp=previous?record.artifacts[String(previous.number)]?.app:undefined;
-   await emit('generating',previous?'Sending actual test failure and source to CreateOS AI for repair.':'Sending your exact goal to CreateOS AI to generate the application.');
-   const app=await createCreateosGenerator().generate({brief:run.brief,stack:run.candidates[0],previous:previousApp,feedback:previous?.result,signal:AbortSignal.timeout(150000)});
+   const local=process.env.BOUNTYBOX_GENERATOR==='codex';
+   const generatorName=local?'the connected local Codex worker':'CreateOS AI';
+   await emit('generating',previous?`Sending actual test failure and source to ${generatorName} for repair.`:`Sending your exact goal to ${generatorName} to generate the application.`);
+   const generator=local?createCodexGenerator({instructions:CREATEOS_APP_INSTRUCTIONS,timeoutMs:150000}):createCreateosGenerator();
+   const app=await generator.generate({brief:run.brief,stack:run.candidates[0],previous:previousApp,feedback:previous?.result,signal:AbortSignal.timeout(150000)});
    const number=run.attempts.length+1;
    record.artifacts[String(number)]={digest:artifactDigest(app),app};
    run.attempts.push({number,revision:app.revision,stack:run.candidates[0]});
-   await emit('testing',`CreateOS AI generated ${app.files.length} files for your application. Source is now available in Code. Starting real sandbox execution.`);
+   await emit('testing',`${local?'Local Codex':'CreateOS AI'} generated ${app.files.length} files for your application. Source is now available in Code. Starting real sandbox execution.`);
    return;
   }
   if(run.status==='testing'){
@@ -57,7 +61,7 @@ export async function advance(id:string,owner:string){
     attempt.decision='Generated diagnostic and independent public-page benchmark passed. Business workflow coverage is limited to the generated diagnostic.';
     run.proposal={id:randomUUID(),artifactDigest:artifactDigest(app),approvalExpiresAt:new Date(Date.now()+15*60000).toISOString(),stack:attempt.stack,result:outcome.result,estimatedMonthlyCostUsd:attempt.stack.estimatedMonthlyCostUsd};
     await emit('awaiting_approval','Tests passed. Approve deployment of this exact artifact using existing credits. No paid subscription is purchased. The judging deployment runs for up to 24 hours.');
-   }else if(attempt.number<2){attempt.decision='Measured test failed; repair once with CreateOS AI.';await emit('repairing',outcome.result.failureReason??'Test failed; repairing generated source.');}
+   }else if(attempt.number<2){attempt.decision=`Measured test failed; repair once with ${process.env.BOUNTYBOX_GENERATOR==='codex'?'local Codex':'CreateOS AI'}.`;await emit('repairing',outcome.result.failureReason??'Test failed; repairing generated source.');}
    else{attempt.decision='Test did not pass after repair';run.error=outcome.result.failureReason;await emit('failed',run.error??'Tests failed. No deployment created.');}
    return;
   }

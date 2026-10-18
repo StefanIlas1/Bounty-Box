@@ -24,15 +24,17 @@ export default { async fetch(request:Request){
    const origin=request.headers.get('origin');
    if(origin&&!['https://bounty-box.com','https://www.bounty-box.com',url.origin].includes(origin))return reply(403,{error:'Invalid origin.'});
   }
-  if(path==='health'&&request.method==='GET')return reply(200,{ok:true,liveReady:!!process.env.CREATEOS_LLM_API_KEY&&!!process.env.CREATEOS_LLM_MODEL&&!!process.env.CREATEOS_PROJECT_API_KEY&&!!process.env.WAITLIST_DATABASE_URL,shippingReady:!!process.env.CREATEOS_PROJECT_API_KEY&&!!process.env.WAITLIST_DATABASE_URL});
+  const localWorker=process.env.BOUNTYBOX_LOCAL_WORKER==='true';
+  const ready=async()=>!!process.env.WAITLIST_DATABASE_URL&&(localWorker?await db.workerReady():!!process.env.CREATEOS_LLM_API_KEY&&!!process.env.CREATEOS_LLM_MODEL&&!!process.env.CREATEOS_PROJECT_API_KEY);
+  if(path==='health'&&request.method==='GET'){const liveReady=await ready();return reply(200,{ok:true,liveReady,shippingReady:localWorker?liveReady:!!process.env.CREATEOS_PROJECT_API_KEY&&!!process.env.WAITLIST_DATABASE_URL});}
   const read=async()=>{if(!request.headers.get('content-type')?.startsWith('application/json'))throw new db.StoreError(415,'Expected JSON');const reader=request.body?.getReader();if(!reader)throw new db.StoreError(400,'Expected JSON');const chunks:Uint8Array[]=[];let size=0;try{while(true){const chunk=await reader.read();if(chunk.done)break;size+=chunk.value.length;if(size>16000)throw new db.StoreError(413,'Request too large');chunks.push(chunk.value);}}finally{await reader.cancel().catch(()=>undefined);}try{const value=JSON.parse(Buffer.concat(chunks).toString('utf8'));if(!value||typeof value!=='object'||Array.isArray(value))throw new Error();return value;}catch{throw new db.StoreError(400,'Expected JSON object');}};
   if(!path&&request.method==='POST'){
-   if(!process.env.CREATEOS_LLM_API_KEY||!process.env.CREATEOS_LLM_MODEL||!process.env.CREATEOS_PROJECT_API_KEY||!process.env.WAITLIST_DATABASE_URL)throw new db.StoreError(503,'CreateOS AI, model, sandbox or storage credentials are not configured. No build was started.');
+   if(!await ready())throw new db.StoreError(503,localWorker?'The build worker is offline. No build was started.':'CreateOS AI, model, sandbox or storage credentials are not configured. No build was started.');
    const data=await read();if(data?.mode!=='live')throw new db.StoreError(400,'Hosted builds require live mode.');
    const brief=parseBrief(data.brief);
    if(brief.load.concurrency>2||brief.load.durationSeconds>5)throw new db.StoreError(400,'Hosted trial is bounded to 2 concurrent requests for 5 seconds.');
    const now=new Date().toISOString();
-   const run:RunSnapshot={id:randomUUID(),mode:'live',status:'queued',brief,candidates:[],attempts:[],events:[{id:1,at:now,stage:'queued',message:'Your goal was queued for a real CreateOS AI build.'}],createdAt:now,updatedAt:now};
+   const run:RunSnapshot={id:randomUUID(),mode:'live',status:'queued',brief,candidates:[],attempts:[],events:[{id:1,at:now,stage:'queued',message:localWorker?'Your goal was queued for code generation and real execution in CreateOS.':'Your goal was queued for a real CreateOS AI build.'}],createdAt:now,updatedAt:now};
    await db.create(run,owner);return reply(202,run);
   }
   const match=/^([a-f0-9-]{36})(?:\/(advance|approve|cancel|artifacts)(?:\/([1-9][0-9]*))?)?$/.exec(path);
@@ -40,7 +42,7 @@ export default { async fetch(request:Request){
   const [,id,action,attempt]=match;const record=await db.get(id,owner);const run=record.snapshot;
   if(request.method==='GET'&&!action)return reply(200,run);
   if(request.method==='GET'&&action==='artifacts'&&attempt){const a=record.artifacts[attempt];if(!a)throw new db.StoreError(404,'Artifact not ready');return reply(200,a);}
-  if(request.method==='POST'&&action==='advance'){await advance(id,owner);return reply(200,(await db.get(id,owner)).snapshot);}
+  if(request.method==='POST'&&action==='advance'){if(!localWorker)await advance(id,owner);return reply(200,(await db.get(id,owner)).snapshot);}
   if(request.method==='POST'&&action==='approve'){
    const data=await read();
    if(run.status!=='awaiting_approval'||!run.proposal||run.proposal.id!==data?.proposalId||Date.parse(run.proposal.approvalExpiresAt??'')<=Date.now())throw new db.StoreError(409,'Proposal changed or expired.');

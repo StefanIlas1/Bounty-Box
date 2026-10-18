@@ -63,6 +63,10 @@ export async function init(): Promise<void> {
       quota_date date PRIMARY KEY,
       run_count integer NOT NULL CHECK (run_count BETWEEN 0 AND 5)
     )`);
+    await sql(`CREATE TABLE IF NOT EXISTS public.bb_worker (
+      id integer PRIMARY KEY CHECK (id = 1),
+      heartbeat_at timestamptz NOT NULL
+    )`);
   })().catch(error => { initialized = undefined; throw error; });
   return initialized;
 }
@@ -125,6 +129,29 @@ export async function acquire(id: string): Promise<boolean> {
 export async function release(id: string): Promise<void> {
   validId(id); await init();
   await sql('UPDATE public.bb_runs SET lease_until = NULL WHERE id = $1::uuid', [id]);
+}
+
+/** Private worker discovery; never expose owner hashes through public API responses. */
+export async function pendingWork(): Promise<Array<{ id: string; ownerHash: string }>> {
+  await init();
+  const rows = await sql(`SELECT id, owner_hash FROM public.bb_runs
+    WHERE status IN ('queued','planning','testing','repairing','provisioning')
+    AND (lease_until IS NULL OR lease_until < now()) ORDER BY created_at LIMIT 1`);
+  return rows.map(row => ({ id: String(row[0]), ownerHash: String(row[1]) }));
+}
+
+export async function beat(): Promise<void> {
+  await init();
+  await sql(`INSERT INTO public.bb_worker (id, heartbeat_at) VALUES (1, now())
+    ON CONFLICT (id) DO UPDATE SET heartbeat_at = now()`);
+}
+export const heartbeat = beat;
+
+export async function workerReady(): Promise<boolean> {
+  await init();
+  const rows = await sql(`SELECT id FROM public.bb_worker WHERE id = 1
+    AND heartbeat_at > now() - interval '30 seconds'`);
+  return rows.length === 1;
 }
 
 /** Public lookup intentionally selects no credentials, artifacts or private-state object. */

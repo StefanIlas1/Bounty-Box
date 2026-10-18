@@ -11,6 +11,8 @@ export interface CodexGeneratorOptions {
   executable?: string;
   model?: string;
   timeoutMs?: number;
+  /** Trusted operator contract, never taken from user input. */
+  instructions?: string;
 }
 
 /** Local signed-in Codex transport. Only source text returns; execution belongs to CreateOS. */
@@ -18,7 +20,7 @@ export function createCodexGenerator(options: CodexGeneratorOptions = {}): Gener
   return { async generate(input) {
     input.signal?.throwIfAborted();
     if (input.stack.mode !== 'live') throw new GenerationError('Live generator requires a live candidate');
-    const prompt = `${GENERATION_INSTRUCTIONS}\nDo not call any tools, inspect files, execute code, or browse. Produce the complete JSON manifest in your final answer.\nInput data:\n${generationInput(input)}`;
+    const prompt = `${options.instructions ?? GENERATION_INSTRUCTIONS}\nDo not call any tools, inspect files, execute code, or browse. Produce the complete JSON manifest in your final answer.\nInput data:\n${generationInput(input)}`;
     const env = options.env ?? process.env;
     const childEnv: NodeJS.ProcessEnv = {};
     // Authentication is resolved by the CLI using HOME/CODEX_HOME. No key or DB secret is copied.
