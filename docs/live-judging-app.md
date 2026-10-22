@@ -1,7 +1,6 @@
 # Real judging app
 
-Open https://bounty-box.com/live-app (redirects to the verified CreateOS URL).
-Direct URL: https://01m569ayf9819747neebb84cse-3000.app.sb.createos.sh
+The retained sandbox was shut down after judging, so https://bounty-box.com/live-app and the direct CreateOS URL no longer resolve. The source and evidence below are unchanged.
 
 This is a real generated Node application with persistent Neon Postgres storage, running in a retained CreateOS sandbox. The client brief requested a navy-and-gold Bounty-Box early-access waitlist. The exact generated source is in `examples/judging-app`; the artifact digest and measured evidence are in `docs/evidence/judging-run.json` and `docs/evidence/judging-verification.json`.
 

@@ -1,6 +1,6 @@
 <div align="center">
 
-**Real generated judging app:** [Open live app](https://bounty-box.com/live-app) · [Live verification and limitations](docs/live-judging-app.md). Retained until October 18, 2026, 9:17 PM EDT. The interactive `/demo` is explicitly scripted.
+**Real generated judging app:** the live sandbox was retained through judging and is now offline. The [generated source](examples/judging-app) and [verification evidence](docs/live-judging-app.md) are still here. The interactive [`/demo`](https://bounty-box.com/demo) is explicitly scripted.
 
 <img src="design/logo-banner.png" alt="bounty-box" width="520" />
 
