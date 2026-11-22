@@ -1,6 +1,6 @@
 <div align="center">
 
-**Real generated judging app:** the live sandbox was retained through judging and is now offline. The [generated source](examples/judging-app) and [verification evidence](docs/live-judging-app.md) are still here. The interactive [`/demo`](https://bounty-box.com/demo) is explicitly scripted.
+**Real generated judging app:** the judging sandbox was destroyed after the event. The [generated source](examples/judging-app) and [verification record](docs/live-judging-app.md) are still here. The interactive [`/demo`](https://bounty-box.com/demo) is a scripted replay.
 
 <img src="design/logo-banner.png" alt="bounty-box" width="520" />
 
@@ -143,21 +143,21 @@ Diagram sources live in [`docs/diagrams/`](docs/diagrams). Editable board: [Miro
 
 ## Run it
 
-Requirements: Node 22, the Stripe CLI with the Projects plugin, and a CreateOS API key.
+Requirements: Node 22, the Stripe CLI with the Projects plugin, a CreateOS API key, and the Codex CLI signed in.
 
 ```bash
 # backend
 npm install
-cp .env.example .env.backend.local     # then fill in values
+cp .env.example .env.backend.local     # set BOUNTYBOX_API_TOKEN (32+ chars) and BOUNTYBOX_LIVE_ENABLED=true
 stripe projects env --pull             # pulls provider credentials
-npm run dev                            # API
+npm run dev                            # API on 127.0.0.1:3000
 npm run worker                         # run worker (second terminal)
 
 # web app
 cd web && npm install && npm run dev
 ```
 
-The web app runs a scripted demo by default; switch to live mode at `/app?mode=live` once the backend is up. `npm test` runs the backend, orchestrator, benchmark and provider checks.
+The web dev server proxies `/api` to `127.0.0.1:3000` and adds the token from `.env.backend.local`. It opens the scripted demo at `/app?mode=demo`. The Live option appears only when `/api/health` reports `liveReady: true`, which needs the API, the worker and the settings above. The hosted site works the same way: [bounty-box.com/demo](https://bounty-box.com/demo) stays scripted unless a hosted worker is running ([runbook](docs/demo-operations.md)). `npm test` runs the backend, orchestrator, benchmark and provider checks.
 
 ## Tech
 
