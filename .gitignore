@@ -3,7 +3,6 @@
 .projects/vault/
 .projects/cache/
 node_modules/
-.coordination/
 .next/
 .bounty-box/
 __pycache__/
