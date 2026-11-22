@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import {
   ArrowRight,
   Play,
@@ -31,9 +31,9 @@ import { cn } from '@/lib/utils'
 import './landing.css'
 
 const NAV_LINKS = [
-  { href: '/#how-it-works', label: 'How it works' },
-  { href: '/#fig-01', label: 'Proof' },
-  { href: '/#trust', label: 'Trust' },
+  { hash: '#how-it-works', label: 'How it works' },
+  { hash: '#fig-01', label: 'Proof' },
+  { hash: '#trust', label: 'Trust' },
 ]
 
 const CATALOG_PROVIDERS = [
@@ -102,9 +102,9 @@ export function NavBar() {
 
         <nav className="hidden items-center gap-10 lg:flex">
           {NAV_LINKS.map((l) => (
-            <a key={l.href} href={l.href} className="text-sm text-muted transition-colors hover:text-ink">
+            <Link key={l.hash} to={{ pathname: '/', hash: l.hash }} className="text-sm text-muted transition-colors hover:text-ink">
               {l.label}
-            </a>
+            </Link>
           ))}
           <Link to="/saas" className="text-sm text-muted transition-colors hover:text-ink">For SaaS</Link>
           <a
@@ -140,10 +140,10 @@ export function NavBar() {
             </SheetHeader>
             <nav className="flex flex-col gap-4 px-4">
               {NAV_LINKS.map((l) => (
-                <SheetClose asChild key={l.href}>
-                  <a href={l.href} className="text-sm text-muted hover:text-ink">
+                <SheetClose asChild key={l.hash}>
+                  <Link to={{ pathname: '/', hash: l.hash }} className="text-sm text-muted hover:text-ink">
                     {l.label}
-                  </a>
+                  </Link>
                 </SheetClose>
               ))}
               <Link to="/saas" className="text-sm text-muted hover:text-ink">For SaaS</Link>
@@ -368,7 +368,18 @@ function Footer() {
   )
 }
 
+function useScrollToHash() {
+  const location = useLocation()
+  useEffect(() => {
+    const targetId = location.hash.slice(1)
+    if (!targetId) return
+    const frame = requestAnimationFrame(() => document.getElementById(targetId)?.scrollIntoView())
+    return () => cancelAnimationFrame(frame)
+  }, [location.hash, location.key])
+}
+
 export default function Landing() {
+  useScrollToHash()
   return (
     <TooltipProvider delayDuration={100}>
       <div className="min-h-screen bg-bg text-ink">
