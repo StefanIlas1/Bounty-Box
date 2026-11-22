@@ -5,14 +5,30 @@
   "buildCommand": "npm run build --prefix web",
   "outputDirectory": "web/dist",
   "functions": {
-    "api/builder.ts": { "maxDuration": 300 },
-    "api/product.ts": { "maxDuration": 30 }
+    "api/builder.ts": {
+      "maxDuration": 300
+    },
+    "api/product.ts": {
+      "maxDuration": 30
+    }
   },
   "rewrites": [
-    { "source": "/api/health", "destination": "/api/builder?path=health" },
-    { "source": "/api/runs", "destination": "/api/builder" },
-    { "source": "/api/runs/:path*", "destination": "/api/builder?path=:path*" },
-    { "source": "/product-v1/:slug", "destination": "/api/product?slug=:slug" },
+    {
+      "source": "/api/health",
+      "destination": "/api/builder?path=health"
+    },
+    {
+      "source": "/api/runs",
+      "destination": "/api/builder"
+    },
+    {
+      "source": "/api/runs/:path*",
+      "destination": "/api/builder?path=:path*"
+    },
+    {
+      "source": "/product-v1/:slug",
+      "destination": "/api/product?slug=:slug"
+    },
     {
       "source": "/waitlist",
       "destination": "/index.html"
@@ -28,6 +44,13 @@
     {
       "source": "/app/:path*",
       "destination": "/index.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/live-app",
+      "destination": "/demo",
+      "permanent": false
     }
   ]
 }
