@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { RunEvent, BomItem } from '../../shared/types'
 import type { RunSnapshot } from '../../shared/backend'
 import type { Phase } from '../state/reducer'
-import { advanceRun, approveRun, cancelRun, createRun, getRun, getRunArtifact, safeApiError, probeBackendReachable } from './client'
+import { advanceRun, approveRun, cancelRun, createRun, getRun, getRunArtifact, safeApiError } from './client'
 import { diffSnapshot, STAGE_TO_PHASE, backendBriefToUiBrief } from './snapshotAdapter'
 
 export interface StartPayload {
@@ -29,7 +29,6 @@ interface UseLiveRunOpts {
 }
 
 export function useLiveRun({ dispatch, setPhase, resetState, initialRunId }: UseLiveRunOpts) {
-  const [reachable, setReachable] = useState<boolean | null>(null)
   const [runId, setRunId] = useState<string | null>(null)
   const [snapshotMode, setSnapshotMode] = useState<RunSnapshot['mode'] | null>(null)
   const [starting, setStarting] = useState(false)
@@ -51,14 +50,6 @@ export function useLiveRun({ dispatch, setPhase, resetState, initialRunId }: Use
     void advanceRun(snap.id).catch(error => {
       if (task.epoch === epochRef.current) setStartError(safeApiError(error))
     }).finally(() => { if (advanceRef.current === task) advanceRef.current = null })
-  }, [])
-
-  useEffect(() => {
-    let disposed = false
-    const probe = async () => { const ok = await probeBackendReachable(); if (!disposed) setReachable(ok) }
-    void probe()
-    const id = setInterval(probe, 10_000)
-    return () => { disposed = true; clearInterval(id) }
   }, [])
 
   const stopPolling = useCallback(() => {
@@ -143,7 +134,7 @@ export function useLiveRun({ dispatch, setPhase, resetState, initialRunId }: Use
     return () => { epochRef.current += 1; stopPolling() }
   }, [initialRunId, watch, stopPolling])
 
-  const begin = useCallback(async (payload: StartPayload) => {
+  const begin = useCallback(async (payload: StartPayload): Promise<boolean> => {
     stop()
     resetState()
     setStarting(true)
@@ -155,9 +146,12 @@ export function useLiveRun({ dispatch, setPhase, resetState, initialRunId }: Use
         targetUsers: payload.targetUsers,
         load: { concurrency: payload.concurrency, durationSeconds: payload.durationSeconds, maxP95Ms: payload.maxP95Ms, maxErrorRate: payload.maxErrorRate },
       }, payload.useFixtures ? 'fixture' : 'live')
-      if (epoch === epochRef.current) watch(snap)
+      if (epoch !== epochRef.current) return false
+      watch(snap)
+      return true
     } catch (error) {
       if (epoch === epochRef.current) setStartError(safeApiError(error))
+      return false
     } finally {
       if (epoch === epochRef.current) setStarting(false)
     }
@@ -191,5 +185,5 @@ export function useLiveRun({ dispatch, setPhase, resetState, initialRunId }: Use
   }, [watch])
 
   useEffect(() => () => { epochRef.current += 1; stopPolling() }, [stopPolling])
-  return { reachable, runId, snapshotMode, simulated: false, starting, approving, startError, begin, approve, cancel, stop }
+  return { runId, snapshotMode, starting, approving, startError, begin, approve, cancel, stop }
 }

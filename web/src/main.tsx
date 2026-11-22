@@ -24,7 +24,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/" element={<Landing />} />
         <Route path="/waitlist" element={<Waitlist />} />
         <Route path="/saas" element={<Saas />} />
-        <Route path="/demo" element={<AppShell defaultMode="live" />} />
+        <Route path="/demo" element={<AppShell defaultMode="demo" />} />
         <Route path="/app/*" element={<AppShell />} />
       </Routes>
     </BrowserRouter>

@@ -51,17 +51,12 @@ export async function cancelRun(runId: string): Promise<RunSnapshot> {
   return parseJsonOrThrow(res)
 }
 
-/** No /api/health in this contract. Reachability is probed with a harmless lookup of a
- * run that doesn't exist: a 404 with `{ error }` JSON means the backend process answered
- * (reachable). A thrown fetch, or a non-JSON body (e.g. the dev proxy's own 502 text/plain
- * page when 127.0.0.1:3000 isn't listening), means it did not (unreachable). */
-export async function probeBackendReachable(): Promise<boolean> {
+export async function fetchLiveReady(): Promise<boolean> {
   try {
-    const res = await fetch('/api/runs/does-not-exist')
-    const contentType = res.headers.get('content-type') ?? ''
-    if (!contentType.includes('application/json')) return false
+    const res = await fetch('/api/health')
+    if (!res.ok) return false
     const body = await res.json()
-    return typeof body?.error === 'string' || res.status === 404
+    return body?.liveReady === true
   } catch {
     return false
   }
