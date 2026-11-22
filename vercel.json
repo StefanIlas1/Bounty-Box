@@ -4,6 +4,7 @@
   "installCommand": "npm ci && npm ci --prefix web",
   "buildCommand": "npm run build --prefix web",
   "outputDirectory": "web/dist",
+  "trailingSlash": false,
   "functions": {
     "api/builder.ts": {
       "maxDuration": 300
