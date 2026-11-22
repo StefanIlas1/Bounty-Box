@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waitlist</title>
+<link rel="icon" href="/favicon.svg">
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #0b1020; color: #e8ebf5; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { width: min(420px, 100% - 48px); }
+  h1 { margin: 0 0 8px; font-size: 28px; font-weight: 650; letter-spacing: -0.01em; }
+  p { margin: 0; color: #9aa3bd; }
+  form { display: flex; gap: 8px; margin-top: 28px; }
+  input { flex: 1; min-width: 0; padding: 11px 12px; border: 1px solid #2a3350; border-radius: 6px; background: #121a30; color: inherit; font: inherit; }
+  input:focus { outline: 2px solid #635bff; outline-offset: 1px; }
+  button { padding: 11px 16px; border: 0; border-radius: 6px; background: #e9b949; color: #1a1405; font: inherit; font-weight: 600; cursor: pointer; }
+  button:hover { background: #f0c865; }
+  #status { min-height: 24px; margin-top: 12px; font-size: 14px; }
+  #status.ok { color: #7bd88f; }
+  #status.bad { color: #ff7b7b; }
+  #count { margin-top: 28px; font-size: 14px; }
+  #count strong { color: #e8ebf5; font-variant-numeric: tabular-nums; }
+  footer { margin-top: 40px; font-size: 12px; color: #6b7491; }
+  footer a { color: #9aa3bd; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Join the waitlist</h1>
+  <p>Be first to know when we launch.</p>
+  <form id="signupForm" novalidate>
+    <input id="emailInput" type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+    <button type="submit">Sign up</button>
+  </form>
+  <div id="status" role="status" aria-live="polite"></div>
+  <p id="count"><strong id="signupTotal">0</strong> people on the list</p>
+  <footer>Demo preview built by <a href="/">Bounty-Box</a>. Signups are stored in this browser only.</footer>
+</main>
+<script>
+  const storageKey = 'bb_preview_waitlist'
+  const signupForm = document.getElementById('signupForm')
+  const emailInput = document.getElementById('emailInput')
+  const statusLine = document.getElementById('status')
+  const signupTotal = document.getElementById('signupTotal')
+  const readSignups = () => { try { return JSON.parse(localStorage.getItem(storageKey) || '[]') } catch { return [] } }
+  const writeSignups = (list) => { try { localStorage.setItem(storageKey, JSON.stringify(list)) } catch {} }
+  const showTotal = () => { signupTotal.textContent = String(readSignups().length) }
+  const showStatus = (text, kind) => { statusLine.textContent = text; statusLine.className = kind }
+  signupForm.addEventListener('submit', (event) => {
+    event.preventDefault()
+    const email = emailInput.value.trim().toLowerCase()
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showStatus('Enter a valid email address.', 'bad'); return }
+    const signups = readSignups()
+    if (signups.includes(email)) { showStatus('You are already on the list.', 'ok'); return }
+    signups.push(email)
+    writeSignups(signups)
+    emailInput.value = ''
+    showStatus('You are on the list.', 'ok')
+    showTotal()
+  })
+  showTotal()
+</script>
+</body>
+</html>

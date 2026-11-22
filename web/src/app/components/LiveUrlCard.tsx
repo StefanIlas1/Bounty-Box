@@ -8,14 +8,15 @@ import type { RunState } from '../state/reducer'
 export function LiveUrlCard({ state, scripted = false }: { state: RunState; scripted?: boolean }) {
   const [copied, setCopied] = useState(false)
   if (!state.liveUrl) return null
+  const liveUrl = new URL(state.liveUrl, window.location.origin).href
 
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(state.liveUrl!)
+      await navigator.clipboard.writeText(liveUrl)
       setCopied(true)
       setTimeout(() => setCopied(false), 1500)
     } catch {
-      // ignore
+      setCopied(false)
     }
   }
 
@@ -24,24 +25,24 @@ export function LiveUrlCard({ state, scripted = false }: { state: RunState; scri
       <BorderBeam size={60} duration={5} colorFrom="#635bff" colorTo="#e9b949" />
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
-          <Rocket className="size-4 text-blue" /> {scripted ? 'Verified judging app' : 'Live URL'}
+          <Rocket className="size-4 text-blue" /> {scripted ? 'App preview' : 'Live URL'}
         </CardTitle>
       </CardHeader>
-      {scripted && <p className="px-6 pb-3 text-xs text-muted">This replay made no purchases or deployments. This separate real app was generated, repaired and verified in CreateOS with Neon. Available until October 18, 9:17 PM EDT.</p>}
+      {scripted && <p className="px-6 pb-3 text-xs text-muted">This replay made no purchases or deployments. The preview runs the waitlist app in your browser.</p>}
       <CardContent className="flex items-center gap-2">
         <a
-          href={state.liveUrl}
+          href={liveUrl}
           target="_blank"
           rel="noreferrer"
           className="flex-1 truncate rounded bg-surface-2 px-2.5 py-1.5 font-mono text-sm text-blue hover:underline"
         >
-          {state.liveUrl}
+          {liveUrl}
         </a>
         <Button variant="outline" size="icon" onClick={copy} title="Copy link">
           {copied ? <Check className="size-4 text-blue" /> : <Copy className="size-4" />}
         </Button>
         <Button variant="outline" size="icon" asChild title="Open">
-          <a href={state.liveUrl} target="_blank" rel="noreferrer">
+          <a href={liveUrl} target="_blank" rel="noreferrer">
             <ExternalLink className="size-4" />
           </a>
         </Button>

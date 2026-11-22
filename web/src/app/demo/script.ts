@@ -10,6 +10,7 @@ export const DEMO_BRIEF = {
 }
 
 export const DEMO_RUN_ID = 'demo-run'
+export const DEMO_PREVIEW_PATH = '/preview/waitlist.html'
 const SANDBOX_ID = 'sbx_7f3a9c2d'
 
 const svcNeon: Service = { category: 'database', provider: 'Neon', serviceId: 'neon/free', monthlyCost: 0, tier: 'free' }
@@ -348,10 +349,10 @@ export const demoEventsPostApproval: RunEvent[] = [
   { type: 'provisioning', service: svcCreateosBeginner, command: 'stripe projects add createos/beginner-monthly', status: 'done', output: 'createos/beginner-monthly provisioned', at: at(5200) },
   { type: 'provisioning', service: svcResend, command: 'stripe projects add resend/free', status: 'started', at: at(5800) },
   { type: 'provisioning', service: svcResend, command: 'stripe projects add resend/free', status: 'done', output: 'resend/free provisioned', at: at(6600) },
-  { type: 'agent_message', text: 'Simulated provisioning complete. This replay does not deploy anything. The final link opens a separately verified real app.', at: at(7200) },
+  { type: 'agent_message', text: 'Simulated provisioning complete. This replay does not deploy anything. The final link opens a hosted preview of the waitlist app.', at: at(7200) },
   { type: 'log', level: 'ok', message: 'Ingress enabled on sandbox ' + SANDBOX_ID, at: at(8400) },
-  { type: 'live', url: 'https://01m569ayf9819747neebb84cse-3000.app.sb.createos.sh', at: at(9200) },
-  { type: 'agent_message', text: "Replay complete. Open the separately generated and verified judging app at https://01m569ayf9819747neebb84cse-3000.app.sb.createos.sh.", at: at(9600) },
+  { type: 'live', url: DEMO_PREVIEW_PATH, at: at(9200) },
+  { type: 'agent_message', text: 'Replay complete. Open the waitlist preview from the link on the right and try a signup.', at: at(9600) },
   { type: 'run_finished', at: at(10000) },
 ]
 
