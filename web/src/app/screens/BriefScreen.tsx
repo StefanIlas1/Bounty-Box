@@ -63,7 +63,6 @@ export function BriefScreen({
       durationSeconds,
       maxP95Ms,
       maxErrorRate,
-      useFixtures: false,
       hardwareOn,
       deviceNeeds: hardwareOn ? prompt : undefined,
     })

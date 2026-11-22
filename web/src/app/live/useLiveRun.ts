@@ -13,7 +13,6 @@ export interface StartPayload {
   durationSeconds: number
   maxP95Ms: number
   maxErrorRate: number
-  useFixtures: boolean
   hardwareItem?: BomItem
   hardwareOn?: boolean
   deviceNeeds?: string
@@ -145,7 +144,7 @@ export function useLiveRun({ dispatch, setPhase, resetState, initialRunId }: Use
         monthlyBudgetUsd: payload.budgetMonthly,
         targetUsers: payload.targetUsers,
         load: { concurrency: payload.concurrency, durationSeconds: payload.durationSeconds, maxP95Ms: payload.maxP95Ms, maxErrorRate: payload.maxErrorRate },
-      }, payload.useFixtures ? 'fixture' : 'live')
+      })
       if (epoch !== epochRef.current) return false
       watch(snap)
       return true

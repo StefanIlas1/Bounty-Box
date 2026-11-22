@@ -19,11 +19,11 @@ async function parseJsonOrThrow(res: Response): Promise<any> {
   return body
 }
 
-export async function createRun(brief: BackendBrief, mode: 'live' | 'fixture'): Promise<RunSnapshot> {
+export async function createRun(brief: BackendBrief): Promise<RunSnapshot> {
   const res = await fetch('/api/runs', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ brief, mode }),
+    body: JSON.stringify({ brief, mode: 'live' }),
   })
   return parseJsonOrThrow(res)
 }
