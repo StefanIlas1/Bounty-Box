@@ -44,7 +44,6 @@ function suggestTab(state: RunState): TabKey | null {
 
 const TAB_LABEL: Record<TabKey, string> = { code: 'Code', terminal: 'Terminal', comparisons: 'Comparisons', decisions: 'Decisions' }
 
-// Plain-language pointer to where the interesting thing is happening right now.
 function guide(state: RunState): { text: string; tab?: TabKey; panel?: 'sandbox' | 'cart' | 'live' } {
   switch (state.phase) {
     case 'idle':
@@ -130,7 +129,7 @@ export function BuildScreen({ mode, state, onApprove, approving, demoControls, l
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden lg:overflow-hidden">
     <div role="status" aria-live="polite" className="mx-4 mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 rounded border border-blue/40 bg-blue/10 px-4 py-2.5 text-sm text-ink">
       <Eye className="size-4 shrink-0 text-blue-soft" aria-hidden="true" />
       <span className="min-w-0 flex-1">{g.text}</span>
@@ -146,18 +145,18 @@ export function BuildScreen({ mode, state, onApprove, approving, demoControls, l
         </button>
       )}
     </div>
-    <div className="grid min-h-0 flex-1 grid-cols-[300px_minmax(0,1fr)_340px] gap-4 p-4">
-      <div className="min-h-0 min-w-0">
+    <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 p-4 lg:grid-cols-[280px_minmax(0,1fr)_290px] xl:grid-cols-[300px_minmax(0,1fr)_340px]">
+      <div className="h-[520px] min-h-0 min-w-0 lg:h-auto">
         <AgentPanel mode={mode} state={state} demo={demoControls} live={liveControls} />
       </div>
 
-      <div className="flex min-h-0 min-w-0 flex-col rounded bg-surface p-3">
+      <div className="flex h-[560px] min-h-0 min-w-0 flex-col rounded bg-surface p-3 lg:h-auto">
         <Tabs value={tab} onValueChange={(v) => pick(v as TabKey)} className="flex min-h-0 min-w-0 flex-1 flex-col">
-          <TabsList className="self-start">
-            <TabsTrigger value="code" className="gap-1.5"><Code2 className="size-3.5" /> Code{g.tab === "code" && tab !== "code" && <span className="bb-ping ml-0.5 size-1.5 rounded-full bg-blue-soft" aria-label="activity here" />}</TabsTrigger>
-            <TabsTrigger value="terminal" className="gap-1.5"><TerminalIcon className="size-3.5" /> Terminal{g.tab === "terminal" && tab !== "terminal" && <span className="bb-ping ml-0.5 size-1.5 rounded-full bg-blue-soft" aria-label="activity here" />}</TabsTrigger>
-            <TabsTrigger value="comparisons" className="gap-1.5"><Columns3 className="size-3.5" /> Comparisons{g.tab === "comparisons" && tab !== "comparisons" && <span className="bb-ping ml-0.5 size-1.5 rounded-full bg-blue-soft" aria-label="activity here" />}</TabsTrigger>
-            <TabsTrigger value="decisions" className="gap-1.5"><ListChecks className="size-3.5" /> Decisions{g.tab === "decisions" && tab !== "decisions" && <span className="bb-ping ml-0.5 size-1.5 rounded-full bg-blue-soft" aria-label="activity here" />}</TabsTrigger>
+          <TabsList className="max-w-full self-start overflow-x-auto">
+            <TabsTrigger value="code" className="gap-1.5"><Code2 className="hidden size-3.5 sm:block" /> Code{g.tab === "code" && tab !== "code" && <span className="bb-ping ml-0.5 size-1.5 rounded-full bg-blue-soft" aria-label="activity here" />}</TabsTrigger>
+            <TabsTrigger value="terminal" className="gap-1.5"><TerminalIcon className="hidden size-3.5 sm:block" /> Terminal{g.tab === "terminal" && tab !== "terminal" && <span className="bb-ping ml-0.5 size-1.5 rounded-full bg-blue-soft" aria-label="activity here" />}</TabsTrigger>
+            <TabsTrigger value="comparisons" className="gap-1.5"><Columns3 className="hidden size-3.5 sm:block" /> Comparisons{g.tab === "comparisons" && tab !== "comparisons" && <span className="bb-ping ml-0.5 size-1.5 rounded-full bg-blue-soft" aria-label="activity here" />}</TabsTrigger>
+            <TabsTrigger value="decisions" className="gap-1.5"><ListChecks className="hidden size-3.5 sm:block" /> Decisions{g.tab === "decisions" && tab !== "decisions" && <span className="bb-ping ml-0.5 size-1.5 rounded-full bg-blue-soft" aria-label="activity here" />}</TabsTrigger>
           </TabsList>
           <TabsContent value="code" className="mt-3 min-h-0 min-w-0 flex-1"><CodeTab state={state} mode={mode} /></TabsContent>
           <TabsContent value="terminal" className="mt-3 min-h-0 min-w-0 flex-1"><TerminalTab state={state} /></TabsContent>
@@ -166,7 +165,7 @@ export function BuildScreen({ mode, state, onApprove, approving, demoControls, l
         </Tabs>
       </div>
 
-      <div className="flex min-h-0 min-w-0 flex-col gap-3 overflow-y-auto pb-16 pr-0.5 [&>*]:shrink-0">
+      <div className="flex min-h-0 min-w-0 flex-col gap-3 pb-16 pr-0.5 lg:overflow-y-auto [&>*]:shrink-0">
         <div id="panel-sandbox" className="rounded"><SandboxCard state={state} /></div>
         <div id="panel-cart" className="flex flex-col gap-3 rounded">
           <CartCard state={state} onApprove={onApprove} approving={approving} />

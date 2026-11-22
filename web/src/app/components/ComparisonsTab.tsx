@@ -11,38 +11,63 @@ export function ComparisonsTab({ state, mode = 'demo' }: { state: RunState; mode
   }
 
   return (
-    <div className="h-full min-w-0 overflow-auto rounded border border-line bg-surface-2">
-      <Table className="min-w-[540px] table-fixed">
+    <div className="@container h-full min-w-0 overflow-auto rounded border border-line bg-surface-2">
+      <ul className="divide-y divide-line @lg:hidden">
+        {rows.map((s) => {
+          const last = s.loadResults[s.loadResults.length - 1]
+          const monthlyCost = s.monthlyCost ?? s.stack.services.reduce((total, service) => total + service.monthlyCost, 0)
+          const metrics: [string, string][] = [
+            ['p95', last ? `${last.p95Ms}ms` : '—'],
+            ['Errors', last ? `${(last.errorRate * 100).toFixed(1)}%` : '—'],
+            [mode === 'live' ? 'Concurrency' : 'Users', last ? last.users.toLocaleString() : '—'],
+            ['$/mo', `$${monthlyCost.toFixed(2)}`],
+          ]
+          return (
+            <li key={s.stack.id} className="space-y-2 p-3 text-sm">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0 font-semibold">{s.stack.id} <span className="font-sans text-xs font-normal text-muted">{s.stack.label}</span></div>
+                {s.status ? <StatusPill status={s.status as PillStatus} /> : <StatusPill status="pending" />}
+              </div>
+              <div className="break-words font-mono text-xs text-muted">{s.stack.services.map((svc) => svc.serviceId).join(', ')}</div>
+              <dl className="grid grid-cols-4 gap-2">
+                {metrics.map(([label, value]) => (
+                  <div key={label} className="min-w-0">
+                    <dt className="truncate text-[11px] text-muted">{label}</dt>
+                    <dd className="font-mono text-xs tabular-nums">{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </li>
+          )
+        })}
+      </ul>
+      <Table className="hidden @lg:table">
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[16%]">Stack</TableHead>
-            <TableHead className="w-[27%]">Services</TableHead>
-            <TableHead className="w-[9%]">p95</TableHead>
-            <TableHead className="w-[10%]">Error rate</TableHead>
-            <TableHead className="w-[12%]">{mode === 'live' ? 'Concurrency' : 'Users'}</TableHead>
-            <TableHead className="w-[9%]">$/mo</TableHead>
-            <TableHead className="w-[17%]">Status</TableHead>
+            <TableHead>Stack</TableHead>
+            <TableHead className="text-right">p95</TableHead>
+            <TableHead className="text-right">Errors</TableHead>
+            <TableHead className="text-right">{mode === 'live' ? 'Concurrency' : 'Users'}</TableHead>
+            <TableHead className="text-right">$/mo</TableHead>
+            <TableHead>Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {rows.map((s) => {
             const last = s.loadResults[s.loadResults.length - 1]
+            const serviceList = s.stack.services.map((svc) => svc.serviceId).join(', ')
+            const monthlyCost = s.monthlyCost ?? s.stack.services.reduce((total, service) => total + service.monthlyCost, 0)
             return (
-              <TableRow key={s.stack.id}>
-                <TableCell className="truncate font-semibold">
-                  {s.stack.id} <span className="font-sans text-xs text-muted">{s.stack.label}</span>
+              <TableRow key={s.stack.id} className="align-top">
+                <TableCell className="min-w-[180px] whitespace-normal">
+                  <div className="font-semibold">{s.stack.id} <span className="font-sans text-xs font-normal text-muted">{s.stack.label}</span></div>
+                  <div className="mt-0.5 break-words font-mono text-xs text-muted">{serviceList}</div>
                 </TableCell>
-                <TableCell
-                  className="truncate font-mono text-xs text-muted"
-                  title={s.stack.services.map((svc) => svc.serviceId).join(', ')}
-                >
-                  {s.stack.services.map((svc) => svc.serviceId).join(', ')}
-                </TableCell>
-                <TableCell className="truncate font-mono">{last ? `${last.p95Ms}ms` : '—'}</TableCell>
-                <TableCell className="truncate font-mono">{last ? `${(last.errorRate * 100).toFixed(1)}%` : '—'}</TableCell>
-                <TableCell className="truncate font-mono">{last ? last.users.toLocaleString() : '—'}</TableCell>
-                <TableCell className="truncate font-mono">{`$${(s.monthlyCost ?? s.stack.services.reduce((total, service) => total + service.monthlyCost, 0)).toFixed(2)}`}</TableCell>
-                <TableCell className="truncate">{s.status ? <StatusPill status={s.status as PillStatus} /> : <StatusPill status="pending" />}</TableCell>
+                <TableCell className="text-right font-mono tabular-nums">{last ? `${last.p95Ms}ms` : '—'}</TableCell>
+                <TableCell className="text-right font-mono tabular-nums">{last ? `${(last.errorRate * 100).toFixed(1)}%` : '—'}</TableCell>
+                <TableCell className="text-right font-mono tabular-nums">{last ? last.users.toLocaleString() : '—'}</TableCell>
+                <TableCell className="text-right font-mono tabular-nums">{`$${monthlyCost.toFixed(2)}`}</TableCell>
+                <TableCell>{s.status ? <StatusPill status={s.status as PillStatus} /> : <StatusPill status="pending" />}</TableCell>
               </TableRow>
             )
           })}
