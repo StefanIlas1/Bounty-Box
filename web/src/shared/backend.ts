@@ -1,8 +1,3 @@
-// Copied from /Users/mohsensarrafan/Bounty-Box/src/lib/contracts.ts (owned by the backend team / agent-1).
-// Do not edit that file from here. Keep this in sync if their contract changes.
-// This is the shape of data the real backend returns in Live mode; web/src/shared/types.ts
-// (RunEvent etc.) remains the UI's own internal event stream that both Demo and Live feed.
-
 export type BackendRunStatus =
   | 'queued' | 'planning' | 'generating' | 'testing' | 'repairing'
   | 'awaiting_approval' | 'provisioning' | 'deployed' | 'failed' | 'cancelled'
@@ -90,8 +85,3 @@ export interface RunSnapshot {
   updatedAt: string
 }
 
-// POST /api/runs { brief: BackendBrief, mode: 'live' | 'fixture' } -> 202 RunSnapshot
-// GET /api/runs/:id -> RunSnapshot
-// POST /api/runs/:id/approve { proposalId } -> RunSnapshot
-// POST /api/runs/:id/cancel -> RunSnapshot
-// Errors: { error: string }. Poll GET every 2s while run is active.

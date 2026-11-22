@@ -55,7 +55,6 @@ export default function AppShell({ defaultMode }: { defaultMode?: Mode }) {
       next.set('mode', mode)
       setSearchParams(next, { replace: true })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode])
 
   const demoPlayer = useDemoPlayer({ dispatch, resetState })
