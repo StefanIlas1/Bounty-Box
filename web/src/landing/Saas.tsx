@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import { Check, Copy, ShieldCheck, Scale, Tag } from 'lucide-react'
 import { NavBar } from './Landing'
 import { Button } from '@/components/ui/button'
@@ -40,7 +39,8 @@ function Field({ id, label, hint, children }: { id: string; label: string; hint?
 
 export default function Saas() {
   const [f, setF] = useState<Form>(EMPTY)
-  const [state, setState] = useState<'idle' | 'sending' | 'sent' | 'saved'>('idle')
+  const [state, setState] = useState<'idle' | 'sending' | 'sent' | 'failed'>('idle')
+  const [errorMessage, setErrorMessage] = useState('')
   const [copied, setCopied] = useState(false)
   const set = (k: keyof Form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setF({ ...f, [k]: e.target.value })
 
@@ -53,17 +53,27 @@ export default function Saas() {
       `Partner pricing offered: ${f.partnerPricing}`, `Free tier: ${f.freeTier}`, `Notes: ${f.notes}`,
     ].join('\n')
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault()
+  async function sendApplication() {
     setState('sending')
+    setErrorMessage('')
     try {
       const res = await fetch('/api/partners', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(f) })
-      if (!res.ok) throw new Error(String(res.status))
-      setState('sent')
+      if (res.ok) { setState('sent'); return }
+      const payload = await res.json().catch(() => null) as { error?: string } | null
+      if (res.status === 400 || res.status === 413) {
+        setErrorMessage(payload?.error ?? 'Check the form and try again.')
+        setState('idle')
+        return
+      }
+      setState('failed')
     } catch {
-      try { localStorage.setItem('bb-partner-application', JSON.stringify({ ...f, savedAt: Date.now() })) } catch { /* storage unavailable */ }
-      setState('saved')
+      setState('failed')
     }
+  }
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault()
+    void sendApplication()
   }
 
   const ready = f.company && f.email && f.product && f.category && f.description && f.standardPricing && f.partnerPricing
@@ -99,24 +109,25 @@ export default function Saas() {
 
           <div className="relative overflow-hidden rounded-lg border border-line bg-surface p-6 sm:p-8">
             <BorderBeam size={120} duration={9} colorFrom="#e9b949" colorTo="#635bff" />
-            {state === 'sent' || state === 'saved' ? (
+            {state === 'sent' || state === 'failed' ? (
               <div className="flex flex-col gap-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue/15 text-blue-soft"><Check className="h-5 w-5" /></div>
-                <h2 className="font-display text-2xl font-bold">{state === 'sent' ? 'Application received' : 'Saved on this device'}</h2>
+                {state === 'sent' && <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue/15 text-blue-soft"><Check className="h-5 w-5" /></div>}
+                <h2 className="font-display text-2xl font-bold">{state === 'sent' ? 'Application received' : "Couldn't send yet"}</h2>
                 <p className="text-muted">
                   {state === 'sent'
                     ? `Thanks, ${f.contactName || f.company}. We'll test ${f.product} against the current catalog and reply to ${f.email}.`
-                    : "We couldn't reach our server right now, so your application is saved in this browser. Copy it below and send it to the Bounty-Box team."}
+                    : 'Our server did not respond. Your answers are kept here, so try again in a moment or copy them for your records.'}
                 </p>
-                {state === 'saved' && (
+                {state === 'failed' && (
                   <>
+                    <Button type="button" className="h-11 self-start bg-gold font-semibold text-on-gold hover:bg-gold/90" onClick={() => void sendApplication()}>Try again</Button>
                     <pre className="max-h-64 overflow-auto whitespace-pre-wrap rounded-md border border-line bg-navy p-4 font-mono text-xs text-ink/90">{summary()}</pre>
                     <Button type="button" variant="outline" className="self-start" onClick={() => { navigator.clipboard.writeText(summary()).then(() => setCopied(true)).catch(() => {}) }}>
                       {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />} {copied ? 'Copied' : 'Copy application'}
                     </Button>
                   </>
                 )}
-                <Button type="button" variant="ghost" className="self-start text-muted" onClick={() => { setF(EMPTY); setState('idle'); setCopied(false) }}>Submit another product</Button>
+                <Button type="button" variant="ghost" className="self-start text-muted" onClick={() => { if (state === 'sent') setF(EMPTY); setState('idle'); setCopied(false) }}>{state === 'sent' ? 'Submit another product' : 'Edit application'}</Button>
               </div>
             ) : (
               <form onSubmit={submit} className="flex flex-col gap-5">
@@ -155,6 +166,7 @@ export default function Saas() {
                 <Button type="submit" disabled={!ready || state === 'sending'} className="h-11 bg-gold font-semibold text-on-gold hover:bg-gold/90">
                   {state === 'sending' ? 'Sending…' : 'Submit application'}
                 </Button>
+                {errorMessage && <p role="alert" className="text-sm text-bad">{errorMessage}</p>}
                 <p className="text-xs text-muted">We test every applicant the same way. Submitting doesn't guarantee placement.</p>
               </form>
             )}
