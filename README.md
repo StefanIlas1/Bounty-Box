@@ -44,7 +44,7 @@ Shipping even a small app means picking a database, a host, a cache and an email
 | Agent writes and runs its own code | Generates the app and a load test, runs both, and repairs its code until the test passes |
 | Stack set up with **Stripe Projects** | Services come from the Stripe Projects catalog and are provisioned with `stripe projects add` after approval |
 | Code runs in a **CreateOS Sandbox** | Every generated build and load test runs in a CreateOS sandbox (`devbox:1`) with an egress allowlist, a live preview URL, fork for parallel fixes, and pause while awaiting approval |
-| Demo video | [media/bounty-box-demo.mp4](media/bounty-box-demo.mp4) |
+| Demo video | [web/public/media/bounty-box-demo.mp4](web/public/media/bounty-box-demo.mp4) |
 | Public repo | You are here |
 
 ## System design
