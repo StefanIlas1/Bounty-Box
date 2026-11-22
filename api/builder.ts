@@ -37,6 +37,7 @@ export default { async fetch(request:Request){
    const run:RunSnapshot={id:randomUUID(),mode:'live',status:'queued',brief,candidates:[],attempts:[],events:[{id:1,at:now,stage:'queued',message:localWorker?'Your goal was queued for code generation and real execution in CreateOS.':'Your goal was queued for a real CreateOS AI build.'}],createdAt:now,updatedAt:now};
    await db.create(run,owner);return reply(202,run);
   }
+  if(!path)return reply(405,{error:'Use POST to start a run.'});
   const match=/^([a-f0-9-]{36})(?:\/(advance|approve|cancel|artifacts)(?:\/([1-9][0-9]*))?)?$/.exec(path);
   if(!match)throw new db.StoreError(404,'Run not found');
   const [,id,action,attempt]=match;const record=await db.get(id,owner);const run=record.snapshot;
