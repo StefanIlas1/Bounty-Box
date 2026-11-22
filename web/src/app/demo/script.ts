@@ -209,7 +209,6 @@ const PKG_C = `{
 }
 `
 
-let seq = 0
 function at(ms: number): number {
   return ms
 }

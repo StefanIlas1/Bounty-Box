@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react'
-import { Mic, ArrowRight, ChevronDown } from 'lucide-react'
+import { ArrowRight, ChevronDown } from 'lucide-react'
 import { GridPattern } from '@/components/ui/grid-pattern'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Logo } from '../../shared/Logo'
 import type { Mode } from '../../shared/types'
 import type { StartPayload } from '../live/useLiveRun'
+import { DEMO_BRIEF } from '../demo/script'
 
 const EXAMPLES = [
   'A task tracker for a student team with priorities and completion status',
@@ -36,7 +36,7 @@ export function BriefScreen({
   startError?: string | null
   initialHardware?: boolean
 }) {
-  const [prompt, setPrompt] = useState(mode === 'live' ? '' : EXAMPLES[0])
+  const [prompt, setPrompt] = useState(mode === 'live' ? '' : DEMO_BRIEF.prompt)
   const [budget, setBudget] = useState(30)
   const [users, setUsers] = useState(mode === 'live' ? 1 : 1000)
   const [concurrency, setConcurrency] = useState(mode === 'live' ? 1 : DEFAULT_CONCURRENCY)
@@ -46,7 +46,7 @@ export function BriefScreen({
   const [advancedOpen, setAdvancedOpen] = useState(false)
   const [hardwareOn, setHardwareOn] = useState(!!initialHardware)
   useEffect(() => {
-    setPrompt(mode === 'live' ? '' : EXAMPLES[0])
+    setPrompt(mode === 'live' ? '' : DEMO_BRIEF.prompt)
     setUsers(mode === 'live' ? 1 : 1000)
     setConcurrency(mode === 'live' ? 1 : DEFAULT_CONCURRENCY)
     setDurationSeconds(mode === 'live' ? 5 : DEFAULT_DURATION_S)
@@ -156,27 +156,17 @@ export function BriefScreen({
         {mode === 'live' && <p className="text-xs text-muted">Live builds generate a small web app from your goal and run bounded checks in CreateOS. Up to 100 planned users; default test is 2 concurrent requests for 5 seconds. Planned users are not measured capacity.</p>}
         {startError && <p className="text-sm text-bad">{startError}</p>}
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-2">
           <Button
             size="lg"
             disabled={!canStart || starting}
             onClick={start}
-            className="flex-1 gap-1.5 bg-gold text-on-gold hover:bg-gold/85"
+            className="w-full gap-1.5 bg-gold text-on-gold hover:bg-gold/85"
           >
             {starting ? 'Starting…' : 'Start build'} <ArrowRight className="size-4" />
           </Button>
-          {mode === 'live' && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="icon" disabled>
-                  <Mic className="size-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Voice brief needs the LiveKit token endpoint</TooltipContent>
-            </Tooltip>
-          )}
+          {mode === 'demo' && <p className="text-center text-xs text-muted">Demo replays a scripted waitlist build, whatever you type.</p>}
         </div>
-        {mode === 'demo' && <p className="text-center text-[11px] text-muted">Demo mode plays a fixed scripted example regardless of what you type above.</p>}
         <ol aria-label="What you will see after you start" className="grid grid-cols-2 gap-2 border-t border-line pt-4 text-xs text-muted sm:grid-cols-4">
           {[
             ['Agent', 'left panel: its reasoning, live'],
