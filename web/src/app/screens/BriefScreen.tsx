@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
 import { Logo } from '../../shared/Logo'
 import type { Mode } from '../../shared/types'
 import type { StartPayload } from '../live/useLiveRun'
@@ -17,7 +16,6 @@ const EXAMPLES = [
   'An event interest form for a campus robotics club',
 ]
 
-// ADR-10 defaults.
 const DEFAULT_CONCURRENCY = 10
 const DEFAULT_DURATION_S = 30
 const DEFAULT_MAX_P95 = 500
@@ -97,10 +95,13 @@ export function BriefScreen({
 
         <div className="flex flex-wrap gap-1.5">
           {EXAMPLES.map((ex) => (
-            <button key={ex} onClick={() => setPrompt(ex)} className="text-left">
-              <Badge variant="outline" className="cursor-pointer whitespace-normal border-line font-sans text-muted hover:border-blue/40 hover:text-blue">
-                {ex}
-              </Badge>
+            <button
+              key={ex}
+              type="button"
+              onClick={() => setPrompt(ex)}
+              className="rounded-2xl border border-line px-2.5 py-1 text-left text-xs font-medium leading-snug text-muted transition-colors hover:border-blue/40 hover:text-blue focus-visible:outline-2 focus-visible:outline-blue"
+            >
+              {ex}
             </button>
           ))}
         </div>
