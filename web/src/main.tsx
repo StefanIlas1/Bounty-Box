@@ -5,7 +5,6 @@ import './index.css'
 import './glow.css'
 import Landing from './landing/Landing'
 import Waitlist from './landing/Waitlist'
-import Login from './landing/Login'
 import Saas from './landing/Saas'
 import AppShell from './app/AppShell'
 
@@ -15,7 +14,6 @@ createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/waitlist" element={<Waitlist />} />
-        <Route path="/login" element={<Login />} />
         <Route path="/saas" element={<Saas />} />
         <Route path="/demo" element={<AppShell defaultMode="live" />} />
         <Route path="/app/*" element={<AppShell />} />
