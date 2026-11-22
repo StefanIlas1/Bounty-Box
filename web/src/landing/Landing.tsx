@@ -3,16 +3,7 @@ import { Link } from 'react-router-dom'
 import {
   ArrowRight,
   Play,
-  Database,
-  Globe,
   ShieldCheck,
-  Mail,
-  ListOrdered,
-  Zap,
-  Archive,
-  Search,
-  Share2,
-  Clock,
   PenLine,
   FlaskConical,
   CheckCircle2,
@@ -28,15 +19,12 @@ import { siNeon, siSupabase, siUpstash, siResend, siVercel, siRailway, siAuth0, 
 import { ProviderGrid, type GridMode } from './ProviderGrid'
 import { IterationStory } from './IterationStory'
 import { DemoVideoSection } from './DemoVideo'
-import { FigChart } from './FigChart'
 import { GithubMark } from './GithubMark'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { DotPattern } from '@/components/ui/dot-pattern'
 import { GridPattern } from '@/components/ui/grid-pattern'
-import { BorderBeam } from '@/components/ui/border-beam'
 import { FlickeringGrid } from '@/components/ui/flickering-grid'
-import { Badge } from '@/components/ui/badge'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
@@ -48,22 +36,6 @@ const NAV_LINKS = [
   { href: '/#trust', label: 'Trust' },
 ]
 
-const TOP_TILES = [
-  { icon: Database, name: 'Postgres', detail: 'Postgres · via Neon' },
-  { icon: Globe, name: 'Edge host', detail: 'Edge host · via Vercel' },
-  { icon: ShieldCheck, name: 'Auth', detail: 'Auth · via Auth0' },
-  { icon: Mail, name: 'Email', detail: 'Email · via Resend' },
-  { icon: ListOrdered, name: 'Queue', detail: 'Queue · via Railway' },
-]
-
-const BOTTOM_TILES = [
-  { icon: Zap, name: 'Redis', detail: '↻ swapped in · p95 140ms', swapped: true },
-  { icon: Archive, name: 'Storage', detail: 'Storage · via Supabase' },
-  { icon: Search, name: 'Search', detail: 'Search · via Render' },
-  { icon: Share2, name: 'Vector DB', detail: 'Vector DB · via Supabase' },
-  { icon: Clock, name: 'Cron', detail: 'Cron · via Railway' },
-]
-
 const CATALOG_PROVIDERS = [
   { name: 'Neon', path: siNeon.path }, { name: 'Supabase', path: siSupabase.path }, { name: 'Upstash', path: siUpstash.path },
   { name: 'Resend', path: siResend.path }, { name: 'Vercel', path: siVercel.path }, { name: 'Railway', path: siRailway.path },
@@ -73,29 +45,6 @@ const CATALOG_PROVIDERS = [
   { name: 'Fly.io', path: siFlydotio.path }, { name: 'Algolia', path: siAlgolia.path }, { name: 'Datadog', path: siDatadog.path },
   { name: 'Cloudinary', path: siCloudinary.path }, { name: 'OpenRouter', path: siOpenrouter.path }, { name: 'MongoDB', path: siMongodb.path },
   { name: 'Sentry', path: siSentry.path }, { name: 'Netlify', path: siNetlify.path }, { name: 'Perplexity', path: siPerplexity.path },
-]
-
-type IterationCard = {
-  n: string
-  title: string
-  result: string
-  cost: string
-  pass: boolean
-  chosen?: boolean
-}
-
-const ITERATIONS: IterationCard[] = [
-  { n: 'ATTEMPT 1', title: 'SQLite + free host', result: '✕ fails at 800 users', cost: '$0/mo', pass: false },
-  { n: 'ATTEMPT 2', title: 'Postgres + VM', result: '✓ 1,000 users · p95 90ms', cost: '$48/mo · over budget', pass: true },
-  { n: 'ATTEMPT 3', title: 'Postgres + edge, no cache', result: '✕ p95 1.4s under load', cost: '$22/mo', pass: false },
-  {
-    n: 'CHOSEN',
-    title: 'Postgres + edge + Redis',
-    result: '✓ 1,000 users · p95 140ms',
-    cost: '$27.40/mo · $2.60 under',
-    pass: true,
-    chosen: true,
-  },
 ]
 
 const STEPS = [
@@ -259,7 +208,6 @@ function Hero() {
 }
 
 function CatalogRow() {
-  // Two copies side by side so the strip loops seamlessly.
   const loop = [...CATALOG_PROVIDERS, ...CATALOG_PROVIDERS]
   return (
     <section className="border-y border-line bg-surface/40">
@@ -302,66 +250,6 @@ function SectionHead({
         <p className={cn('mt-3 max-w-2xl', light ? 'text-ink/65' : 'text-muted')}>{body}</p>
       </div>
     </div>
-  )
-}
-
-function IterationStrip() {
-  return (
-    <section className="border-b border-line">
-      <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-        <SectionHead
-          eyebrow="One run, four attempts"
-          title="Show the depth of the search, simply."
-          body="One run plays out as four cards. The agent tries, measures, fails, swaps, and lands under budget — before you read a line of code."
-        />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {ITERATIONS.map((c) => (
-            <Card
-              key={c.n}
-              className={cn(
-                'relative overflow-hidden rounded-lg border bg-surface ring-0',
-                c.chosen ? 'border-gold shadow-[0_0_0_1px_var(--color-gold)]' : 'border-line'
-              )}
-            >
-              <CardContent className="flex flex-col gap-2.5">
-                <Badge
-                  variant={c.chosen ? 'default' : 'outline'}
-                  className={cn(
-                    'rounded-full font-mono text-[10px] uppercase tracking-wide',
-                    !c.chosen && 'border-brown-soft/40 text-brown-soft'
-                  )}
-                >
-                  {c.n}
-                </Badge>
-                <span className="font-display text-base font-semibold text-ink">{c.title}</span>
-                <span className={cn('font-mono text-sm', c.pass ? 'text-ok' : 'text-bad')}>{c.result}</span>
-                <span className="font-mono text-sm text-muted">{c.cost}</span>
-              </CardContent>
-              {c.chosen && <BorderBeam size={90} duration={7} colorFrom="#e9b949" colorTo="#635bff" />}
-            </Card>
-          ))}
-        </div>
-        <p className="mt-5 text-sm text-muted">
-          Example figures. In the product every number comes from a real sandbox run you can open.
-        </p>
-      </div>
-    </section>
-  )
-}
-
-function FigureSection() {
-  return (
-    <section id="fig-01" className="relative isolate overflow-hidden border-b border-line bg-surface/30">
-      <DotPattern aria-hidden="true" width={22} height={22} cr={1} className="pointer-events-none absolute inset-0 -z-10 fill-brown-soft/30 [mask-image:linear-gradient(to_bottom,white,transparent_85%)]" />
-      <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
-        <SectionHead
-          eyebrow="Measured, not claimed"
-          title="Every stack gets charted against your budget."
-          body="Cost and latency for every attempt, plotted against the budget line and the latency target. The chosen stack is the one that clears both."
-        />
-        <FigChart />
-      </div>
-    </section>
   )
 }
 
